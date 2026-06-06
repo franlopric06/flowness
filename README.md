@@ -44,7 +44,7 @@ Flowness es un método propio de movilidad, flexibilidad y mindfulness creado po
 - [ ] Base de datos con PostgreSQL y Prisma
 - [ ] Autenticación con JWT
 - [ ] Panel de administración
-- [ ] Despliegue en Vercel
+- [x] Despliegue en Vercel
 
 ---
 
