@@ -44,7 +44,22 @@ Flowness es un método propio de movilidad, flexibilidad y mindfulness creado po
 - [ ] Base de datos con PostgreSQL y Prisma
 - [ ] Autenticación con JWT
 - [ ] Panel de administración
+- [x] Análisis técnico SPA y PWA
 - [x] Despliegue en Vercel
+
+### D. Fundamentos Técnicos: SPA y PWA
+
+**¿Qué es una SPA (Single Page Application)?**
+
+Una SPA es una aplicación web que carga una única página HTML y actualiza el contenido dinámicamente mediante JavaScript, sin necesidad de recargar toda la página al navegar entre secciones. Esto se logra mediante un framework como React, que renderiza los componentes de forma eficiente en el navegador.
+
+**¿Qué es una PWA (Progressive Web App)?**
+
+Una PWA es una aplicación web que combina las ventajas de un sitio web con las de una aplicación nativa. Mediante un Service Worker y un manifiesto web, permite que el sitio funcione sin conexión a internet, se instale en el dispositivo como una app y cargue rápidamente incluso con conexiones lentas.
+
+**Aplicación a Flowness:**
+
+Para Flowness, el enfoque SPA permite una navegación fluida entre el catálogo de cursos, las clases online y el panel de administración, sin recargas de página que afecten la experiencia del usuario. El enfoque PWA es fundamental porque permite que usuarios de zonas rurales con conectividad limitada puedan acceder al contenido del método, e instalar la app en su celular como si fuera una aplicación nativa.
 
 ---
 
