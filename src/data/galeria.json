@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "tipo": "foto",
+    "descripcion": "Clase de movilidad articular",
+    "fase": null
+  },
+  {
+    "id": 2,
+    "tipo": "foto",
+    "descripcion": "Sesión de flexibilidad activa",
+    "fase": null
+  },
+  {
+    "id": 3,
+    "tipo": "foto",
+    "descripcion": "Práctica de mindfulness",
+    "fase": null
+  },
+  {
+    "id": 4,
+    "tipo": "video",
+    "descripcion": "Vista previa Fase 01 — Consciencia Corporal",
+    "fase": "01"
+  },
+  {
+    "id": 5,
+    "tipo": "video",
+    "descripcion": "Vista previa Fase 02 — Movilidad Articular",
+    "fase": "02"
+  },
+  {
+    "id": 6,
+    "tipo": "video",
+    "descripcion": "Vista previa Fase 03 — Flexibilidad Activa",
+    "fase": "03"
+  }
+]
