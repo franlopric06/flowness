@@ -28,7 +28,7 @@ Este archivo registra los cambios más relevantes del proyecto ordenados por fec
 
 | Descripción | Fecha |
 |---|---|
-| Agrego carpeta /docs con documentación técnica completa | - |
+| Agregamos la carpeta docs con documentacion tecnica | 16/06/2026 |
 | Agrego roadmap con enfoque MVP al README.md | - |
 | Agrego nuevos componentes: Catalogo, Galeria, Contacto | - |
 | Agrego mock data en JSON para cursos y clases | - |
