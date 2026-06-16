@@ -14,6 +14,7 @@
 | **Rubro** | Salud y bienestar |
 | **Ubicación** | Hipólito Irigoyen 383, Tinogasta, Catamarca |
 | **Redes sociales** | Instagram @flownessargentina |
+| **Telefono** | 3837-488876 |
 
 Flowness es un método propio de movilidad, flexibilidad y mindfulness creado por una kinesióloga de la ciudad de Tinogasta. Estructurado en seis fases progresivas, con registro de marca a nivel nacional en las categorías de fitness, salud, formación y educación.
 
@@ -190,3 +191,5 @@ Los wireframes de baja fidelidad representan la distribución visual de los bloq
   "theme_color": "#7B9B77"
 }
 ```
+
+Este archivo de manifiesto le indica al navegador cómo debe comportarse Flowness cuando se instala en el celular. El campo `name` es el nombre completo de la app, `short_name` es el nombre que aparece debajo del ícono, `start_url` es la pantalla que abre al iniciar, `display: standalone` hace que se abra sin la barra del navegador como una app nativa, y los colores `background_color` y `theme_color` respetan la identidad visual de Flowness.
