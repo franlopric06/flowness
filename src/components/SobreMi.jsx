@@ -14,7 +14,7 @@ function SobreMi() {
         {/* Foto */}
         <div className="bg-[#E6D5B8] rounded-2xl h-64 flex items-center justify-center md:w-1/3 md:h-80 border border-[#D8A48F]/20">
           <p className="text-[#A9A9A2] text-xs text-center px-4">
-            [ Foto de Flor Verazay ]
+            [ Foto ]
           </p>
         </div>
 
