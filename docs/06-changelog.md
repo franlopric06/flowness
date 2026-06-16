@@ -30,7 +30,7 @@ Este archivo registra los cambios más relevantes del proyecto ordenados por fec
 |---|---|
 | Agregamos la carpeta docs con documentacion tecnica | 16/06/2026 |
 | Agregamos componente Catalogo con mock data de cursos| 16/06/2026 |
-| Agrego nuevos componentes: Catalogo, Galeria, Contacto | - |
+| Agregamos componente Galeria con mock data | 16/06/2026|
 | Agrego mock data en JSON para cursos y clases | - |
 | Actualizo deploy en Vercel con avances de la Etapa 2 | - |
 

@@ -39,7 +39,7 @@ function Galeria() {
               key={item.id}
               className="bg-[#E6D5B8] rounded-2xl h-48 flex flex-col items-center justify-center border border-[#D8A48F]/20 gap-3"
             >
-              <span className="text-4xl text-[#A9A9A2]">▶</span>
+              <span className="text-4xl text-[#A9A9A2]"></span>
               <p className="text-[#A9A9A2] text-xs text-center px-4">
                 {item.descripcion}
               </p>
