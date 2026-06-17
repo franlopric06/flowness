@@ -11,8 +11,8 @@ function App() {
     <>
       <Header />
       <Main />
-      <SobreMi />
       <Catalogo />
+      <SobreMi />
       <Galeria />
       <Contacto />  
       <Footer />
