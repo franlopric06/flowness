@@ -33,7 +33,7 @@ Este archivo registra los cambios más relevantes del proyecto ordenados por fec
 | Agregamos componente Galeria con mock data | 16/06/2026 |
 | Agregamos componente SobreMi | 16/06/2026 |
 | Agregamos componente Contacto | 16/06/2026 |
-
+| Actualizamos el Main.jsx con las 6 fases del metodo | 16/06/2026 |
 ---
 
 ## Próximos pasos

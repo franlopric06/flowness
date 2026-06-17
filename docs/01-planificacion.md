@@ -19,10 +19,10 @@ El proyecto se divide en tres fases incrementales. Cada fase entrega algo funcio
 - [x] Componentes Header, Main y Footer
 - [x] Estilizado con Tailwind CSS
 - [x] Deploy en Vercel
-- [ ] Landing page completa (hero, 6 fases, sobre mí)
-- [ ] Catálogo de cursos visible (sin compra)
-- [ ] Galería de fotos y videos de muestra
-- [ ] Formulario de contacto
+- [x] Landing page completa (hero, 6 fases, sobre mí)
+- [x] Catálogo de cursos visible (sin compra)
+- [x] Galería de fotos y videos de muestra
+- [x] Formulario de contacto
 
 ### Fase 2 — Comercial: El Negocio Funciona
 *Objetivo: Usuario final puede vender cursos y gestionar clases online.*
