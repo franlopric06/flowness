@@ -51,6 +51,7 @@ function Header() {
       {menuAbierto && (
         <ul className="md:hidden flex flex-col items-center gap-6 py-6 list-none border-t border-[#D8A48F]/20">
           <li><Link to="/" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Inicio</Link></li>
+          <li><Link to="/clases" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Clases Online</Link></li>
           <li><Link to="/sobre-mi" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Sobre mí</Link></li>
           <li><Link to="/cursos" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Cursos</Link></li>
           <li><Link to="/galeria" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Galería</Link></li>
