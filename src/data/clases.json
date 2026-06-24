@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "fase": "01",
+    "nombre": "Consciencia Corporal",
+    "descripcion": "Aprendé a escuchar las señales internas de tu cuerpo e identificar patrones de tensión.",
+    "duracion": "60 min",
+    "precio_vivo": 3000,
+    "precio_grabada": 2000,
+    "horarios": ["Lunes 18:00", "Miércoles 10:00", "Viernes 18:00"]
+  },
+  {
+    "id": 2,
+    "fase": "02",
+    "nombre": "Movilidad Articular",
+    "descripcion": "Explorá los límites actuales de tu cuerpo de forma segura y consciente.",
+    "duracion": "60 min",
+    "precio_vivo": 3000,
+    "precio_grabada": 2000,
+    "horarios": ["Martes 18:00", "Jueves 10:00", "Sábado 10:00"]
+  },
+  {
+    "id": 3,
+    "fase": "03",
+    "nombre": "Flexibilidad Activa",
+    "descripcion": "Ganá amplitud de movimiento desde la fuerza muscular controlada.",
+    "duracion": "60 min",
+    "precio_vivo": 3000,
+    "precio_grabada": 2000,
+    "horarios": ["Lunes 10:00", "Miércoles 18:00", "Viernes 10:00"]
+  },
+  {
+    "id": 4,
+    "fase": "04",
+    "nombre": "Control y Estabilidad",
+    "descripcion": "Aprendé a moverte con precisión y eficiencia integrando control postural.",
+    "duracion": "60 min",
+    "precio_vivo": 3500,
+    "precio_grabada": 2500,
+    "horarios": ["Martes 10:00", "Jueves 18:00", "Sábado 18:00"]
+  },
+  {
+    "id": 5,
+    "fase": "05",
+    "nombre": "Fluidez de Movimiento",
+    "descripcion": "Conectá todas las fases para lograr un movimiento natural y coordinado.",
+    "duracion": "60 min",
+    "precio_vivo": 3500,
+    "precio_grabada": 2500,
+    "horarios": ["Lunes 18:00", "Jueves 10:00", "Sábado 10:00"]
+  },
+  {
+    "id": 6,
+    "fase": "06",
+    "nombre": "Mindfulness en Movimiento",
+    "descripcion": "Integrá la conciencia plena con cada patrón de movimiento para el bienestar total.",
+    "duracion": "60 min",
+    "precio_vivo": 3500,
+    "precio_grabada": 2500,
+    "horarios": ["Martes 18:00", "Miércoles 10:00", "Viernes 18:00"]
+  }
+]

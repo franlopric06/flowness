@@ -23,6 +23,7 @@ function Header() {
         {/* Links — ocultos en mobile */}
         <ul className="hidden md:flex gap-8 list-none">
           <li><Link to="/" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Inicio</Link></li>
+          <li><Link to="/clases" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Clases Online</Link></li>
           <li><Link to="/sobre-mi" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Sobre mí</Link></li>
           <li><Link to="/cursos" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Cursos</Link></li>
           <li><Link to="/galeria" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Galería</Link></li>

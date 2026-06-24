@@ -1,11 +1,31 @@
+import { Link } from 'react-router-dom'
+
 function ElMetodo() {
-  const fases = [
-    { num: "01", nombre: "Consciencia Corporal", desc: "Reconocimiento del cuerpo y sus límites actuales como punto de partida. Aprendemos a escuchar las señales internas y a identificar patrones de tensión y compensación.", beneficios: ["Mayor autoconocimiento corporal", "Identificación de zonas de tensión", "Base para el trabajo progresivo"] },
-    { num: "02", nombre: "Movilidad Articular", desc: "Trabajo progresivo sobre el rango de movimiento de cada articulación. Exploramos los límites actuales del cuerpo de forma segura y consciente.", beneficios: ["Mayor rango de movimiento", "Lubricación articular", "Reducción de rigidez"] },
-    { num: "03", nombre: "Flexibilidad Activa", desc: "Desarrollo de la flexibilidad desde la fuerza muscular controlada. No se trata de forzar el cuerpo sino de ganar amplitud desde adentro.", beneficios: ["Flexibilidad sostenible", "Mayor fuerza en el rango amplio", "Menor riesgo de lesiones"] },
-    { num: "04", nombre: "Control y Estabilidad", desc: "Integración del movimiento con el control postural y la estabilidad. Aprendemos a movernos con precisión y eficiencia.", beneficios: ["Mejor postura", "Mayor control motor", "Estabilidad en el movimiento"] },
-    { num: "05", nombre: "Fluidez de Movimiento", desc: "Conexión entre fases para lograr un movimiento natural y fluido. El cuerpo comienza a moverse como una unidad integrada.", beneficios: ["Movimiento más natural", "Coordinación mejorada", "Mayor economía de movimiento"] },
-    { num: "06", nombre: "Mindfulness en Movimiento", desc: "Integración de la conciencia plena con cada patrón de movimiento. La mente y el cuerpo trabajan en completa sincronía.", beneficios: ["Mayor concentración", "Reducción del estrés", "Bienestar integral"] },
+  const niveles = [
+    {
+      num: "01",
+      nombre: "Flowness Esencial",
+      nivel: "Básico",
+      desc: "Diseñado para personas que se inician en el movimiento consciente. No se requieren conocimientos previos. Aprendés los fundamentos del método Flowness desde cero, trabajando la consciencia corporal y la movilidad básica.",
+      incluye: ["Acceso a las 6 fases en nivel básico", "Videos explicativos de cada ejercicio", "Guía de práctica semanal", "Acceso de por vida"],
+      para: "Personas sin experiencia previa en kinesiología o educación física"
+    },
+    {
+      num: "02",
+      nombre: "Flowness Avanza",
+      nivel: "Intermedio",
+      desc: "Para quienes ya tienen una base de movimiento y quieren profundizar en el método. Trabajamos flexibilidad activa, control postural y fluidez de movimiento con mayor complejidad técnica.",
+      incluye: ["Progresión de las 6 fases nivel intermedio", "Videos de corrección técnica", "Rutinas de práctica avanzadas", "Acceso de por vida"],
+      para: "Personas con experiencia básica en movimiento o que completaron el Nivel 01"
+    },
+    {
+      num: "03",
+      nombre: "Flowness Pro",
+      nivel: "Avanzado",
+      desc: "Formación completa orientada a profesionales de la salud y el movimiento. Incluye la metodología completa de Flowness con profundidad técnica y científica para aplicar en la práctica profesional.",
+      incluye: ["Metodología completa del método Flowness", "Fundamentos anatómicos y fisiológicos", "Protocolo de aplicación profesional", "Certificación de instructor Flowness"],
+      para: "Kinesiólogos, profesores de educación física y profesionales de la salud"
+    }
   ]
 
   return (
@@ -14,23 +34,23 @@ function ElMetodo() {
       {/* HERO */}
       <section className="px-6 py-16 text-center md:px-16">
         <p className="text-[#D8A48F] text-xs tracking-widest uppercase mb-3">
-          El método
+          Formación Flowness
         </p>
         <h1 className="text-4xl font-light text-gray-800 mb-6 md:text-5xl">
-          Seis fases hacia el{' '}
-          <span className="text-[#7B9B77] font-semibold">bienestar</span>
+          Tres niveles de{' '}
+          <span className="text-[#7B9B77] font-semibold">formación</span>
         </h1>
         <p className="text-[#A9A9A2] text-sm leading-relaxed max-w-xl mx-auto md:text-base">
-          Flowness es un método occidental de movilidad, flexibilidad y mindfulness estructurado en seis fases progresivas, diseñado para transformar la relación con tu cuerpo de forma gradual y sostenible.
+          Flowness ofrece una formación progresiva en tres niveles, desde los fundamentos hasta la certificación profesional. Cada nivel está diseñado para acompañar tu crecimiento de forma gradual y sostenible.
         </p>
       </section>
 
-      {/* FASES */}
+      {/* NIVELES */}
       <section className="px-6 pb-16 md:px-16">
         <div className="flex flex-col gap-6">
-          {fases.map((fase, index) => (
+          {niveles.map((nivel, index) => (
             <div
-              key={fase.num}
+              key={nivel.num}
               className={`rounded-2xl p-8 border border-[#D8A48F]/15 ${
                 index % 2 === 0 ? 'bg-white' : 'bg-[#E6D5B8]/30'
               }`}
@@ -39,22 +59,28 @@ function ElMetodo() {
 
                 {/* Numero */}
                 <div className="md:w-24 md:shrink-0">
-                  <p className="text-6xl font-light text-[#7B9B77]/20">{fase.num}</p>
+                  <p className="text-6xl font-light text-[#7B9B77]/20">{nivel.num}</p>
+                  <span className="text-[#D8A48F] text-xs tracking-widest uppercase">{nivel.nivel}</span>
                 </div>
 
                 {/* Contenido */}
                 <div className="flex flex-col gap-4 flex-1">
-                  <h2 className="text-xl font-semibold text-[#7B9B77]">{fase.nombre}</h2>
-                  <p className="text-[#888] text-sm leading-relaxed">{fase.desc}</p>
+                  <h2 className="text-xl font-semibold text-[#7B9B77]">{nivel.nombre}</h2>
+                  <p className="text-[#888] text-sm leading-relaxed">{nivel.desc}</p>
 
-                  {/* Beneficios */}
+                  {/* Para quien es */}
+                  <p className="text-[#A9A9A2] text-xs italic">
+                    👤 {nivel.para}
+                  </p>
+
+                  {/* Incluye */}
                   <div className="flex flex-col gap-2 md:flex-row md:gap-4 md:flex-wrap">
-                    {fase.beneficios.map((b, i) => (
+                    {nivel.incluye.map((item, i) => (
                       <span
                         key={i}
                         className="bg-[#7B9B77]/10 text-[#7B9B77] text-xs tracking-wide px-4 py-2 rounded-full"
                       >
-                        ✓ {b}
+                        ✓ {item}
                       </span>
                     ))}
                   </div>
@@ -74,12 +100,12 @@ function ElMetodo() {
         <p className="text-white/70 text-sm mb-8 max-w-md mx-auto">
           Elegí el nivel que más se adapta a tu momento y comenzá tu camino con Flowness.
         </p>
-        
-          <a href="/cursos"
+        <Link
+          to="/cursos"
           className="inline-block bg-white text-[#7B9B77] text-xs tracking-widest uppercase px-8 py-4 rounded-full hover:bg-[#F5F0EB] transition-colors"
         >
-          Ver cursos →
-        </a>
+          Ver precios y comprar →
+        </Link>
       </section>
 
     </main>

@@ -8,6 +8,7 @@ import SobreMi from './pages/SobreMi'
 import Galeria from './pages/Galeria'
 import Login from './pages/Login'
 import ElMetodo from './pages/ElMetodo'
+import ClasesOnline from './pages/ClasesOnline'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/galeria" element={<Galeria />} />
         <Route path="/ingresar" element={<Login />} />
         <Route path="/metodo" element={<ElMetodo />} />
+        <Route path="/clases" element={<ClasesOnline />} />
       </Routes>
       <Footer />
     </>
