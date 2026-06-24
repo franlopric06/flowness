@@ -9,11 +9,13 @@ import Galeria from './pages/Galeria'
 import Login from './pages/Login'
 import ElMetodo from './pages/ElMetodo'
 import ClasesOnline from './pages/ClasesOnline'
+import Vibra from './components/Vibra'
 
 function App() {
   return (
     <>
       <Header />
+      <Vibra />
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/cursos" element={<Cursos />} />
