@@ -11,6 +11,8 @@ import Login from './pages/Login'
 import Formacion from './pages/Formacion'
 import ClasesOnline from './pages/ClasesOnline'
 import Vibra from './components/Vibra'
+import Admin from './pages/Admin'
+
 
 function App() {
   return (
@@ -27,6 +29,7 @@ function App() {
         <Route path="/ingresar" element={<Login />} />
         <Route path="/formacion" element={<Formacion />} />
         <Route path="/clases" element={<ClasesOnline />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
       <Footer />
     </>
