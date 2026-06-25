@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       String   @default("usuario")
+  createdAt DateTime @default(now())
+  compras   Compra[]
+}
+
+model Curso {
+  id          Int      @id @default(autoincrement())
+  nivel       String
+  nombre      String
+  descripcion String
+  precio      Float
+  duracion    String
+  videos      Int
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  compras     Compra[]
+}
+
+model Clase {
+  id             Int       @id @default(autoincrement())
+  fase           String
+  nombre         String
+  descripcion    String
+  duracion       String
+  precio_vivo    Float
+  precio_grabada Float
+  activo         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  horarios       Horario[]
+  reservas       Reserva[]
+}
+
+model Horario {
+  id        Int    @id @default(autoincrement())
+  claseId   Int
+  dia       String
+  hora      String
+  clase     Clase  @relation(fields: [claseId], references: [id])
+}
+
+model Compra {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  cursoId   Int
+  monto     Float
+  estado    String   @default("pendiente")
+  createdAt DateTime @default(now())
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+}
+
+model Reserva {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  claseId   Int
+  tipo      String
+  monto     Float
+  estado    String   @default("pendiente")
+  createdAt DateTime @default(now())
+  clase     Clase    @relation(fields: [claseId], references: [id])
+}
+
+model Foto {
+  id          Int      @id @default(autoincrement())
+  url         String
+  descripcion String?
+  tipo        String   @default("foto")
+  fase        String?
+  nivel       String?
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model VideoMuestra {
+  id          Int      @id @default(autoincrement())
+  url         String
+  titulo      String
+  descripcion String?
+  fase        String?
+  nivel       String?
+  duracion    String?
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
