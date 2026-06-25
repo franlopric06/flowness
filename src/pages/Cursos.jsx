@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom'
 import cursos from '../data/cursos.json'
+import SEO from '../components/SEO'
 
 function Cursos() {
   return (
+     <>
+    <SEO
+      titulo="Cursos"
+      descripcion="Accedé a los cursos grabados de Flowness. Tres niveles de formación en movilidad, flexibilidad y mindfulness con acceso de por vida."
+      url="/cursos"
+    />
     <main className="pt-12 min-hscreen md:pt-24 bg-[#F5F0EB] min-h-screen">
 
       {/* HERO */}
@@ -103,6 +110,7 @@ function Cursos() {
       </section>
 
     </main>
+    </>
   )
 }
 

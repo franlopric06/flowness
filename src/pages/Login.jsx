@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import SEO from '../components/SEO'
 
 function Login() {
   const [modo, setModo] = useState('login') // 'login' o 'registro'
 
   return (
+     <>
+    <SEO
+      titulo="Ingresar"
+      descripcion="Iniciá sesión o creá tu cuenta en Flowness para acceder a tus cursos y clases online."
+      url="/ingresar"
+    />
       <main className="min-h-screen bg-[#F5F0EB] flex items-center justify-center px-6 pt-22 pb-10 md:pt-36">
       <div className="bg-white rounded-2xl shadow-md w-full max-w-md overflow-hidden">
 
@@ -113,6 +120,7 @@ function Login() {
 
       </div>
     </main>
+    </>
   )
 }
 

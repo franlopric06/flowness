@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import SEO from '../components/SEO'
 
 function ElMetodo() {
   const niveles = [
@@ -29,6 +30,12 @@ function ElMetodo() {
   ]
 
   return (
+    <>
+    <SEO
+        titulo="Formación"
+        descripcion="Conocé los tres niveles de formación de Flowness: Esencial, Avanza y Pro. Formación progresiva en movilidad, flexibilidad y mindfulness."
+        url="/formacion"
+      />
     <main className="pt-14 bg-[#F5F0EB] min-h-screen md:pt-22">
      
       {/* HERO */}
@@ -109,6 +116,7 @@ function ElMetodo() {
       </section>
 
     </main>
+    </>
   )
 }
 

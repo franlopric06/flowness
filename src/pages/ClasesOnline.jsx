@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import clases from '../data/clases.json'
+import SEO from '../components/SEO'
 
 function ClasesOnline() {
   const [seleccionada, setSeleccionada] = useState(null)
 
   return (
+    <>
+      <SEO
+        titulo="Clases Online"
+        descripcion="Reservá tu lugar en una clase online en vivo o comprá la clase grabada de Flowness para verla cuando quieras"
+        url="/clases"
+      />  
    <main className="pt-10 bg-[#F5F0EB] min-h-screen md:pt-24">
 
       {/* HERO */}
@@ -93,6 +100,7 @@ function ClasesOnline() {
       </section>
 
     </main>
+    </>
   )
 }
 
