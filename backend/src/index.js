@@ -5,6 +5,7 @@ require('dotenv').config()
 const authRoutes = require('./routes/auth.routes')
 const cursosRoutes = require('./routes/cursos.routes')
 const clasesRoutes = require('./routes/clases.routes')
+const adminRoutes = require('./routes/admin.routes')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -20,6 +21,7 @@ app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api/cursos', cursosRoutes)
 app.use('/api/clases', clasesRoutes)
+app.use('/api/admin', adminRoutes)
 
 // Ruta de prueba
 app.get('/', (req, res) => {
