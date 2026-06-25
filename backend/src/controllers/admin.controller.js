@@ -50,4 +50,37 @@ const eliminarCurso = async (req, res) => {
   }
 }
 
-module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso }
+const getClases = async (req, res) => {
+  try {
+    const clases = await prisma.clase.findMany({
+      include: { horarios: true },
+      orderBy: { fase: 'asc' }
+    })
+    res.json(clases)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener clases' })
+  }
+}
+
+const actualizarClase = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { nombre, descripcion, precio_vivo, precio_grabada, duracion, activo } = req.body
+    const clase = await prisma.clase.update({
+      where: { id: parseInt(id) },
+      data: {
+        nombre,
+        descripcion,
+        precio_vivo: parseFloat(precio_vivo),
+        precio_grabada: parseFloat(precio_grabada),
+        duracion,
+        activo
+      }
+    })
+    res.json(clase)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar clase' })
+  }
+}
+
+module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, getClases, actualizarClase }

@@ -5,10 +5,11 @@ const {
   getCursos,
   crearCurso,
   actualizarCurso,
-  eliminarCurso
+  eliminarCurso,
+  getClases,
+  actualizarClase
 } = require('../controllers/admin.controller')
 
-// Todas las rutas del admin requieren token y rol admin
 router.use(verificarToken)
 router.use(verificarAdmin)
 
@@ -17,5 +18,9 @@ router.get('/cursos', getCursos)
 router.post('/cursos', crearCurso)
 router.put('/cursos/:id', actualizarCurso)
 router.delete('/cursos/:id', eliminarCurso)
+
+// Clases
+router.get('/clases', getClases)
+router.put('/clases/:id', actualizarClase)
 
 module.exports = router
