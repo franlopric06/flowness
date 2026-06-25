@@ -2,7 +2,7 @@ import galeria from '../data/galeria.json'
 
 function Galeria() {
   return (
-    <section className="bg-[#F5F0EB] px-6 py-12 md:px-16 md:py-16">
+   <section className="bg-[#F5F0EB] px-6 py-12 md:px-16 md:py-16">
       <p className="text-[#D8A48F] text-xs tracking-widest uppercase mb-2 text-center">
         Galería
       </p>

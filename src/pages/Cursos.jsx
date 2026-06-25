@@ -68,10 +68,10 @@ function Cursos() {
                     Comprar ahora
                   </button>
                   <Link
-                    to="/metodo"
+                    to="/clases"
                     className="w-full text-center text-[#A9A9A2] text-xs tracking-widest uppercase py-2 hover:text-[#7B9B77] transition-colors"
                   >
-                    Ver qué incluye →
+                    Ver clases online →
                   </Link>
                 </div>
 

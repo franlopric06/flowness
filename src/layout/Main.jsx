@@ -27,7 +27,7 @@ function Main() {
             Flowness es un método occidental de movilidad, flexibilidad y mindfulness estructurado en seis fases progresivas.
           </p>
           <div className="flex flex-col gap-4 w-full md:flex-row md:w-auto">
-            <Link to="/metodo" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-4 rounded-full text-center hover:bg-[#5a7a56] transition-colors">
+            <Link to="/formacion" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-4 rounded-full text-center hover:bg-[#5a7a56] transition-colors">
               Explorar cursos
             </Link>
             <Link to="/clases" className="text-[#D8A48F] text-xs tracking-widest uppercase text-center py-4 hover:opacity-70 transition-opacity">
@@ -49,14 +49,14 @@ function Main() {
     </Link>
 
     {/* 3 Niveles */}
-    <Link to="/cursos" className="py-8 text-center border-b border-[#D8A48F]/20 md:border-b-0 md:border-r hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer">
+    <Link to="/formacion" className="py-8 text-center border-b border-[#D8A48F]/20 md:border-b-0 md:border-r hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer">
       <p className="text-4xl font-light text-[#7B9B77]">3</p>
       <p className="text-[10px] tracking-widest uppercase text-[#A9A9A2] mt-2">Niveles de formación</p>
       <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mt-1">Ver cursos →</p>
     </Link>
 
     {/* 100% Registrado */}
-    <Link to="/metodo" className="py-8 text-center hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer">
+    <Link to="/formacion" className="py-8 text-center hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer">
       <p className="text-4xl font-light text-[#7B9B77]">100%</p>
       <p className="text-[10px] tracking-widest uppercase text-[#A9A9A2] mt-2">Método registrado</p>
       <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mt-1">Conocer más →</p>

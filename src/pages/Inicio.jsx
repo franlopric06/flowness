@@ -1,6 +1,6 @@
 import Main from '../layout/Main'
 import SobreMiComponent from '../components/SobreMi'
-import CatalogoComponent from '../components/Catalogo'
+import Formacion from './Formacion'
 import GaleriaComponent from '../components/Galeria'
 import ContactoComponent from '../components/Contacto'
 
@@ -9,7 +9,7 @@ function Inicio() {
     <>
       <Main />
       <SobreMiComponent />
-      <CatalogoComponent />
+      <Formacion />
       <GaleriaComponent />
       <ContactoComponent />
     </>

@@ -5,7 +5,7 @@ function ClasesOnline() {
   const [seleccionada, setSeleccionada] = useState(null)
 
   return (
-    <main className="pt-16 bg-[#F5F0EB] min-h-screen">
+   <main className="pt-10 bg-[#F5F0EB] min-h-screen md:pt-24">
 
       {/* HERO */}
       <section className="px-6 py-16 text-center md:px-16">

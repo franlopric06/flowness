@@ -7,7 +7,7 @@ import Contacto from './pages/Contacto'
 import SobreMi from './pages/SobreMi'
 import Galeria from './pages/Galeria'
 import Login from './pages/Login'
-import ElMetodo from './pages/ElMetodo'
+import Formacion from './pages/Formacion'
 import ClasesOnline from './pages/ClasesOnline'
 import Vibra from './components/Vibra'
 
@@ -23,7 +23,7 @@ function App() {
         <Route path="/sobre-mi" element={<SobreMi />} />
         <Route path="/galeria" element={<Galeria />} />
         <Route path="/ingresar" element={<Login />} />
-        <Route path="/metodo" element={<ElMetodo />} />
+        <Route path="/formacion" element={<Formacion />} />
         <Route path="/clases" element={<ClasesOnline />} />
       </Routes>
       <Footer />
