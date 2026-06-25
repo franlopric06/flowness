@@ -29,7 +29,7 @@ function ElMetodo() {
   ]
 
   return (
-    <main className="pt-10 bg-[#F5F0EB] min-h-screen md:pt-24">
+    <main className="pt-14 bg-[#F5F0EB] min-h-screen md:pt-22">
      
       {/* HERO */}
       <section className="px-6 py-16 text-center md:px-16">

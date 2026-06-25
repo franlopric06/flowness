@@ -1,6 +1,6 @@
 function SobreMi() {
   return (
-    <section className="bg-white px-6 py-12 md:px-16 md:py-16">
+    <section className="bg-white px-6 pb-4 md:px-16 md:py-10">
       <p className="text-[#D8A48F] text-xs tracking-widest uppercase mb-2 text-center">
         Sobre mí
       </p>

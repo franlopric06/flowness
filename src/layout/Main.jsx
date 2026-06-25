@@ -13,7 +13,7 @@ function Main() {
     <main className="pt-16">
 
       {/* HERO */}
-      <section className="min-h-screen bg-[#F5F0EB] flex items-center justify-center px-6 text-center md:px-16">
+      <section className="bg-[#F5F0EB] flex items-center justify-center px-6 py-16 text-center md:min-h-screen md:px-16">
         <div className="flex flex-col items-center max-w-2xl">
           <span className="bg-[#7B9B77]/10 border border-[#7B9B77]/30 text-[#7B9B77] text-[10px] tracking-widest uppercase px-4 py-2 rounded-full mb-8">
             Método registrado a nivel nacional

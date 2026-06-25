@@ -5,7 +5,7 @@ function Login() {
   const [modo, setModo] = useState('login') // 'login' o 'registro'
 
   return (
-    <main className="min-h-screen bg-[#F5F0EB] flex items-center justify-center px-6 pt-20 pb-10">
+      <main className="min-h-screen bg-[#F5F0EB] flex items-center justify-center px-6 pt-22 pb-10 md:pt-36">
       <div className="bg-white rounded-2xl shadow-md w-full max-w-md overflow-hidden">
 
         {/* Tabs */}

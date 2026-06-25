@@ -3,7 +3,7 @@ import cursos from '../data/cursos.json'
 
 function Cursos() {
   return (
-    <main className="pt-16 bg-[#F5F0EB] min-h-screen">
+    <main className="pt-12 min-hscreen md:pt-24 bg-[#F5F0EB] min-h-screen">
 
       {/* HERO */}
       <section className="px-6 py-16 text-center md:px-16">
