@@ -83,4 +83,39 @@ const actualizarClase = async (req, res) => {
   }
 }
 
-module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, getClases, actualizarClase }
+const getAvisos = async (req, res) => {
+  try {
+    const avisos = await prisma.aviso.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+    res.json(avisos)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener avisos' })
+  }
+}
+
+const crearAviso = async (req, res) => {
+  try {
+    const { titulo, descripcion } = req.body
+    const aviso = await prisma.aviso.create({
+      data: { titulo, descripcion }
+    })
+    res.status(201).json(aviso)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear aviso' })
+  }
+}
+
+const eliminarAviso = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.aviso.delete({
+      where: { id: parseInt(id) }
+    })
+    res.json({ mensaje: 'Aviso eliminado correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar aviso' })
+  }
+}
+
+module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, getClases, actualizarClase, getAvisos, crearAviso, eliminarAviso }

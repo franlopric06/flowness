@@ -96,3 +96,11 @@ model VideoMuestra {
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())
 }
+
+model Aviso {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  descripcion String
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
