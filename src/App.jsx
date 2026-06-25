@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop'
 import Header from './layout/Header'
 import Footer from './layout/Footer'
 import Inicio from './pages/Inicio'
@@ -14,6 +15,7 @@ import Vibra from './components/Vibra'
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Header />
       <Vibra />
       <Routes>
