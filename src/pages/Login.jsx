@@ -37,7 +37,11 @@ function Login() {
 
       localStorage.setItem('token', res.token)
       localStorage.setItem('usuario', JSON.stringify(res.usuario))
-      window.location.href = '/'
+      if (res.usuario.rol === 'admin') {
+        window.location.href = '/admin'
+      } else {
+        window.location.href = '/'
+      }
 
     } catch (err) {
       setError('Error al conectar con el servidor')
