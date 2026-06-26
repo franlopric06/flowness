@@ -32,10 +32,10 @@ const crearPreferencia = async (req, res) => {
             unit_price: curso.precio
           }
         ],
-        back_urls: {
-          success: `${process.env.FRONTEND_URL}/pago-exitoso?cursoId=${cursoId}&usuarioId=${usuarioId}`,
-          failure: `${process.env.FRONTEND_URL}/cursos`,
-          pending: `${process.env.FRONTEND_URL}/cursos`
+       back_urls: {
+          success: `https://flowness.vercel.app/pago-exitoso?cursoId=${cursoId}&usuarioId=${usuarioId}`,
+          failure: `https://flowness.vercel.app/cursos`,
+          pending: `https://flowness.vercel.app/cursos`
         },
         auto_return: 'approved',
         external_reference: `${usuarioId}-${cursoId}`,
