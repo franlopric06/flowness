@@ -11,6 +11,7 @@ const galeriaRoutes = require('./routes/media.publica.routes')
 const pagosRoutes = require('./routes/pagos.routes')
 const usuarioRoutes = require('./routes/usuario.routes')
 const videosRoutes = require('./routes/videos.routes')
+const prisma = require('./prisma')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -32,6 +33,20 @@ app.use('/api/galeria', galeriaRoutes)
 app.use('/api/pagos', pagosRoutes)
 app.use('/api/usuario', usuarioRoutes)
 app.use('/api/videos', videosRoutes)
+
+// Ruta publica de avisos
+app.get('/api/avisos', async (req, res) => {
+  try {
+    const avisos = await prisma.aviso.findMany({
+      where: { activo: true },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    })
+    res.json(avisos)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener avisos' })
+  }
+})
 
 // Ruta de prueba
 app.get('/', (req, res) => {
