@@ -37,7 +37,7 @@ function Login() {
 
       localStorage.setItem('token', res.token)
       localStorage.setItem('usuario', JSON.stringify(res.usuario))
-      navigate('/')
+      window.location.href = '/'
 
     } catch (err) {
       setError('Error al conectar con el servidor')
