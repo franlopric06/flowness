@@ -118,4 +118,30 @@ const eliminarAviso = async (req, res) => {
   }
 }
 
-module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, getClases, actualizarClase, getAvisos, crearAviso, eliminarAviso }
+const activarCurso = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.curso.update({
+      where: { id: parseInt(id) },
+      data: { activo: true }
+    })
+    res.json({ mensaje: 'Curso activado correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al activar curso' })
+  }
+}
+
+const activarClase = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.clase.update({
+      where: { id: parseInt(id) },
+      data: { activo: true }
+    })
+    res.json({ mensaje: 'Clase activada correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al activar clase' })
+  }
+}
+
+module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, activarCurso, getClases, actualizarClase, activarClase, getAvisos, crearAviso, eliminarAviso }

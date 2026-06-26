@@ -6,8 +6,10 @@ const {
   crearCurso,
   actualizarCurso,
   eliminarCurso,
+  activarCurso,
   getClases,
   actualizarClase,
+  activarClase,
   getAvisos,
   crearAviso,
   eliminarAviso
@@ -21,12 +23,14 @@ router.get('/cursos', getCursos)
 router.post('/cursos', crearCurso)
 router.put('/cursos/:id', actualizarCurso)
 router.delete('/cursos/:id', eliminarCurso)
+router.patch('/cursos/:id/activar', activarCurso)
 
 // Clases
 router.get('/clases', getClases)
 router.put('/clases/:id', actualizarClase)
+router.patch('/clases/:id/activar', activarClase)
 
- // Avisos
+// Avisos
 router.get('/avisos', getAvisos)
 router.post('/avisos', crearAviso)
 router.delete('/avisos/:id', eliminarAviso)

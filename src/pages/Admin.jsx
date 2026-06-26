@@ -222,6 +222,31 @@ function Admin() {
     cargarCursos()
   }
 
+  const handleActivar = async (id) => {
+    await fetch(`${API_URL}/admin/cursos/${id}/activar`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    cargarCursos()
+  }
+
+  const handleDesactivarClase = async (id) => {
+    if (!confirm('¿Seguro que querés desactivar esta clase?')) return
+    await fetch(`${API_URL}/admin/clases/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    cargarClases()
+  }
+
+  const handleActivarClase = async (id) => {
+    await fetch(`${API_URL}/admin/clases/${id}/activar`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    cargarClases()
+  }
+
   const handleEliminarAviso = async (id) => {
     if (!confirm('¿Seguro que querés eliminar este aviso?')) return
     await fetch(`${API_URL}/admin/avisos/${id}`, {
@@ -359,7 +384,11 @@ function Admin() {
                         {curso.activo ? 'Activo' : 'Inactivo'}
                       </span>
                       <button onClick={() => handleEditar(curso)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Editar</button>
-                      <button onClick={() => handleEliminar(curso.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Desactivar</button>
+                      {curso.activo ? (
+                        <button onClick={() => handleEliminar(curso.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Desactivar</button>
+                      ) : (
+                        <button onClick={() => handleActivar(curso.id)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Activar</button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -422,6 +451,11 @@ function Admin() {
                         {clase.activo ? 'Activo' : 'Inactivo'}
                       </span>
                       <button onClick={() => handleEditarClase(clase)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Editar</button>
+                      {clase.activo ? (
+                        <button onClick={() => handleDesactivarClase(clase.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Desactivar</button>
+                      ) : (
+                        <button onClick={() => handleActivarClase(clase.id)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Activar</button>
+                      )}
                     </div>
                   </div>
                 ))}
