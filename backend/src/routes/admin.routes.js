@@ -12,7 +12,8 @@ const {
   activarClase,
   getAvisos,
   crearAviso,
-  eliminarAviso
+  eliminarAviso,
+  desactivarClase
 } = require('../controllers/admin.controller')
 
 router.use(verificarToken)
@@ -29,6 +30,7 @@ router.patch('/cursos/:id/activar', activarCurso)
 router.get('/clases', getClases)
 router.put('/clases/:id', actualizarClase)
 router.patch('/clases/:id/activar', activarClase)
+router.delete('/clases/:id', desactivarClase)
 
 // Avisos
 router.get('/avisos', getAvisos)

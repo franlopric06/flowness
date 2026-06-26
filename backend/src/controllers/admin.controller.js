@@ -144,4 +144,17 @@ const activarClase = async (req, res) => {
   }
 }
 
-module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, activarCurso, getClases, actualizarClase, activarClase, getAvisos, crearAviso, eliminarAviso }
+const desactivarClase = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.clase.update({
+      where: { id: parseInt(id) },
+      data: { activo: false }
+    })
+    res.json({ mensaje: 'Clase desactivada correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al desactivar clase' })
+  }
+}
+
+module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, activarCurso, getClases, actualizarClase, activarClase, desactivarClase, getAvisos, crearAviso, eliminarAviso }
