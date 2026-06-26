@@ -10,6 +10,8 @@ function Admin() {
   const [avisos, setAvisos] = useState([])
   const [fotos, setFotos] = useState([])
   const [videos, setVideos] = useState([])
+  const [videosCurso, setVideosCurso] = useState([])
+  const [cursoSeleccionado, setCursoSeleccionado] = useState('')
   const [cargando, setCargando] = useState(true)
   const [seccion, setSeccion] = useState('cursos')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
@@ -19,6 +21,7 @@ function Admin() {
   const [formAviso, setFormAviso] = useState({ titulo: '', descripcion: '' })
   const [formFoto, setFormFoto] = useState({ descripcion: '', fase: '', nivel: '', archivo: null })
   const [formVideo, setFormVideo] = useState({ titulo: '', descripcion: '', fase: '', nivel: '', duracion: '', archivo: null })
+  const [formVideoCurso, setFormVideoCurso] = useState({ titulo: '', descripcion: '', orden: '', archivo: null })
   const [subiendo, setSubiendo] = useState(false)
   const navigate = useNavigate()
 
@@ -39,120 +42,86 @@ function Admin() {
 
   const cargarCursos = async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/cursos`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await fetch(`${API_URL}/admin/cursos`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setCursos(data)
       setCargando(false)
-    } catch (error) {
-      setCargando(false)
-    }
+    } catch (error) { setCargando(false) }
   }
 
   const cargarClases = async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/clases`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await fetch(`${API_URL}/admin/clases`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setClases(data)
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
   const cargarAvisos = async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/avisos`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await fetch(`${API_URL}/admin/avisos`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setAvisos(data)
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
   const cargarFotos = async () => {
     try {
-      const res = await fetch(`${API_URL}/media/fotos`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await fetch(`${API_URL}/media/fotos`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setFotos(data)
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
   const cargarVideos = async () => {
     try {
-      const res = await fetch(`${API_URL}/media/videos`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await fetch(`${API_URL}/media/videos`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setVideos(data)
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+  const cargarVideosCurso = async (cursoId) => {
+    if (!cursoId) return
+    try {
+      const res = await fetch(`${API_URL}/videos/curso/${cursoId}`, { headers: { Authorization: `Bearer ${token}` } })
+      const data = await res.json()
+      setVideosCurso(Array.isArray(data) ? data : [])
+    } catch (error) { console.error(error) }
   }
 
-  const handleChangeClase = (e) => {
-    setFormClase({ ...formClase, [e.target.name]: e.target.value })
-  }
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleChangeClase = (e) => setFormClase({ ...formClase, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const url = editando ? `${API_URL}/admin/cursos/${editando}` : `${API_URL}/admin/cursos`
       const method = editando ? 'PUT' : 'POST'
-      await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form)
-      })
+      await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(form) })
       setForm({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
       setEditando(null)
       cargarCursos()
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
   const handleSubmitClase = async (e) => {
     e.preventDefault()
     try {
-      await fetch(`${API_URL}/admin/clases/${editandoClase}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(formClase)
-      })
+      await fetch(`${API_URL}/admin/clases/${editandoClase}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(formClase) })
       setFormClase({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '' })
       setEditandoClase(null)
       cargarClases()
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
   const handleSubmitAviso = async (e) => {
     e.preventDefault()
     try {
-      await fetch(`${API_URL}/admin/avisos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(formAviso)
-      })
+      await fetch(`${API_URL}/admin/avisos`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(formAviso) })
       setFormAviso({ titulo: '', descripcion: '' })
       cargarAvisos()
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
   }
 
   const handleSubmitFoto = async (e) => {
@@ -165,16 +134,10 @@ function Admin() {
       formData.append('descripcion', formFoto.descripcion)
       formData.append('fase', formFoto.fase)
       formData.append('nivel', formFoto.nivel)
-      await fetch(`${API_URL}/media/fotos`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-      })
+      await fetch(`${API_URL}/media/fotos`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData })
       setFormFoto({ descripcion: '', fase: '', nivel: '', archivo: null })
       cargarFotos()
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
     setSubiendo(false)
   }
 
@@ -190,16 +153,28 @@ function Admin() {
       formData.append('fase', formVideo.fase)
       formData.append('nivel', formVideo.nivel)
       formData.append('duracion', formVideo.duracion)
-      await fetch(`${API_URL}/media/videos`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-      })
+      await fetch(`${API_URL}/media/videos`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData })
       setFormVideo({ titulo: '', descripcion: '', fase: '', nivel: '', duracion: '', archivo: null })
       cargarVideos()
-    } catch (error) {
-      console.error(error)
-    }
+    } catch (error) { console.error(error) }
+    setSubiendo(false)
+  }
+
+  const handleSubmitVideoCurso = async (e) => {
+    e.preventDefault()
+    if (!formVideoCurso.archivo || !cursoSeleccionado) return
+    setSubiendo(true)
+    try {
+      const formData = new FormData()
+      formData.append('archivo', formVideoCurso.archivo)
+      formData.append('cursoId', cursoSeleccionado)
+      formData.append('titulo', formVideoCurso.titulo)
+      formData.append('descripcion', formVideoCurso.descripcion)
+      formData.append('orden', formVideoCurso.orden)
+      await fetch(`${API_URL}/videos`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData })
+      setFormVideoCurso({ titulo: '', descripcion: '', orden: '', archivo: null })
+      cargarVideosCurso(cursoSeleccionado)
+    } catch (error) { console.error(error) }
     setSubiendo(false)
   }
 
@@ -215,63 +190,48 @@ function Admin() {
 
   const handleEliminar = async (id) => {
     if (!confirm('¿Seguro que querés desactivar este curso?')) return
-    await fetch(`${API_URL}/admin/cursos/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/admin/cursos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
     cargarCursos()
   }
 
   const handleActivar = async (id) => {
-    await fetch(`${API_URL}/admin/cursos/${id}/activar`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/admin/cursos/${id}/activar`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } })
     cargarCursos()
   }
 
   const handleDesactivarClase = async (id) => {
     if (!confirm('¿Seguro que querés desactivar esta clase?')) return
-    await fetch(`${API_URL}/admin/clases/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/admin/clases/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
     cargarClases()
   }
 
   const handleActivarClase = async (id) => {
-    await fetch(`${API_URL}/admin/clases/${id}/activar`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/admin/clases/${id}/activar`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } })
     cargarClases()
   }
 
   const handleEliminarAviso = async (id) => {
     if (!confirm('¿Seguro que querés eliminar este aviso?')) return
-    await fetch(`${API_URL}/admin/avisos/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/admin/avisos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
     cargarAvisos()
   }
 
   const handleEliminarFoto = async (id) => {
     if (!confirm('¿Seguro que querés eliminar esta foto?')) return
-    await fetch(`${API_URL}/media/fotos/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/media/fotos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
     cargarFotos()
   }
 
   const handleEliminarVideo = async (id) => {
     if (!confirm('¿Seguro que querés eliminar este video?')) return
-    await fetch(`${API_URL}/media/videos/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    await fetch(`${API_URL}/media/videos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
     cargarVideos()
+  }
+
+  const handleEliminarVideoCurso = async (id) => {
+    if (!confirm('¿Seguro que querés eliminar este video?')) return
+    await fetch(`${API_URL}/videos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+    cargarVideosCurso(cursoSeleccionado)
   }
 
   const cerrarSesion = () => {
@@ -291,7 +251,7 @@ function Admin() {
   return (
     <>
       <SEO titulo="Panel de Administración" descripcion="Panel de administración de Flowness" url="/admin" />
-      <main className="pt-28 bg-[#F5F0EB] min-h-screen md:pt-34">
+      <main className="pt-28 bg-[#F5F0EB] min-h-screen md:pt-32">
 
         {/* Header */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 py-4 md:px-16">
@@ -309,15 +269,10 @@ function Admin() {
         {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {['cursos', 'clases', 'avisos', 'fotos', 'videos'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSeccion(tab)}
-                className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${
-                  seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'
-                }`}
-              >
-                {tab}
+            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos'].map((tab) => (
+              <button key={tab} onClick={() => setSeccion(tab)}
+                className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
+                {tab === 'videos-cursos' ? 'Videos Cursos' : tab}
               </button>
             ))}
           </div>
@@ -367,7 +322,6 @@ function Admin() {
                   </div>
                 </form>
               </div>
-
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
                   <h2 className="text-lg font-semibold text-[#7B9B77]">Cursos ({cursos.length})</h2>
@@ -424,17 +378,12 @@ function Admin() {
                       <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                     </div>
                     <div className="flex gap-3 md:col-span-2">
-                      <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-                        Guardar cambios
-                      </button>
-                      <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">
-                        Cancelar
-                      </button>
+                      <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">Guardar cambios</button>
+                      <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
                     </div>
                   </form>
                 </div>
               )}
-
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
                   <h2 className="text-lg font-semibold text-[#7B9B77]">Clases ({clases.length})</h2>
@@ -471,36 +420,20 @@ function Admin() {
                 <form onSubmit={handleSubmitAviso} className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
-                    <input
-                      value={formAviso.titulo}
-                      onChange={(e) => setFormAviso({ ...formAviso, titulo: e.target.value })}
-                      placeholder="Título del aviso"
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formAviso.titulo} onChange={(e) => setFormAviso({ ...formAviso, titulo: e.target.value })} placeholder="Título del aviso" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                    <textarea
-                      value={formAviso.descripcion}
-                      onChange={(e) => setFormAviso({ ...formAviso, descripcion: e.target.value })}
-                      placeholder="Descripción del aviso"
-                      rows={4}
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none"
-                    />
+                    <textarea value={formAviso.descripcion} onChange={(e) => setFormAviso({ ...formAviso, descripcion: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
                   </div>
-                  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit">
-                    Publicar aviso
-                  </button>
+                  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit">Publicar aviso</button>
                 </form>
               </div>
-
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
                   <h2 className="text-lg font-semibold text-[#7B9B77]">Avisos publicados ({avisos.length})</h2>
                 </div>
-                {avisos.length === 0 && (
-                  <p className="text-[#A9A9A2] text-sm text-center py-8">No hay avisos publicados</p>
-                )}
+                {avisos.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay avisos publicados</p>}
                 {avisos.map((aviso) => (
                   <div key={aviso.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
                     <div>
@@ -508,9 +441,7 @@ function Admin() {
                       <p className="text-[#888] text-sm">{aviso.descripcion}</p>
                       <p className="text-[#A9A9A2] text-xs mt-1">{new Date(aviso.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <button onClick={() => handleEliminarAviso(aviso.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">
-                      Eliminar
-                    </button>
+                    <button onClick={() => handleEliminarAviso(aviso.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
                   </div>
                 ))}
               </div>
@@ -525,39 +456,19 @@ function Admin() {
                 <form onSubmit={handleSubmitFoto} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Archivo</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setFormFoto({ ...formFoto, archivo: e.target.files[0] })}
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none"
-                    />
+                    <input type="file" accept="image/*" onChange={(e) => setFormFoto({ ...formFoto, archivo: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                    <input
-                      value={formFoto.descripcion}
-                      onChange={(e) => setFormFoto({ ...formFoto, descripcion: e.target.value })}
-                      placeholder="Descripción de la foto"
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formFoto.descripcion} onChange={(e) => setFormFoto({ ...formFoto, descripcion: e.target.value })} placeholder="Descripción de la foto" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Fase (opcional)</label>
-                    <input
-                      value={formFoto.fase}
-                      onChange={(e) => setFormFoto({ ...formFoto, fase: e.target.value })}
-                      placeholder="01, 02, 03..."
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formFoto.fase} onChange={(e) => setFormFoto({ ...formFoto, fase: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nivel (opcional)</label>
-                    <input
-                      value={formFoto.nivel}
-                      onChange={(e) => setFormFoto({ ...formFoto, nivel: e.target.value })}
-                      placeholder="01, 02, 03..."
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formFoto.nivel} onChange={(e) => setFormFoto({ ...formFoto, nivel: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="md:col-span-2">
                     <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
@@ -566,7 +477,6 @@ function Admin() {
                   </div>
                 </form>
               </div>
-
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 {fotos.length === 0 && <p className="text-[#A9A9A2] text-sm col-span-4 text-center py-8">No hay fotos subidas</p>}
                 {fotos.map((foto) => (
@@ -582,7 +492,7 @@ function Admin() {
             </>
           )}
 
-          {/* VIDEOS */}
+          {/* VIDEOS MUESTRA */}
           {seccion === 'videos' && (
             <>
               <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
@@ -590,58 +500,27 @@ function Admin() {
                 <form onSubmit={handleSubmitVideo} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Archivo de video</label>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={(e) => setFormVideo({ ...formVideo, archivo: e.target.files[0] })}
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none"
-                    />
+                    <input type="file" accept="video/*" onChange={(e) => setFormVideo({ ...formVideo, archivo: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
-                    <input
-                      value={formVideo.titulo}
-                      onChange={(e) => setFormVideo({ ...formVideo, titulo: e.target.value })}
-                      placeholder="Título del video"
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formVideo.titulo} onChange={(e) => setFormVideo({ ...formVideo, titulo: e.target.value })} placeholder="Título del video" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
-                    <input
-                      value={formVideo.duracion}
-                      onChange={(e) => setFormVideo({ ...formVideo, duracion: e.target.value })}
-                      placeholder="60 seg"
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formVideo.duracion} onChange={(e) => setFormVideo({ ...formVideo, duracion: e.target.value })} placeholder="60 seg" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                    <textarea
-                      value={formVideo.descripcion}
-                      onChange={(e) => setFormVideo({ ...formVideo, descripcion: e.target.value })}
-                      placeholder="Descripción del video"
-                      rows={3}
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none"
-                    />
+                    <textarea value={formVideo.descripcion} onChange={(e) => setFormVideo({ ...formVideo, descripcion: e.target.value })} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Fase (opcional)</label>
-                    <input
-                      value={formVideo.fase}
-                      onChange={(e) => setFormVideo({ ...formVideo, fase: e.target.value })}
-                      placeholder="01, 02, 03..."
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formVideo.fase} onChange={(e) => setFormVideo({ ...formVideo, fase: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nivel (opcional)</label>
-                    <input
-                      value={formVideo.nivel}
-                      onChange={(e) => setFormVideo({ ...formVideo, nivel: e.target.value })}
-                      placeholder="01, 02, 03..."
-                      className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                    />
+                    <input value={formVideo.nivel} onChange={(e) => setFormVideo({ ...formVideo, nivel: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="md:col-span-2">
                     <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
@@ -650,7 +529,6 @@ function Admin() {
                   </div>
                 </form>
               </div>
-
               <div className="flex flex-col gap-4">
                 {videos.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay videos subidos</p>}
                 {videos.map((video) => (
@@ -664,6 +542,69 @@ function Admin() {
                   </div>
                 ))}
               </div>
+            </>
+          )}
+
+          {/* VIDEOS CURSOS */}
+          {seccion === 'videos-cursos' && (
+            <>
+              <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Subir Video de Curso</h2>
+                <div className="flex flex-col gap-1 mb-4">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Seleccioná el curso</label>
+                  <select
+                    value={cursoSeleccionado}
+                    onChange={(e) => { setCursoSeleccionado(e.target.value); cargarVideosCurso(e.target.value) }}
+                    className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
+                  >
+                    <option value="">Elegí un curso</option>
+                    {cursos.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                  </select>
+                </div>
+                {cursoSeleccionado && (
+                  <form onSubmit={handleSubmitVideoCurso} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Archivo de video</label>
+                      <input type="file" accept="video/*" onChange={(e) => setFormVideoCurso({ ...formVideoCurso, archivo: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
+                      <input value={formVideoCurso.titulo} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, titulo: e.target.value })} placeholder="Clase 01 - Introducción" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Orden</label>
+                      <input value={formVideoCurso.orden} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, orden: e.target.value })} placeholder="1, 2, 3..." type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+                      <textarea value={formVideoCurso.descripcion} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, descripcion: e.target.value })} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
+                        {subiendo ? 'Subiendo...' : 'Subir video al curso'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+              {cursoSeleccionado && (
+                <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+                    <h2 className="text-lg font-semibold text-[#7B9B77]">Videos del curso ({videosCurso.length})</h2>
+                  </div>
+                  {videosCurso.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay videos subidos para este curso</p>}
+                  {videosCurso.map((video) => (
+                    <div key={video.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
+                        <p className="text-[#555] font-medium">{video.titulo}</p>
+                        <p className="text-[#888] text-sm">{video.descripcion}</p>
+                      </div>
+                      <button onClick={() => handleEliminarVideoCurso(video.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
 
