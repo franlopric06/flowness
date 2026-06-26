@@ -13,7 +13,7 @@ import ClasesOnline from './pages/ClasesOnline'
 import Vibra from './components/Vibra'
 import Admin from './pages/Admin'
 import PagoExitoso from './pages/PagoExitoso'
-
+import MiCuenta from './pages/MiCuenta'
 
 function App() {
   return (
@@ -35,6 +35,7 @@ function App() {
         <Route path="/formacion" element={<Formacion />} />
         <Route path="/clases" element={<ClasesOnline />} />
         <Route path="/pago-exitoso" element={<PagoExitoso />} />
+        <Route path="/mi-cuenta" element={<MiCuenta />} />
       </Routes>
     </>
   } />

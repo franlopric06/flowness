@@ -49,6 +49,9 @@ function Header() {
           <li><Link to="/sobre-mi" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Sobre mí</Link></li>
           <li><Link to="/galeria" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Galería</Link></li>
           <li><Link to="/contacto" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Contacto</Link></li>
+          {token && usuario.rol !== 'admin' && (
+            <li><Link to="/mi-cuenta" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">Mi cuenta</Link></li>
+          )}
         </ul>
 
         {/* Boton derecho — oculto en mobile */}
@@ -87,6 +90,9 @@ function Header() {
           <li><Link to="/sobre-mi" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Sobre mí</Link></li>
           <li><Link to="/galeria" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Galería</Link></li>
           <li><Link to="/contacto" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Contacto</Link></li>
+          {token && usuario.rol !== 'admin' && (
+            <li><Link to="/mi-cuenta" className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]" onClick={() => setMenuAbierto(false)}>Mi cuenta</Link></li>
+          )}
           {token && usuario.rol === 'admin' ? (
             <li><Link to="/admin" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full" onClick={() => setMenuAbierto(false)}>Panel Admin</Link></li>
           ) : token ? (
