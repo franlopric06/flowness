@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getCursos } from '../services/api'
+import { crearPreferenciaPago } from '../services/api'
 import SEO from '../components/SEO'
 
 function Cursos() {
@@ -15,6 +16,22 @@ function Cursos() {
       })
       .catch(() => setCargando(false))
   }, [])
+
+  const handleComprar = async (cursoId) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    window.location.href = '/ingresar'
+    return
+  }
+  try {
+    const res = await crearPreferenciaPago(cursoId)
+    if (res.init_point) {
+      window.location.href = res.init_point
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
 
   if (cargando) {
     return (
@@ -86,9 +103,12 @@ function Cursos() {
                   </div>
 
                   <div className="mt-auto flex flex-col gap-3">
-                    <button className="w-full bg-[#7B9B77] text-white text-xs tracking-widest uppercase py-4 rounded-full hover:bg-[#5a7a56] transition-colors">
-                      Comprar ahora
-                    </button>
+                    <button
+                        onClick={() => handleComprar(curso.id)}
+                        className="w-full bg-[#7B9B77] text-white text-xs tracking-widest uppercase py-4 rounded-full hover:bg-[#5a7a56] transition-colors"
+                      >
+                        Comprar ahora
+                      </button>
                     <Link
                       to="/clases"
                       className="w-full text-center text-[#A9A9A2] text-xs tracking-widest uppercase py-2 hover:text-[#7B9B77] transition-colors"

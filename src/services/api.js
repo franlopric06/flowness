@@ -27,3 +27,16 @@ export const login = async (datos) => {
   })
   return res.json()
 }
+
+export const crearPreferenciaPago = async (cursoId) => {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API_URL}/pagos/crear-preferencia`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ cursoId })
+  })
+  return res.json()
+}
