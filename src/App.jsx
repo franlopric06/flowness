@@ -12,6 +12,7 @@ import Formacion from './pages/Formacion'
 import ClasesOnline from './pages/ClasesOnline'
 import Vibra from './components/Vibra'
 import Admin from './pages/Admin'
+import PagoExitoso from './pages/PagoExitoso'
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Route path="/ingresar" element={<Login />} />
         <Route path="/formacion" element={<Formacion />} />
         <Route path="/clases" element={<ClasesOnline />} />
+        <Route path="/pago-exitoso" element={<PagoExitoso />} />
       </Routes>
     </>
   } />
