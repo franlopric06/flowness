@@ -136,14 +136,19 @@ const handleComprarGrabada = async (claseId) => {
                   </div>
 
                   {/* Botones */}
-                  <div className="flex flex-col gap-2 md:flex-row">
-                    <button className="flex-1 bg-[#7B9B77] text-white text-xs tracking-widest uppercase py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-                      Reservar clase en vivo
-                    </button>
-                    <button className="flex-1 bg-white text-[#7B9B77] text-xs tracking-widest uppercase py-3 rounded-full border border-[#7B9B77]/30 hover:border-[#7B9B77] transition-colors">
-                      Comprar clase grabada
-                    </button>
-                  </div>
+                  
+                     <div className="flex flex-col gap-2 md:flex-row">
+                       <button 
+                         onClick={() => handleReservar(clase.id)}
+                         className="flex-1 bg-[#7B9B77] text-white text-xs tracking-widest uppercase py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                         Reservar clase en vivo
+                       </button>
+                       <button
+                         onClick={() => handleComprarGrabada(clase.id)}
+                         className="flex-1 bg-white text-[#7B9B77] text-xs tracking-widest uppercase py-3 rounded-full border border-[#7B9B77]/30 hover:border-[#7B9B77] transition-colors">
+                         Comprar clase grabada
+                       </button>
+                     </div>
                 </div>
 
               </div>
