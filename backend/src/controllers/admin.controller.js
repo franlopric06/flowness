@@ -65,7 +65,7 @@ const getClases = async (req, res) => {
 const actualizarClase = async (req, res) => {
   try {
     const { id } = req.params
-    const { nombre, descripcion, precio_vivo, precio_grabada, duracion, activo } = req.body
+    const { nombre, descripcion, precio_vivo, precio_grabada, duracion, activo, videoUrl, zoomLink } = req.body
     const clase = await prisma.clase.update({
       where: { id: parseInt(id) },
       data: {
@@ -74,7 +74,9 @@ const actualizarClase = async (req, res) => {
         precio_vivo: parseFloat(precio_vivo),
         precio_grabada: parseFloat(precio_grabada),
         duracion,
-        activo
+        activo,
+        videoUrl,
+        zoomLink
       }
     })
     res.json(clase)

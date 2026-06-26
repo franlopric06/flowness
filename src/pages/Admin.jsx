@@ -16,7 +16,7 @@ function Admin() {
   const [seccion, setSeccion] = useState('cursos')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
   const [editando, setEditando] = useState(null)
-  const [formClase, setFormClase] = useState({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '' })
+  const [formClase, setFormClase] = useState({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
   const [editandoClase, setEditandoClase] = useState(null)
   const [formAviso, setFormAviso] = useState({ titulo: '', descripcion: '' })
   const [formFoto, setFormFoto] = useState({ descripcion: '', fase: '', nivel: '', archivo: null })
@@ -184,10 +184,10 @@ function Admin() {
   }
 
   const handleEditarClase = (clase) => {
-    setEditandoClase(clase.id)
-    setFormClase({ nombre: clase.nombre, descripcion: clase.descripcion, precio_vivo: clase.precio_vivo, precio_grabada: clase.precio_grabada, duracion: clase.duracion })
-  }
-
+  setEditandoClase(clase.id)
+  setFormClase({ nombre: clase.nombre,descripcion: clase.descripcion, precio_vivo: clase.precio_vivo, precio_grabada: clase.precio_grabada, duracion: clase.duracion,videoUrl: clase.videoUrl || '',zoomLink: clase.zoomLink || ''})
+}
+  
   const handleEliminar = async (id) => {
     if (!confirm('¿Seguro que querés desactivar este curso?')) return
     await fetch(`${API_URL}/admin/cursos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
@@ -378,6 +378,26 @@ function Admin() {
                       <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                     </div>
                     <div className="flex gap-3 md:col-span-2">
+                      <div className="flex flex-col gap-1">
+                         <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
+                         <input 
+                           name="zoomLink" 
+                           value={formClase.zoomLink || ''} 
+                           onChange={handleChangeClase} 
+                           placeholder="https://zoom.us/j/..." 
+                           className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" 
+                         />
+                       </div>
+                       <div className="flex flex-col gap-1">
+                         <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL de Cloudinary)</label>
+                         <input 
+                           name="videoUrl" 
+                           value={formClase.videoUrl || ''} 
+                           onChange={handleChangeClase} 
+                           placeholder="https://res.cloudinary.com/..." 
+                           className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" 
+                         />
+                       </div>
                       <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">Guardar cambios</button>
                       <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
                     </div>

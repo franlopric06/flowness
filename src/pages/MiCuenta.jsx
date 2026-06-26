@@ -187,7 +187,7 @@ function MiCuenta() {
             </>
           )}
 
-          {/* MIS CLASES */}
+       {/* MIS CLASES */}
           {seccion === 'clases' && (
             <>
               {clases.length === 0 ? (
@@ -207,7 +207,7 @@ function MiCuenta() {
                         <p className="text-[#A9A9A2] text-xs">FASE {reserva.clase.fase}</p>
                         <h2 className="text-lg font-semibold text-[#555]">{reserva.clase.nombre}</h2>
                       </div>
-                      <div className="px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div className="px-6 py-4 flex flex-col gap-3">
                         <div>
                           <p className="text-[#888] text-sm">{reserva.clase.descripcion}</p>
                           <p className="text-[#A9A9A2] text-xs mt-1">
@@ -215,9 +215,35 @@ function MiCuenta() {
                             Comprado el {new Date(reserva.createdAt).toLocaleDateString()}
                           </p>
                         </div>
+
                         <span className="bg-[#7B9B77]/10 text-[#7B9B77] text-xs px-4 py-2 rounded-full w-fit">
                           ✓ Acceso habilitado
                         </span>
+
+                        {/* Link de Zoom para clase en vivo */}
+                        {reserva.tipo === 'vivo' && reserva.clase.zoomLink && (
+                          
+                           <a href={reserva.clase.zoomLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="bg-blue-500 text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-blue-600 transition-colors w-fit"
+                          >
+                            Unirse a la clase en vivo →
+                          </a>
+                        )}
+
+                        {/* Video grabado */}
+                        {reserva.tipo === 'grabada' && reserva.clase.videoUrl && (
+                          <div className="bg-[#F5F0EB] rounded-2xl overflow-hidden">
+                            <video
+                              src={reserva.clase.videoUrl}
+                              controls
+                              className="w-full max-h-48 object-contain bg-black"
+                              preload="metadata"
+                            />
+                          </div>
+                        )}
+
                       </div>
                     </div>
                   ))}

@@ -39,6 +39,8 @@ model Clase {
   duracion       String
   precio_vivo    Float
   precio_grabada Float
+  videoUrl       String?   
+  zoomLink       String?
   activo         Boolean   @default(true)
   createdAt      DateTime  @default(now())
   horarios       Horario[]
@@ -117,3 +119,4 @@ model Video {
   createdAt   DateTime @default(now())
   curso       Curso    @relation(fields: [cursoId], references: [id])
 }
+
