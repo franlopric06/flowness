@@ -14,6 +14,7 @@ import Vibra from './components/Vibra'
 import Admin from './pages/Admin'
 import PagoExitoso from './pages/PagoExitoso'
 import MiCuenta from './pages/MiCuenta'
+import WhatsappButton from './components/WhatsappButton'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
   <Route path="*" element={
     <>
       <Vibra />
+       <WhatsappButton />
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/cursos" element={<Cursos />} />
