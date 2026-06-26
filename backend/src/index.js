@@ -8,6 +8,7 @@ const clasesRoutes = require('./routes/clases.routes')
 const adminRoutes = require('./routes/admin.routes')
 const mediaRoutes = require('./routes/media.routes')
 const galeriaRoutes = require('./routes/media.publica.routes')
+const pagosRoutes = require('./routes/pagos.routes')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -26,6 +27,7 @@ app.use('/api/clases', clasesRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/media', mediaRoutes)
 app.use('/api/galeria', galeriaRoutes)
+app.use('/api/pagos', pagosRoutes)
 
 // Ruta de prueba
 app.get('/', (req, res) => {
