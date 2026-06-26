@@ -9,6 +9,7 @@ function MiCuenta() {
   const [clases, setClases] = useState([])
   const [cargando, setCargando] = useState(true)
   const [seccion, setSeccion] = useState('cursos')
+  const [videosActivos, setVideosActivos] = useState({})
   const navigate = useNavigate()
 
   const token = localStorage.getItem('token')
@@ -48,6 +49,22 @@ function MiCuenta() {
     }
   }
 
+  const verVideos = async (cursoId) => {
+    if (videosActivos[cursoId]) {
+      setVideosActivos({ ...videosActivos, [cursoId]: null })
+      return
+    }
+    try {
+      const res = await fetch(`${API_URL}/videos/curso/${cursoId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setVideosActivos({ ...videosActivos, [cursoId]: data })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   if (cargando) {
     return (
       <main className="pt-20 bg-[#F5F0EB] min-h-screen flex items-center justify-center">
@@ -59,8 +76,8 @@ function MiCuenta() {
   return (
     <>
       <SEO titulo="Mi Cuenta" descripcion="Mis cursos y clases comprados en Flowness" url="/mi-cuenta" />
-      <main className="pt-18 bg-[#F5F0EB] min-h-screen md:pt-34">
-      
+      <main className="pt-20 bg-[#F5F0EB] min-h-screen md:pt-24">
+
         {/* Header */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 py-6 md:px-16">
           <h1 className="text-2xl font-light text-gray-700">
@@ -106,7 +123,7 @@ function MiCuenta() {
                   </a>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-6">
                   {cursos.map((compra) => (
                     <div key={compra.id} className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                       <div className="bg-[#E6D5B8] px-6 py-4">
@@ -120,10 +137,44 @@ function MiCuenta() {
                             Comprado el {new Date(compra.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <span className="bg-[#7B9B77]/10 text-[#7B9B77] text-xs px-4 py-2 rounded-full w-fit">
-                          ✓ Acceso habilitado
-                        </span>
+                        <div className="flex gap-3 items-center">
+                          <span className="bg-[#7B9B77]/10 text-[#7B9B77] text-xs px-4 py-2 rounded-full">
+                            ✓ Acceso habilitado
+                          </span>
+                          <button
+                            onClick={() => verVideos(compra.curso.id)}
+                            className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:bg-[#5a7a56] transition-colors"
+                          >
+                            {videosActivos[compra.curso.id] ? 'Ocultar videos' : 'Ver videos'}
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Videos del curso */}
+                      {videosActivos[compra.curso.id] && (
+                        <div className="border-t border-[#D8A48F]/15 px-6 py-4">
+                          {videosActivos[compra.curso.id].length === 0 ? (
+                            <p className="text-[#A9A9A2] text-sm text-center py-4">
+                              Próximamente se agregarán los videos de este curso.
+                            </p>
+                          ) : (
+                            <div className="flex flex-col gap-4">
+                              {videosActivos[compra.curso.id].map((video) => (
+                                <div key={video.id} className="bg-[#F5F0EB] rounded-2xl overflow-hidden">
+                                  <video src={video.url} controls className="w-full" />
+                                  <div className="px-4 py-3">
+                                    <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
+                                    <p className="text-[#555] font-medium text-sm">{video.titulo}</p>
+                                    {video.descripcion && (
+                                      <p className="text-[#888] text-xs mt-1">{video.descripcion}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -155,7 +206,7 @@ function MiCuenta() {
                         <div>
                           <p className="text-[#888] text-sm">{reserva.clase.descripcion}</p>
                           <p className="text-[#A9A9A2] text-xs mt-1">
-                            Tipo: {reserva.tipo === 'vivo' ? 'Clase en vivo' : 'Clase grabada'} • 
+                            Tipo: {reserva.tipo === 'vivo' ? 'Clase en vivo' : 'Clase grabada'} •
                             Comprado el {new Date(reserva.createdAt).toLocaleDateString()}
                           </p>
                         </div>
