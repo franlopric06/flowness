@@ -28,6 +28,7 @@ model Curso {
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())
   compras     Compra[]
+  videosContenido Video[]
 }
 
 model Clase {
@@ -103,4 +104,16 @@ model Aviso {
   descripcion String
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())
+}
+
+model Video {
+  id          Int      @id @default(autoincrement())
+  cursoId     Int
+  titulo      String
+  descripcion String?
+  url         String
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  curso       Curso    @relation(fields: [cursoId], references: [id])
 }

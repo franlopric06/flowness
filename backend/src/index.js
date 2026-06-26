@@ -10,6 +10,8 @@ const mediaRoutes = require('./routes/media.routes')
 const galeriaRoutes = require('./routes/media.publica.routes')
 const pagosRoutes = require('./routes/pagos.routes')
 const usuarioRoutes = require('./routes/usuario.routes')
+const videosRoutes = require('./routes/videos.routes')
+
 const app = express()
 const PORT = process.env.PORT || 3000
 
@@ -29,7 +31,7 @@ app.use('/api/media', mediaRoutes)
 app.use('/api/galeria', galeriaRoutes)
 app.use('/api/pagos', pagosRoutes)
 app.use('/api/usuario', usuarioRoutes)
-
+app.use('/api/videos', videosRoutes)
 
 // Ruta de prueba
 app.get('/', (req, res) => {
