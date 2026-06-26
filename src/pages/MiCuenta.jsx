@@ -161,7 +161,8 @@ function MiCuenta() {
                             <div className="flex flex-col gap-4">
                               {videosActivos[compra.curso.id].map((video) => (
                                 <div key={video.id} className="bg-[#F5F0EB] rounded-2xl overflow-hidden">
-                                  <video src={video.url} controls className="w-full" />
+                                  <video src={video.url} controls className="w-full md:w-96 md:mx-auto max-h-48 object-contain bg-black" />
+                                 
                                   <div className="px-4 py-3">
                                     <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
                                     <p className="text-[#555] font-medium text-sm">{video.titulo}</p>
