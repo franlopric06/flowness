@@ -235,10 +235,10 @@ function Admin() {
   }
 
   const cerrarSesion = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('usuario')
-    navigate('/')
-  }
+  localStorage.removeItem('token')
+  localStorage.removeItem('usuario')
+  window.location.href = '/'
+}
 
   if (cargando) {
     return (
@@ -354,56 +354,60 @@ function Admin() {
           {seccion === 'clases' && (
             <>
               {editandoClase && (
-                <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
-                  <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Clase</h2>
-                  <form onSubmit={handleSubmitClase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-                      <input name="nombre" value={formClase.nombre} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
-                      <input name="duracion" value={formClase.duracion} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1 md:col-span-2">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                      <textarea name="descripcion" value={formClase.descripcion} onChange={handleChangeClase} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio en vivo</label>
-                      <input name="precio_vivo" value={formClase.precio_vivo} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio grabada</label>
-                      <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex gap-3 md:col-span-2">
-                      <div className="flex flex-col gap-1">
-                         <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
-                         <input 
-                           name="zoomLink" 
-                           value={formClase.zoomLink || ''} 
-                           onChange={handleChangeClase} 
-                           placeholder="https://zoom.us/j/..." 
-                           className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" 
-                         />
-                       </div>
-                       <div className="flex flex-col gap-1">
-                         <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL de Cloudinary)</label>
-                         <input 
-                           name="videoUrl" 
-                           value={formClase.videoUrl || ''} 
-                           onChange={handleChangeClase} 
-                           placeholder="https://res.cloudinary.com/..." 
-                           className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" 
-                         />
-                       </div>
-                      <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">Guardar cambios</button>
-                      <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
-                    </div>
-                  </form>
-                </div>
-              )}
+  <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+    <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Clase</h2>
+    <form onSubmit={handleSubmitClase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="flex flex-col gap-1">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+        <input name="nombre" value={formClase.nombre} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
+        <input name="duracion" value={formClase.duracion} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+      </div>
+      <div className="flex flex-col gap-1 md:col-span-2">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+        <textarea name="descripcion" value={formClase.descripcion} onChange={handleChangeClase} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio en vivo</label>
+        <input name="precio_vivo" value={formClase.precio_vivo} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio grabada</label>
+        <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+      </div>
+      <div className="flex flex-col gap-1 md:col-span-2">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
+        <input
+          name="zoomLink"
+          value={formClase.zoomLink || ''}
+          onChange={handleChangeClase}
+          placeholder="https://zoom.us/j/..."
+          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
+        />
+      </div>
+      <div className="flex flex-col gap-1 md:col-span-2">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL de Cloudinary)</label>
+        <input
+          name="videoUrl"
+          value={formClase.videoUrl || ''}
+          onChange={handleChangeClase}
+          placeholder="https://res.cloudinary.com/..."
+          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
+        />
+      </div>
+      <div className="flex flex-col gap-3 md:flex-row md:col-span-2">
+        <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+          Guardar cambios
+        </button>
+        <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+)}
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
                   <h2 className="text-lg font-semibold text-[#7B9B77]">Clases ({clases.length})</h2>
