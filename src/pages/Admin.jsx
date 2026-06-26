@@ -84,7 +84,7 @@ function Admin() {
   const cargarVideosCurso = async (cursoId) => {
     if (!cursoId) return
     try {
-      const res = await fetch(`${API_URL}/videos/curso/${cursoId}`, { headers: { Authorization: `Bearer ${token}` } })
+      const res = await fetch(`${API_URL}/videos/admin/curso/${cursoId}`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setVideosCurso(Array.isArray(data) ? data : [])
     } catch (error) { console.error(error) }
