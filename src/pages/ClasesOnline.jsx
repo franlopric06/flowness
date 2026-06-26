@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getClases } from '../services/api'
+import { crearPreferenciaClase } from '../services/api'
 import SEO from '../components/SEO'
 
 function ClasesOnline() {
@@ -15,6 +16,38 @@ function ClasesOnline() {
       })
       .catch(() => setCargando(false))
   }, [])
+
+  const handleReservar = async (claseId) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    window.location.href = '/ingresar'
+    return
+  }
+  try {
+    const res = await crearPreferenciaClase(claseId, 'vivo')
+    if (res.init_point) {
+      window.location.href = res.init_point
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleComprarGrabada = async (claseId) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    window.location.href = '/ingresar'
+    return
+  }
+  try {
+    const res = await crearPreferenciaClase(claseId, 'grabada')
+    if (res.init_point) {
+      window.location.href = res.init_point
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
 
   if (cargando) {
     return (

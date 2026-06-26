@@ -40,3 +40,16 @@ export const crearPreferenciaPago = async (cursoId) => {
   })
   return res.json()
 }
+
+export const crearPreferenciaClase = async (claseId, tipo) => {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API_URL}/pagos/crear-preferencia-clase`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ claseId, tipo })
+  })
+  return res.json()
+}
