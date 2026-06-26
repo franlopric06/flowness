@@ -18,7 +18,11 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      <Header />
+     <Header />
+<Routes>
+  <Route path="/admin" element={<Admin />} />
+  <Route path="*" element={
+    <>
       <Vibra />
       <Routes>
         <Route path="/" element={<Inicio />} />
@@ -29,8 +33,10 @@ function App() {
         <Route path="/ingresar" element={<Login />} />
         <Route path="/formacion" element={<Formacion />} />
         <Route path="/clases" element={<ClasesOnline />} />
-        <Route path="/admin" element={<Admin />} />
       </Routes>
+    </>
+  } />
+</Routes>
       <Footer />
     </>
   )
