@@ -8,20 +8,18 @@ const subirVideo = async (req, res) => {
 
     if (!archivo) return res.status(400).json({ error: 'No se subió ningún archivo' })
 
-    // Verificar que el curso existe
     const curso = await prisma.curso.findUnique({
       where: { id: parseInt(cursoId) }
     })
 
     if (!curso) return res.status(404).json({ error: 'Curso no encontrado' })
 
-    // Subir a Cloudinary como video privado
     const resultado = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
           folder: `flowness/cursos/${cursoId}`,
           resource_type: 'video',
-          type: 'authenticated'
+          type: 'upload'
         },
         (error, result) => error ? reject(error) : resolve(result)
       ).end(archivo.buffer)
@@ -49,7 +47,6 @@ const getVideosCurso = async (req, res) => {
     const { cursoId } = req.params
     const usuarioId = req.usuario.id
 
-    // Verificar si el usuario compró el curso
     const compra = await prisma.compra.findFirst({
       where: {
         usuarioId,
@@ -62,30 +59,12 @@ const getVideosCurso = async (req, res) => {
       return res.status(403).json({ error: 'No tenés acceso a este curso' })
     }
 
-    // Obtener videos del curso
     const videos = await prisma.video.findMany({
-      where: {
-        cursoId: parseInt(cursoId),
-        activo: true
-      },
+      where: { cursoId: parseInt(cursoId), activo: true },
       orderBy: { orden: 'asc' }
     })
 
-    // Generar URLs firmadas para cada video
-    const videosConAcceso = videos.map(video => {
-      const urlFirmada = cloudinary.url(
-        video.url.split('/upload/')[1],
-        {
-          resource_type: 'video',
-          type: 'authenticated',
-          sign_url: true,
-          expires_at: Math.floor(Date.now() / 1000) + 3600
-        }
-      )
-      return { ...video, url: urlFirmada }
-    })
-
-    res.json(videosConAcceso)
+    res.json(videos)
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'Error al obtener videos' })
