@@ -27,27 +27,27 @@ El proyecto se divide en tres fases incrementales. Cada fase entrega algo funcio
 ### Fase 2 — Comercial: El Negocio Funciona
 *Objetivo: Usuario final puede vender cursos y gestionar clases online.*
 
-- [ ] Registro e inicio de sesión (JWT)
-- [ ] Compra de cursos
-- [ ] Videos protegidos para usuarios con compra confirmada
-- [ ] Reserva de clases online
-- [ ] Mi cuenta (cursos comprados)
-- [ ] Backend Node.js + Express
-- [ ] Base de datos PostgreSQL + Prisma
-- [ ] Configuración de Redis para caching de sesiones y catálogo
-- [ ] Deploy backend en Railway
+- [x] Registro e inicio de sesión (JWT)
+- [x] Compra de cursos
+- [x] Videos protegidos para usuarios con compra confirmada
+- [x] Reserva de clases online
+- [x] Mi cuenta (cursos comprados)
+- [x] Backend Node.js + Express
+- [x] Base de datos PostgreSQL + Prisma
+- [x] Configuración de Redis para caching de sesiones y catálogo
+- [x] Deploy backend en Railway
 
 ### Fase 3 — Administración: Autonomía Total
 *Objetivo: Usuario final gestiona todo el sitio sin ayuda técnica.*
 
-- [ ] Panel de control (estadísticas generales)
-- [ ] Gestión de cursos y videos privados
-- [ ] Gestión de clases online y horarios
-- [ ] Actualización de precios
-- [ ] Publicación de avisos y novedades
-- [ ] Videos de muestra para publicidad
-- [ ] Galería de fotos
-- [ ] Gestión de usuarios
+- [x] Panel de control (estadísticas generales)
+- [x] Gestión de cursos y videos privados
+- [x] Gestión de clases online y horarios
+- [x] Actualización de precios
+- [x] Publicación de avisos y novedades
+- [x] Videos de muestra para publicidad
+- [x] Galería de fotos
+- [x] Gestión de usuarios
 
 ---
 

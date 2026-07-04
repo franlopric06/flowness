@@ -159,4 +159,71 @@ const desactivarClase = async (req, res) => {
   }
 }
 
-module.exports = { getCursos, crearCurso, actualizarCurso, eliminarCurso, activarCurso, getClases, actualizarClase, activarClase, desactivarClase, getAvisos, crearAviso, eliminarAviso }
+const getFases = async (req, res) => {
+  try {
+    const fases = await prisma.fase.findMany({
+      where: { activo: true },
+      orderBy: { numero: 'asc' }
+    })
+    res.json(fases)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener fases' })
+  }
+}
+
+const crearFase = async (req, res) => {
+  try {
+    const { numero, nombre, descripcion } = req.body
+    const fase = await prisma.fase.create({
+      data: { numero, nombre, descripcion }
+    })
+    res.status(201).json(fase)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear fase' })
+  }
+}
+
+const actualizarFase = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { numero, nombre, descripcion } = req.body
+    const fase = await prisma.fase.update({
+      where: { id: parseInt(id) },
+      data: { numero, nombre, descripcion }
+    })
+    res.json(fase)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar fase' })
+  }
+}
+
+const eliminarFase = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.fase.update({
+      where: { id: parseInt(id) },
+      data: { activo: false }
+    })
+    res.json({ mensaje: 'Fase eliminada correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar fase' })
+  }
+}
+module.exports = { 
+  getCursos,
+   crearCurso, 
+   actualizarCurso,
+  eliminarCurso, 
+  activarCurso, 
+  getClases, 
+  actualizarClase, 
+  activarClase, 
+  desactivarClase, 
+  getAvisos, 
+  crearAviso, 
+  eliminarAviso, 
+  getFases, 
+  crearFase, 
+  actualizarFase, 
+  eliminarFase
+ }

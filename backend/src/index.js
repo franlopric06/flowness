@@ -48,6 +48,19 @@ app.get('/api/avisos', async (req, res) => {
   }
 })
 
+// Ruta publica de fases
+app.get('/api/fases', async (req, res) => {
+  try {
+    const fases = await prisma.fase.findMany({
+      where: { activo: true },
+      orderBy: { numero: 'asc' }
+    })
+    res.json(fases)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener fases' })
+  }
+})
+
 // Ruta de prueba
 app.get('/', (req, res) => {
   res.json({ mensaje: 'API de Flowness funcionando ✓' })

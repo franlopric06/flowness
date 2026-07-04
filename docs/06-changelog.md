@@ -54,15 +54,15 @@ Este archivo registra los cambios más relevantes del proyecto ordenados por fec
 | Agregamos headers de seguridad en vercel.json | 25/06/2026 |
 | Agregamos validacion y sanitizacion al formulario de contacto | 25/06/2026 |
 | Agregamos docs/07-ia-aplicada.md con bitacora de uso de IA | 25/06/2026 |
+| Agregamos backend con Node.js, Express, Prisma y autenticacion JWT | 25/06/2026
+|  
 
 ## Próximos pasos
-
-- [ ] Implementar backend con Node.js y Express
-- [ ] Configurar base de datos PostgreSQL con Prisma
-- [ ] Implementar autenticación con JWT
-- [ ] Integrar pasarela de pagos con Mercado Pago
-- [ ] Desarrollar panel de administración
-- [ ] Deploy backend en Railway
+- [x] Configurar base de datos PostgreSQL con Prisma
+- [x] Implementar autenticación con JWT
+- [x] Integrar pasarela de pagos con Mercado Pago
+- [x] Desarrollar panel de administración
+- [x] Deploy backend en Railway
 
 ---
 
