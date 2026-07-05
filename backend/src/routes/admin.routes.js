@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { verificarToken, verificarAdmin } = require('../middlewares/auth.middleware')
+const { upload } = require('../config/cloudinary')
 const {
   getCursos, crearCurso, actualizarCurso, eliminarCurso, activarCurso,
   getClases, actualizarClase, activarClase, desactivarClase,
@@ -45,6 +46,6 @@ router.delete('/niveles/:id', eliminarNivel)
 
 // Sobre mi
 router.get('/sobre-mi', getSobreMi)
-router.post('/sobre-mi', actualizarSobreMi)
+router.post('/sobre-mi', upload.single('foto'), actualizarSobreMi)
 
 module.exports = router

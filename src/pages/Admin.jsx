@@ -14,7 +14,7 @@ function Admin() {
   const [cursoSeleccionado, setCursoSeleccionado] = useState('')
   const [fases, setFases] = useState([])
   const [niveles, setNiveles] = useState([])
-  const [sobreMi, setSobreMi] = useState({ nombre: '', titulo: '', descripcion1: '', descripcion2: '' })
+  const [sobreMi, setSobreMi] = useState({ nombre: '', titulo: '', descripcion1: '', descripcion2: '', foto: null, fotoUrl: '' })
   const [cargando, setCargando] = useState(true)
   const [seccion, setSeccion] = useState('cursos')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
@@ -120,21 +120,29 @@ function Admin() {
     try {
       const res = await fetch(`${API_URL}/admin/sobre-mi`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
-      if (data) setSobreMi({ nombre: data.nombre || '', titulo: data.titulo || '', descripcion1: data.descripcion1 || '', descripcion2: data.descripcion2 || '' })
+      if (data) setSobreMi({ nombre: data.nombre || '', titulo: data.titulo || '', descripcion1: data.descripcion1 || '', descripcion2: data.descripcion2 || '', fotoUrl: data.fotoUrl || '', foto: null })
     } catch (error) { console.error(error) }
   }
 
   const handleSubmitSobreMi = async (e) => {
-    e.preventDefault()
-    try {
-      await fetch(`${API_URL}/admin/sobre-mi`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(sobreMi)
-      })
-      alert('Sobre mí actualizado correctamente')
-    } catch (error) { console.error(error) }
-  }
+  e.preventDefault()
+  try {
+    const formData = new FormData()
+    formData.append('nombre', sobreMi.nombre)
+    formData.append('titulo', sobreMi.titulo)
+    formData.append('descripcion1', sobreMi.descripcion1)
+    formData.append('descripcion2', sobreMi.descripcion2)
+    if (sobreMi.foto) formData.append('foto', sobreMi.foto)
+
+    await fetch(`${API_URL}/admin/sobre-mi`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    })
+    alert('Sobre mí actualizado correctamente')
+    cargarSobreMi()
+  } catch (error) { console.error(error) }
+}
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
   const handleChangeClase = (e) => setFormClase({ ...formClase, [e.target.name]: e.target.value })
@@ -367,7 +375,7 @@ function Admin() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título / Profesión</label>
-                  <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Kinesióloga — Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                 </div>
                 <div className="flex flex-col gap-1 md:col-span-2">
                   <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 1</label>
@@ -378,6 +386,18 @@ function Admin() {
                   <textarea value={sobreMi.descripcion2} onChange={(e) => setSobreMi({ ...sobreMi, descripcion2: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
                 </div>
                 <div className="md:col-span-2">
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                   <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Foto</label>
+                   <input
+                    type="file"
+                     accept="image/*"
+                     onChange={(e) => setSobreMi({ ...sobreMi, foto: e.target.files[0] })}
+                     className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none"
+                   />
+                   {sobreMi.fotoUrl && (
+                     <img src={sobreMi.fotoUrl} alt="Foto actual" className="w-24 h-24 object-cover rounded-xl mt-2" />
+                   )}
+                 </div>
                   <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
                     Guardar cambios
                   </button>

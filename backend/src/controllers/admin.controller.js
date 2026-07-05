@@ -273,17 +273,33 @@ const getSobreMi = async (req, res) => {
 const actualizarSobreMi = async (req, res) => {
   try {
     const { nombre, titulo, descripcion1, descripcion2 } = req.body
+    const archivo = req.file
+
+    let fotoUrl = undefined
+
+    if (archivo) {
+      const { cloudinary } = require('../config/cloudinary')
+      const resultado = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: 'flowness/sobre-mi', resource_type: 'image' },
+          (error, result) => error ? reject(error) : resolve(result)
+        ).end(archivo.buffer)
+      })
+      fotoUrl = resultado.secure_url
+    }
+
     const existente = await prisma.sobreMi.findFirst()
+    const data = { nombre, titulo, descripcion1, descripcion2 }
+    if (fotoUrl) data.fotoUrl = fotoUrl
+
     let sobreMi
     if (existente) {
       sobreMi = await prisma.sobreMi.update({
         where: { id: existente.id },
-        data: { nombre, titulo, descripcion1, descripcion2 }
+        data
       })
     } else {
-      sobreMi = await prisma.sobreMi.create({
-        data: { nombre, titulo, descripcion1, descripcion2 }
-      })
+      sobreMi = await prisma.sobreMi.create({ data })
     }
     res.json(sobreMi)
   } catch (error) {
