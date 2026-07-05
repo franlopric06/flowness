@@ -16,7 +16,23 @@ function SobreMi() {
       .catch(() => setCargando(false))
   }, [])
 
-  if (cargando || !datos) return null
+  if (cargando) return null
+
+  if (!datos) return (
+    <section className="bg-white px-6 pt-8 pb-4 md:px-16 md:py-10">
+      <p className="text-[#D8A48F] text-xs tracking-widest uppercase mb-2 text-center">
+        Sobre mí
+      </p>
+      <h2 className="text-3xl font-light text-gray-700 mb-6 text-center md:text-4xl">
+        Quién está detrás de{' '}
+        <span className="text-[#7B9B77] font-semibold">Flowness</span>
+      </h2>
+      <p className="text-center text-[#A9A9A2] text-sm py-8">
+        Próximamente conocerás a la creadora del método.
+      
+      </p>
+    </section>
+  )
 
   return (
     <section className="bg-white px-6 pt-8 pb-4 md:px-16 md:py-10">
