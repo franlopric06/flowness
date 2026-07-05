@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { getClases } from '../services/api'
 import { crearPreferenciaClase } from '../services/api'
 import SEO from '../components/SEO'
@@ -7,6 +8,9 @@ function ClasesOnline() {
   const [clases, setClases] = useState([])
   const [seleccionada, setSeleccionada] = useState(null)
   const [cargando, setCargando] = useState(true)
+  const [searchParams] = useSearchParams()
+  const faseParam = searchParams.get('fase')
+  const refsClases = useRef({})
 
   useEffect(() => {
     getClases()
@@ -17,37 +21,46 @@ function ClasesOnline() {
       .catch(() => setCargando(false))
   }, [])
 
-  const handleReservar = async (claseId) => {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    window.location.href = '/ingresar'
-    return
-  }
-  try {
-    const res = await crearPreferenciaClase(claseId, 'vivo')
-    if (res.init_point) {
-      window.location.href = res.init_point
+  // Cuando cargan las clases y hay una fase en la URL, hace scroll a esa clase
+  useEffect(() => {
+    if (!cargando && faseParam && refsClases.current[faseParam]) {
+      setTimeout(() => {
+        refsClases.current[faseParam].scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 300)
     }
-  } catch (error) {
-    console.error(error)
-  }
-}
+  }, [cargando, faseParam])
 
-const handleComprarGrabada = async (claseId) => {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    window.location.href = '/ingresar'
-    return
-  }
-  try {
-    const res = await crearPreferenciaClase(claseId, 'grabada')
-    if (res.init_point) {
-      window.location.href = res.init_point
+  const handleReservar = async (claseId) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/ingresar'
+      return
     }
-  } catch (error) {
-    console.error(error)
+    try {
+      const res = await crearPreferenciaClase(claseId, 'vivo')
+      if (res.init_point) {
+        window.location.href = res.init_point
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
-}
+
+  const handleComprarGrabada = async (claseId) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/ingresar'
+      return
+    }
+    try {
+      const res = await crearPreferenciaClase(claseId, 'grabada')
+      if (res.init_point) {
+        window.location.href = res.init_point
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   if (cargando) {
     return (
@@ -86,7 +99,12 @@ const handleComprarGrabada = async (claseId) => {
             {clases.map((clase) => (
               <div
                 key={clase.id}
-                className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden"
+                ref={el => refsClases.current[clase.fase] = el}
+                className={`bg-white rounded-2xl border overflow-hidden transition-all ${
+                  faseParam === clase.fase
+                    ? 'border-[#7B9B77] shadow-lg'
+                    : 'border-[#D8A48F]/15'
+                }`}
               >
                 {/* Header de la card */}
                 <div className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
@@ -136,19 +154,18 @@ const handleComprarGrabada = async (claseId) => {
                   </div>
 
                   {/* Botones */}
-                  
-                     <div className="flex flex-col gap-2 md:flex-row">
-                       <button 
-                         onClick={() => handleReservar(clase.id)}
-                         className="flex-1 bg-[#7B9B77] text-white text-xs tracking-widest uppercase py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-                         Reservar clase en vivo
-                       </button>
-                       <button
-                         onClick={() => handleComprarGrabada(clase.id)}
-                         className="flex-1 bg-white text-[#7B9B77] text-xs tracking-widest uppercase py-3 rounded-full border border-[#7B9B77]/30 hover:border-[#7B9B77] transition-colors">
-                         Comprar clase grabada
-                       </button>
-                     </div>
+                  <div className="flex flex-col gap-2 md:flex-row">
+                    <button
+                      onClick={() => handleReservar(clase.id)}
+                      className="flex-1 bg-[#7B9B77] text-white text-xs tracking-widest uppercase py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                      Reservar clase en vivo
+                    </button>
+                    <button
+                      onClick={() => handleComprarGrabada(clase.id)}
+                      className="flex-1 bg-white text-[#7B9B77] text-xs tracking-widest uppercase py-3 rounded-full border border-[#7B9B77]/30 hover:border-[#7B9B77] transition-colors">
+                      Comprar clase grabada
+                    </button>
+                  </div>
                 </div>
 
               </div>
