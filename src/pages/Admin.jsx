@@ -11,6 +11,8 @@ function Admin() {
   const [fotos, setFotos] = useState([])
   const [videos, setVideos] = useState([])
   const [videosCurso, setVideosCurso] = useState([])
+  const [documentosCurso, setDocumentosCurso] = useState([])
+  const [formDocumento, setFormDocumento] = useState({ titulo: '', descripcion: '', archivo: null })
   const [cursoSeleccionado, setCursoSeleccionado] = useState('')
   const [fases, setFases] = useState([])
   const [niveles, setNiveles] = useState([])
@@ -99,6 +101,47 @@ function Admin() {
       setVideosCurso(Array.isArray(data) ? data : [])
     } catch (error) { console.error(error) }
   }
+
+  const cargarDocumentosCurso = async (cursoId) => {
+  if (!cursoId) return
+  try {
+    const res = await fetch(`${API_URL}/videos/documentos/admin/curso/${cursoId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await res.json()
+    setDocumentosCurso(Array.isArray(data) ? data : [])
+  } catch (error) { console.error(error) }
+}
+
+const handleSubmitDocumento = async (e) => {
+  e.preventDefault()
+  if (!formDocumento.archivo || !cursoSeleccionado) return
+  setSubiendo(true)
+  try {
+    const formData = new FormData()
+    formData.append('archivo', formDocumento.archivo)
+    formData.append('cursoId', cursoSeleccionado)
+    formData.append('titulo', formDocumento.titulo)
+    formData.append('descripcion', formDocumento.descripcion)
+    await fetch(`${API_URL}/videos/documentos`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    })
+    setFormDocumento({ titulo: '', descripcion: '', archivo: null })
+    cargarDocumentosCurso(cursoSeleccionado)
+  } catch (error) { console.error(error) }
+  setSubiendo(false)
+}
+
+const handleEliminarDocumento = async (id) => {
+  if (!confirm('¿Seguro que querés eliminar este documento?')) return
+  await fetch(`${API_URL}/videos/documentos/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  cargarDocumentosCurso(cursoSeleccionado)
+}
 
   const cargarFases = async () => {
     try {
@@ -710,64 +753,127 @@ function Admin() {
             </>
           )}
 
-          {/* VIDEOS CURSOS */}
-          {seccion === 'videos-cursos' && (
-            <>
-              <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
-                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Subir Video de Curso</h2>
-                <div className="flex flex-col gap-1 mb-4">
-                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Seleccioná el curso</label>
-                  <select value={cursoSeleccionado} onChange={(e) => { setCursoSeleccionado(e.target.value); cargarVideosCurso(e.target.value) }} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]">
-                    <option value="">Elegí un curso</option>
-                    {cursos.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-                  </select>
-                </div>
-                {cursoSeleccionado && (
-                  <form onSubmit={handleSubmitVideoCurso} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="flex flex-col gap-1 md:col-span-2">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Archivo de video</label>
-                      <input type="file" accept="video/*" onChange={(e) => setFormVideoCurso({ ...formVideoCurso, archivo: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
-                      <input value={formVideoCurso.titulo} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, titulo: e.target.value })} placeholder="Clase 01 - Introducción" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Orden</label>
-                      <input value={formVideoCurso.orden} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, orden: e.target.value })} placeholder="1, 2, 3..." type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1 md:col-span-2">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                      <textarea value={formVideoCurso.descripcion} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, descripcion: e.target.value })} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-                    </div>
-                    <div className="md:col-span-2">
-                      <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
-                        {subiendo ? 'Subiendo...' : 'Subir video al curso'}
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
-              {cursoSeleccionado && (
-                <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#D8A48F]/15">
-                    <h2 className="text-lg font-semibold text-[#7B9B77]">Videos del curso ({videosCurso.length})</h2>
-                  </div>
-                  {videosCurso.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay videos subidos para este curso</p>}
-                  {videosCurso.map((video) => (
-                    <div key={video.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
-                      <div>
-                        <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
-                        <p className="text-[#555] font-medium">{video.titulo}</p>
-                        <p className="text-[#888] text-sm">{video.descripcion}</p>
-                      </div>
-                      <button onClick={() => handleEliminarVideoCurso(video.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+            {/* VIDEOS CURSOS */}
+{seccion === 'videos-cursos' && (
+  <>
+    {/* Selector de curso */}
+    <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+      <div className="flex flex-col gap-1 mb-6">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Seleccioná el curso</label>
+        <select
+          value={cursoSeleccionado}
+          onChange={(e) => {
+            setCursoSeleccionado(e.target.value)
+            cargarVideosCurso(e.target.value)
+            cargarDocumentosCurso(e.target.value)
+          }}
+          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
+        >
+          <option value="">Elegí un curso</option>
+          {cursos.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+        </select>
+      </div>
+
+      {cursoSeleccionado && (
+        <>
+          {/* Subir Video */}
+          <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Subir Video</h2>
+          <form onSubmit={handleSubmitVideoCurso} className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-8">
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Archivo de video</label>
+              <input type="file" accept="video/*" onChange={(e) => setFormVideoCurso({ ...formVideoCurso, archivo: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
+              <input value={formVideoCurso.titulo} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, titulo: e.target.value })} placeholder="Clase 01 - Introducción" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Orden</label>
+              <input value={formVideoCurso.orden} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, orden: e.target.value })} placeholder="1, 2, 3..." type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+            </div>
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+              <textarea value={formVideoCurso.descripcion} onChange={(e) => setFormVideoCurso({ ...formVideoCurso, descripcion: e.target.value })} rows={2} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+            </div>
+            <div className="md:col-span-2">
+              <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
+                {subiendo ? 'Subiendo...' : 'Subir video'}
+              </button>
+            </div>
+          </form>
+
+          {/* Separador */}
+          <div className="border-t border-[#D8A48F]/20 my-6" />
+
+          {/* Subir PDF */}
+          <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Subir Documento PDF</h2>
+          <form onSubmit={handleSubmitDocumento} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Archivo PDF</label>
+              <input type="file" accept=".pdf" onChange={(e) => setFormDocumento({ ...formDocumento, archivo: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
+              <input value={formDocumento.titulo} onChange={(e) => setFormDocumento({ ...formDocumento, titulo: e.target.value })} placeholder="Guía de práctica semanal" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción (opcional)</label>
+              <input value={formDocumento.descripcion} onChange={(e) => setFormDocumento({ ...formDocumento, descripcion: e.target.value })} placeholder="Instrucciones de ejercicios..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+            </div>
+            <div className="md:col-span-2">
+              <button type="submit" disabled={subiendo} className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:opacity-80 transition-colors disabled:opacity-50">
+                {subiendo ? 'Subiendo...' : 'Subir PDF'}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
+    </div>
+
+    {/* Lista de videos */}
+    {cursoSeleccionado && (
+      <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+          <h2 className="text-lg font-semibold text-[#7B9B77]">Videos del curso ({videosCurso.length})</h2>
+        </div>
+        {videosCurso.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay videos subidos</p>}
+        {videosCurso.map((video) => (
+          <div key={video.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
+              <p className="text-[#555] font-medium">{video.titulo}</p>
+              <p className="text-[#888] text-sm">{video.descripcion}</p>
+            </div>
+            <button onClick={() => handleEliminarVideoCurso(video.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Lista de PDFs */}
+    {cursoSeleccionado && (
+      <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
+        <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+          <h2 className="text-lg font-semibold text-[#7B9B77]">Documentos del curso ({documentosCurso.length})</h2>
+        </div>
+        {documentosCurso.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay documentos subidos</p>}
+        {documentosCurso.map((doc) => (
+          <div key={doc.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[#A9A9A2] text-xs">📄 PDF</p>
+              <p className="text-[#555] font-medium">{doc.titulo}</p>
+              <p className="text-[#888] text-sm">{doc.descripcion}</p>
+            </div>
+            <div className="flex gap-3">
+              <a href={doc.url} target="_blank" rel="noreferrer" className="text-xs text-[#7B9B77] hover:opacity-70 transition-colors">Ver PDF</a>
+              <button onClick={() => handleEliminarDocumento(doc.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </>
+)}
 
           {/* CLASES DEL MÉTODO — FASES */}
           {seccion === 'fases' && (
