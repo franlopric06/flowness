@@ -220,14 +220,23 @@ function MiCuenta() {
                                     <p className="text-[#555] font-medium text-sm">📄 {doc.titulo}</p>
                                     {doc.descripcion && <p className="text-[#888] text-xs mt-1">{doc.descripcion}</p>}
                                   </div>
-                                  <a
-                                    href={doc.url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:bg-[#5a7a56] transition-colors"
-                                  >
-                                    Descargar
-                                  </a>
+                                  <div className="flex gap-2">
+                                    <a
+                                      href={`https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:bg-[#5a7a56] transition-colors"
+                                    >
+                                      Ver PDF
+                                    </a>
+                                    <a
+                                      href={doc.url}
+                                      download
+                                      className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:opacity-80 transition-colors"
+                                    >
+                                      Descargar
+                                    </a>
+                                  </div>
                                 </div>
                               ))}
                             </div>
@@ -275,7 +284,6 @@ function MiCuenta() {
                           ✓ Acceso habilitado
                         </span>
 
-                        {/* Link de Zoom para clase en vivo */}
                         {reserva.tipo === 'vivo' && reserva.clase.zoomLink && (
                           <a
                             href={reserva.clase.zoomLink}
@@ -287,7 +295,6 @@ function MiCuenta() {
                           </a>
                         )}
 
-                        {/* Video grabado */}
                         {reserva.tipo === 'grabada' && reserva.clase.videoUrl && (
                           <div className="bg-[#F5F0EB] rounded-2xl overflow-hidden">
                             <video
@@ -298,7 +305,6 @@ function MiCuenta() {
                             />
                           </div>
                         )}
-
                       </div>
                     </div>
                   ))}
