@@ -23,6 +23,9 @@ function Admin() {
   const [formVideo, setFormVideo] = useState({ titulo: '', descripcion: '', fase: '', nivel: '', duracion: '', archivo: null })
   const [formVideoCurso, setFormVideoCurso] = useState({ titulo: '', descripcion: '', orden: '', archivo: null })
   const [subiendo, setSubiendo] = useState(false)
+  const [fases, setFases] = useState([])
+  const [formFase, setFormFase] = useState({ numero: '', nombre: '', descripcion: '' })
+  const [editandoFase, setEditandoFase] = useState(null)
   const navigate = useNavigate()
 
   const token = localStorage.getItem('token')
@@ -38,6 +41,7 @@ function Admin() {
     cargarAvisos()
     cargarFotos()
     cargarVideos()
+    cargarFases()
   }, [])
 
   const cargarCursos = async () => {
@@ -80,6 +84,50 @@ function Admin() {
       setVideos(data)
     } catch (error) { console.error(error) }
   }
+
+  const cargarFases = async () => {
+  try {
+    const res = await fetch(`${API_URL}/admin/fases`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await res.json()
+    setFases(Array.isArray(data) ? data : [])
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleSubmitFase = async (e) => {
+  e.preventDefault()
+  try {
+    const url = editandoFase ? `${API_URL}/admin/fases/${editandoFase}` : `${API_URL}/admin/fases`
+    const method = editandoFase ? 'PUT' : 'POST'
+    await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(formFase)
+    })
+    setFormFase({ numero: '', nombre: '', descripcion: '' })
+    setEditandoFase(null)
+    cargarFases()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleEditarFase = (fase) => {
+  setEditandoFase(fase.id)
+  setFormFase({ numero: fase.numero, nombre: fase.nombre, descripcion: fase.descripcion })
+}
+
+const handleEliminarFase = async (id) => {
+  if (!confirm('¿Seguro que querés eliminar esta fase?')) return
+  await fetch(`${API_URL}/admin/fases/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  cargarFases()
+}
 
   const cargarVideosCurso = async (cursoId) => {
     if (!cursoId) return
@@ -269,7 +317,7 @@ function Admin() {
         {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos'].map((tab) => (
+            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases'].map((tab) => (
               <button key={tab} onClick={() => setSeccion(tab)}
                 className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
                 {tab === 'videos-cursos' ? 'Videos Cursos' : tab}
@@ -631,6 +679,79 @@ function Admin() {
               )}
             </>
           )}
+
+          {/* FASES */}
+{seccion === 'fases' && (
+  <>
+    <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+      <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">
+        {editandoFase ? 'Editar Fase' : 'Agregar Nueva Fase'}
+      </h2>
+      <form onSubmit={handleSubmitFase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-1">
+          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Número</label>
+          <input
+            value={formFase.numero}
+            onChange={(e) => setFormFase({ ...formFase, numero: e.target.value })}
+            placeholder="01, 02, 03..."
+            className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+          <input
+            value={formFase.nombre}
+            onChange={(e) => setFormFase({ ...formFase, nombre: e.target.value })}
+            placeholder="Consciencia Corporal"
+            className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
+          />
+        </div>
+        <div className="flex flex-col gap-1 md:col-span-2">
+          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+          <textarea
+            value={formFase.descripcion}
+            onChange={(e) => setFormFase({ ...formFase, descripcion: e.target.value })}
+            placeholder="Descripción de la fase..."
+            rows={3}
+            className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none"
+          />
+        </div>
+        <div className="flex gap-3 md:col-span-2">
+          <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+            {editandoFase ? 'Guardar cambios' : 'Agregar fase'}
+          </button>
+          {editandoFase && (
+            <button type="button" onClick={() => { setEditandoFase(null); setFormFase({ numero: '', nombre: '', descripcion: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">
+              Cancelar
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+
+    <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
+      <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+        <h2 className="text-lg font-semibold text-[#7B9B77]">Fases del método ({fases.length})</h2>
+      </div>
+      {fases.length === 0 && (
+        <p className="text-[#A9A9A2] text-sm text-center py-8">No hay fases cargadas todavía</p>
+      )}
+      {fases.map((fase) => (
+        <div key={fase.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[#A9A9A2] text-xs">FASE {fase.numero}</p>
+            <p className="text-[#555] font-medium">{fase.nombre}</p>
+            <p className="text-[#888] text-sm">{fase.descripcion}</p>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => handleEditarFase(fase)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Editar</button>
+            <button onClick={() => handleEliminarFase(fase.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
+)}
 
         </section>
       </main>
