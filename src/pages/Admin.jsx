@@ -380,12 +380,19 @@ const handleEliminarSobreMi = async () => {
            {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases', 'niveles', 'sobre-mi'].map((tab) => (
-              <button key={tab} onClick={() => setSeccion(tab)}
-                className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
-                {tab === 'videos-cursos' ? 'Videos Cursos' : tab === 'sobre-mi' ? 'Sobre mí' : tab}
-              </button>
-            ))}
+            
+            {['sobre-mi', 'fotos', 'videos', 'niveles','cursos', 'fases', 'clases', 'videos-cursos', 'avisos'].map((tab) => (
+             <button key={tab} onClick={() => setSeccion(tab)}
+               className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
+              {tab === 'sobre-mi' ? 'Sobre mí' :
+              tab === 'cursos' ? 'Comprar Cursos' :
+              tab === 'clases' ? 'Comprar Clases' :
+              tab === 'fases' ? 'Clases' :
+              tab === 'niveles' ? 'Cursos' :
+              tab === 'videos-cursos' ? 'Videos Cursos' :
+              tab}
+             </button>
+           ))}
           </div>
         </section>
 
