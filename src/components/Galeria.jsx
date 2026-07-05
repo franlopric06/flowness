@@ -45,7 +45,7 @@ function Galeria() {
                 <img
                   src={foto.url}
                   alt={foto.descripcion}
-                  className="w-full h-48 object-cover"
+                  className="w-full object-contain bg-white"
                 />
                 {foto.descripcion && (
                   <div className="bg-white px-4 py-2">
@@ -70,7 +70,7 @@ function Galeria() {
                 <video
                   src={video.url}
                   controls
-                  className="w-full h-48 object-cover"
+                  className="w-full"
                 />
                 <div className="bg-white px-4 py-2">
                   <p className="text-[#7B9B77] text-xs font-medium">{video.titulo}</p>
