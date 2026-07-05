@@ -29,6 +29,7 @@ model Curso {
   createdAt   DateTime @default(now())
   compras     Compra[]
   videosContenido Video[]
+  documentos  Documento[]
 }
 
 model Clase {
@@ -149,4 +150,15 @@ model SobreMi {
   descripcion2 String
   fotoUrl      String?
   createdAt    DateTime @default(now())
+}
+
+model Documento {
+  id          Int      @id @default(autoincrement())
+  cursoId     Int
+  titulo      String
+  descripcion String?
+  url         String
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  curso       Curso    @relation(fields: [cursoId], references: [id])
 }
