@@ -101,8 +101,7 @@ const subirDocumento = async (req, res) => {
       cloudinary.uploader.upload_stream(
         {
           folder: `flowness/cursos/${cursoId}/documentos`,
-          resource_type: 'raw',
-          format: 'pdf'
+          resource_type: 'raw'
         },
         (error, result) => error ? reject(error) : resolve(result)
       ).end(archivo.buffer)
@@ -113,7 +112,7 @@ const subirDocumento = async (req, res) => {
         cursoId: parseInt(cursoId),
         titulo,
         descripcion,
-        url: resultado.secure_url
+        url: resultado.secure_url.replace('/raw/upload/', '/raw/upload/fl_attachment/')
       }
     })
 
