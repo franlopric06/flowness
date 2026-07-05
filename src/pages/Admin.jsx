@@ -411,7 +411,7 @@ const handleEliminarDocumento = async (id) => {
   return (
     <>
       <SEO titulo="Panel de Administración" descripcion="Panel de administración de Flowness" url="/admin" />
-      <main className="pt-20 bg-[#F5F0EB] min-h-screen md:pt-30">
+      <main className="pt-18 bg-[#F5F0EB] min-h-screen md:pt-32">
 
         {/* Header */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 py-4 md:px-16">
