@@ -19,7 +19,7 @@ function Admin() {
   const [seccion, setSeccion] = useState('cursos')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
   const [editando, setEditando] = useState(null)
-  const [formClase, setFormClase] = useState({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
+  const [formClase, setFormClase] = useState({ fase: '', nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
   const [editandoClase, setEditandoClase] = useState(null)
   const [formAviso, setFormAviso] = useState({ titulo: '', descripcion: '' })
   const [formFoto, setFormFoto] = useState({ descripcion: '', fase: '', nivel: '', archivo: null })
@@ -125,36 +125,28 @@ function Admin() {
   }
 
   const handleSubmitSobreMi = async (e) => {
-  e.preventDefault()
-  try {
-    const formData = new FormData()
-    formData.append('nombre', sobreMi.nombre)
-    formData.append('titulo', sobreMi.titulo)
-    formData.append('descripcion1', sobreMi.descripcion1)
-    formData.append('descripcion2', sobreMi.descripcion2)
-    if (sobreMi.foto) formData.append('foto', sobreMi.foto)
+    e.preventDefault()
+    try {
+      const formData = new FormData()
+      formData.append('nombre', sobreMi.nombre)
+      formData.append('titulo', sobreMi.titulo)
+      formData.append('descripcion1', sobreMi.descripcion1)
+      formData.append('descripcion2', sobreMi.descripcion2)
+      if (sobreMi.foto) formData.append('foto', sobreMi.foto)
+      await fetch(`${API_URL}/admin/sobre-mi`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData })
+      alert('Sobre mí actualizado correctamente')
+      cargarSobreMi()
+    } catch (error) { console.error(error) }
+  }
 
-    await fetch(`${API_URL}/admin/sobre-mi`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData
-    })
-    alert('Sobre mí actualizado correctamente')
-    cargarSobreMi()
-  } catch (error) { console.error(error) }
-}
-
-const handleEliminarSobreMi = async () => {
-  if (!confirm('¿Seguro que querés eliminar toda la información de Sobre mí?')) return
-  try {
-    await fetch(`${API_URL}/admin/sobre-mi`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    setSobreMi({ nombre: '', titulo: '', descripcion1: '', descripcion2: '', foto: null, fotoUrl: '' })
-    alert('Información eliminada correctamente')
-  } catch (error) { console.error(error) }
-}
+  const handleEliminarSobreMi = async () => {
+    if (!confirm('¿Seguro que querés eliminar toda la información de Sobre mí?')) return
+    try {
+      await fetch(`${API_URL}/admin/sobre-mi`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+      setSobreMi({ nombre: '', titulo: '', descripcion1: '', descripcion2: '', foto: null, fotoUrl: '' })
+      alert('Información eliminada correctamente')
+    } catch (error) { console.error(error) }
+  }
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
   const handleChangeClase = (e) => setFormClase({ ...formClase, [e.target.name]: e.target.value })
@@ -171,11 +163,24 @@ const handleEliminarSobreMi = async () => {
     } catch (error) { console.error(error) }
   }
 
+  const handleCrearClase = async (e) => {
+    e.preventDefault()
+    try {
+      await fetch(`${API_URL}/admin/clases`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(formClase)
+      })
+      setFormClase({ fase: '', nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
+      cargarClases()
+    } catch (error) { console.error(error) }
+  }
+
   const handleSubmitClase = async (e) => {
     e.preventDefault()
     try {
       await fetch(`${API_URL}/admin/clases/${editandoClase}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(formClase) })
-      setFormClase({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
+      setFormClase({ fase: '', nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
       setEditandoClase(null)
       cargarClases()
     } catch (error) { console.error(error) }
@@ -275,7 +280,7 @@ const handleEliminarSobreMi = async () => {
 
   const handleEditarClase = (clase) => {
     setEditandoClase(clase.id)
-    setFormClase({ nombre: clase.nombre, descripcion: clase.descripcion, precio_vivo: clase.precio_vivo, precio_grabada: clase.precio_grabada, duracion: clase.duracion, videoUrl: clase.videoUrl || '', zoomLink: clase.zoomLink || '' })
+    setFormClase({ fase: clase.fase || '', nombre: clase.nombre, descripcion: clase.descripcion, precio_vivo: clase.precio_vivo, precio_grabada: clase.precio_grabada, duracion: clase.duracion, videoUrl: clase.videoUrl || '', zoomLink: clase.zoomLink || '' })
   }
 
   const handleEditarFase = (fase) => {
@@ -376,82 +381,65 @@ const handleEliminarSobreMi = async () => {
               Cerrar sesión
             </button>
           </div>
+        </section>
 
-           {/* Tabs */}
+        {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            
-            {['sobre-mi', 'fotos', 'videos', 'niveles','cursos', 'fases', 'clases', 'videos-cursos', 'avisos'].map((tab) => (
-             <button key={tab} onClick={() => setSeccion(tab)}
-               className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
-              {tab === 'sobre-mi' ? 'Sobre mí' :
-              tab === 'cursos' ? 'Comprar Cursos' :
-              tab === 'clases' ? 'Comprar Clases' :
-              tab === 'fases' ? 'Clases' :
-              tab === 'niveles' ? 'Cursos' :
-              tab === 'videos-cursos' ? 'Videos Cursos' :
-              tab}
-             </button>
-           ))}
+            {['sobre-mi', 'fotos', 'videos', 'niveles', 'cursos', 'fases', 'clases', 'videos-cursos', 'avisos'].map((tab) => (
+              <button key={tab} onClick={() => setSeccion(tab)}
+                className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
+                {tab === 'sobre-mi' ? 'Sobre mí' :
+                 tab === 'cursos' ? 'Comprar Cursos' :
+                 tab === 'clases' ? 'Comprar Clases' :
+                 tab === 'fases' ? 'Clases del Método' :
+                 tab === 'niveles' ? 'Cursos Info' :
+                 tab === 'videos-cursos' ? 'Videos Cursos' :
+                 tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
           </div>
         </section>
 
-        <section className="px-6 py-8 md:px-16"></section>
-
-       {/* SOBRE MI */}
-{seccion === 'sobre-mi' && (
-  <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15">
-    <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Sobre mí</h2>
-    <form onSubmit={handleSubmitSobreMi} className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-          <input value={sobreMi.nombre} onChange={(e) => setSobreMi({ ...sobreMi, nombre: e.target.value })} placeholder="Flor Verazay" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título / Profesión</label>
-          <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-        </div>
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 1</label>
-        <textarea value={sobreMi.descripcion1} onChange={(e) => setSobreMi({ ...sobreMi, descripcion1: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 2</label>
-        <textarea value={sobreMi.descripcion2} onChange={(e) => setSobreMi({ ...sobreMi, descripcion2: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Foto</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setSobreMi({ ...sobreMi, foto: e.target.files[0] })}
-          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none"
-        />
-        {sobreMi.fotoUrl && (
-          <img src={sobreMi.fotoUrl} alt="Foto actual" className="w-24 h-24 object-cover rounded-xl mt-2" />
-        )}
-      </div>
-      <div className="flex gap-3">
-  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-    Guardar cambios
-  </button>
-  <button type="button" onClick={handleEliminarSobreMi} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-red-400 transition-colors">
-    Eliminar todo
-  </button>
-</div>
-    </form>
-  </div>
-)}
-
-        </section>
-
-     
-
         <section className="px-6 py-8 md:px-16">
 
-          {/* CURSOS */}
+          {/* SOBRE MI */}
+          {seccion === 'sobre-mi' && (
+            <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15">
+              <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Sobre mí</h2>
+              <form onSubmit={handleSubmitSobreMi} className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+                    <input value={sobreMi.nombre} onChange={(e) => setSobreMi({ ...sobreMi, nombre: e.target.value })} placeholder="Flor Verazay" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título / Profesión</label>
+                    <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 1</label>
+                  <textarea value={sobreMi.descripcion1} onChange={(e) => setSobreMi({ ...sobreMi, descripcion1: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 2</label>
+                  <textarea value={sobreMi.descripcion2} onChange={(e) => setSobreMi({ ...sobreMi, descripcion2: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Foto</label>
+                  <input type="file" accept="image/*" onChange={(e) => setSobreMi({ ...sobreMi, foto: e.target.files[0] })} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none" />
+                  {sobreMi.fotoUrl && <img src={sobreMi.fotoUrl} alt="Foto actual" className="w-24 h-24 object-cover rounded-xl mt-2" />}
+                </div>
+                <div className="flex gap-3">
+                  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">Guardar cambios</button>
+                  <button type="button" onClick={handleEliminarSobreMi} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-red-400 transition-colors">Eliminar todo</button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* COMPRAR CURSOS */}
           {seccion === 'cursos' && (
             <>
               <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
@@ -486,9 +474,7 @@ const handleEliminarSobreMi = async () => {
                       {editando ? 'Guardar cambios' : 'Agregar curso'}
                     </button>
                     {editando && (
-                      <button type="button" onClick={() => { setEditando(null); setForm({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">
-                        Cancelar
-                      </button>
+                      <button type="button" onClick={() => { setEditando(null); setForm({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
                     )}
                   </div>
                 </form>
@@ -521,48 +507,60 @@ const handleEliminarSobreMi = async () => {
             </>
           )}
 
-          {/* CLASES */}
+          {/* COMPRAR CLASES */}
           {seccion === 'clases' && (
             <>
-              {editandoClase && (
-                <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
-                  <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Clase</h2>
-                  <form onSubmit={handleSubmitClase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-                      <input name="nombre" value={formClase.nombre} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
-                      <input name="duracion" value={formClase.duracion} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1 md:col-span-2">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                      <textarea name="descripcion" value={formClase.descripcion} onChange={handleChangeClase} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio en vivo</label>
-                      <input name="precio_vivo" value={formClase.precio_vivo} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio grabada</label>
-                      <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1 md:col-span-2">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
-                      <input name="zoomLink" value={formClase.zoomLink || ''} onChange={handleChangeClase} placeholder="https://zoom.us/j/..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-1 md:col-span-2">
-                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL)</label>
-                      <input name="videoUrl" value={formClase.videoUrl || ''} onChange={handleChangeClase} placeholder="https://res.cloudinary.com/..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                    </div>
-                    <div className="flex flex-col gap-3 md:flex-row md:col-span-2">
-                      <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">Guardar cambios</button>
-                      <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
-                    </div>
-                  </form>
-                </div>
-              )}
+              <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">
+                  {editandoClase ? 'Editar Clase' : 'Agregar Nueva Clase'}
+                </h2>
+                <form onSubmit={editandoClase ? handleSubmitClase : handleCrearClase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Fase</label>
+                    <input name="fase" value={formClase.fase || ''} onChange={handleChangeClase} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+                    <input name="nombre" value={formClase.nombre} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
+                    <input name="duracion" value={formClase.duracion} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+                    <textarea name="descripcion" value={formClase.descripcion} onChange={handleChangeClase} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio en vivo</label>
+                    <input name="precio_vivo" value={formClase.precio_vivo} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio grabada</label>
+                    <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  {editandoClase && (
+                    <>
+                      <div className="flex flex-col gap-1 md:col-span-2">
+                        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
+                        <input name="zoomLink" value={formClase.zoomLink || ''} onChange={handleChangeClase} placeholder="https://zoom.us/j/..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                      </div>
+                      <div className="flex flex-col gap-1 md:col-span-2">
+                        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL)</label>
+                        <input name="videoUrl" value={formClase.videoUrl || ''} onChange={handleChangeClase} placeholder="https://res.cloudinary.com/..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                      </div>
+                    </>
+                  )}
+                  <div className="flex flex-col gap-3 md:flex-row md:col-span-2">
+                    <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                      {editandoClase ? 'Guardar cambios' : 'Agregar clase'}
+                    </button>
+                    {editandoClase && (
+                      <button type="button" onClick={() => { setEditandoClase(null); setFormClase({ fase: '', nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
+                    )}
+                  </div>
+                </form>
+              </div>
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
                   <h2 className="text-lg font-semibold text-[#7B9B77]">Clases ({clases.length})</h2>
@@ -771,11 +769,11 @@ const handleEliminarSobreMi = async () => {
             </>
           )}
 
-          {/* FASES */}
+          {/* CLASES DEL MÉTODO — FASES */}
           {seccion === 'fases' && (
             <>
               <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
-                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">{editandoFase ? 'Editar Fase' : 'Agregar Nueva Fase'}</h2>
+                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">{editandoFase ? 'Editar Clase del Método' : 'Agregar Nueva Clase del Método'}</h2>
                 <form onSubmit={handleSubmitFase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Número</label>
@@ -787,11 +785,11 @@ const handleEliminarSobreMi = async () => {
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-                    <textarea value={formFase.descripcion} onChange={(e) => setFormFase({ ...formFase, descripcion: e.target.value })} placeholder="Descripción de la fase..." rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                    <textarea value={formFase.descripcion} onChange={(e) => setFormFase({ ...formFase, descripcion: e.target.value })} placeholder="Descripción de la clase..." rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
                   </div>
                   <div className="flex gap-3 md:col-span-2">
                     <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-                      {editandoFase ? 'Guardar cambios' : 'Agregar fase'}
+                      {editandoFase ? 'Guardar cambios' : 'Agregar clase'}
                     </button>
                     {editandoFase && (
                       <button type="button" onClick={() => { setEditandoFase(null); setFormFase({ numero: '', nombre: '', descripcion: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
@@ -801,13 +799,13 @@ const handleEliminarSobreMi = async () => {
               </div>
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
-                  <h2 className="text-lg font-semibold text-[#7B9B77]">Fases del método ({fases.length})</h2>
+                  <h2 className="text-lg font-semibold text-[#7B9B77]">Clases del método ({fases.length})</h2>
                 </div>
-                {fases.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay fases cargadas todavía</p>}
+                {fases.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay clases cargadas todavía</p>}
                 {fases.map((fase) => (
                   <div key={fase.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
                     <div>
-                      <p className="text-[#A9A9A2] text-xs">FASE {fase.numero}</p>
+                      <p className="text-[#A9A9A2] text-xs">CLASE {fase.numero}</p>
                       <p className="text-[#555] font-medium">{fase.nombre}</p>
                       <p className="text-[#888] text-sm">{fase.descripcion}</p>
                     </div>
@@ -821,7 +819,7 @@ const handleEliminarSobreMi = async () => {
             </>
           )}
 
-          {/* NIVELES */}
+          {/* CURSOS INFO — NIVELES */}
           {seccion === 'niveles' && (
             <>
               <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
@@ -850,7 +848,7 @@ const handleEliminarSobreMi = async () => {
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Qué incluye (separado por comas)</label>
                     <textarea value={formNivel.incluye} onChange={(e) => setFormNivel({ ...formNivel, incluye: e.target.value })} placeholder="Acceso a las 6 fases,Videos explicativos,Acceso de por vida" rows={2} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-                    <p className="text-[#A9A9A2] text-xs">Separar cada ítem con una coma. Ej: Videos explicativos,Guía semanal,Acceso de por vida</p>
+                    <p className="text-[#A9A9A2] text-xs">Separar cada ítem con una coma.</p>
                   </div>
                   <div className="flex gap-3 md:col-span-2">
                     <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">

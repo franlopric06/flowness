@@ -41,7 +41,7 @@ function Clases() {
             <p className="text-5xl font-light text-[#7B9B77]/20 mb-4">{fase.numero}</p>
             <p className="text-[#7B9B77] font-semibold mb-2">{fase.nombre}</p>
             <p className="text-[#A9A9A2] text-sm leading-relaxed">{fase.descripcion}</p>
-            <p className="text-[#D8A48F] text-xs tracking-widest uppercase mt-4 hover:opacity-70">
+            <p className=" bg-white text-[#7B9B77] text-xs tracking-widest uppercase px-8 py-4 rounded-full hover:bg-[#F5F0EB] transition-colors">
               Ver clase →
             </p>
           </Link>

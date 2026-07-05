@@ -133,6 +133,25 @@ const activarCurso = async (req, res) => {
   }
 }
 
+const crearClase = async (req, res) => {
+  try {
+    const { fase, nombre, descripcion, duracion, precio_vivo, precio_grabada } = req.body
+    const clase = await prisma.clase.create({
+      data: {
+        fase,
+        nombre,
+        descripcion,
+        duracion,
+        precio_vivo: parseFloat(precio_vivo),
+        precio_grabada: parseFloat(precio_grabada)
+      }
+    })
+    res.status(201).json(clase)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear clase' })
+  }
+}
+
 const activarClase = async (req, res) => {
   try {
     const { id } = req.params
@@ -326,6 +345,7 @@ module.exports = {
   eliminarCurso, 
   activarCurso, 
   getClases, 
+  crearClase,
   actualizarClase, 
   activarClase, 
   desactivarClase, 
