@@ -82,6 +82,13 @@ function ElMetodo() {
                         👤 {nivel.para}
                       </p>
 
+                      <Link
+                        to={`/cursos?nivel=${nivel.numero}`}
+                        className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit"
+                      >
+                        Ver nivel →
+                      </Link>
+
                       {/* Incluye */}
                       <div className="flex flex-col gap-2 md:flex-row md:gap-4 md:flex-wrap">
                         {nivel.incluye.split(',').map((item, i) => (
