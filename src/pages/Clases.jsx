@@ -35,7 +35,7 @@ function Clases() {
         {fases.map((fase) => (
           <Link
             key={fase.id}
-            to={`/clases?fase=${fase.numero}`}
+           to={`/comprar-clases?fase=${fase.numero}`}
             className="bg-[#F5F0EB] rounded-2xl p-8 border border-[#D8A48F]/15 hover:shadow-lg hover:border-[#7B9B77]/30 transition-all cursor-pointer"
           >
             <p className="text-5xl font-light text-[#7B9B77]/20 mb-4">{fase.numero}</p>
