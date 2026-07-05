@@ -93,7 +93,7 @@ function MiCuenta() {
   return (
     <>
       <SEO titulo="Mi Cuenta" descripcion="Mis cursos y clases comprados en Flowness" url="/mi-cuenta" />
-      <main className="pt-19 bg-[#F5F0EB] min-h-screen md:pt-28">
+      <main className="pt-18 bg-[#F5F0EB] min-h-screen md:pt-30">
 
         {/* Header */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 py-6 md:px-16">
