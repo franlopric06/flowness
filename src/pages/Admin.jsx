@@ -14,6 +14,7 @@ function Admin() {
   const [cursoSeleccionado, setCursoSeleccionado] = useState('')
   const [fases, setFases] = useState([])
   const [niveles, setNiveles] = useState([])
+  const [sobreMi, setSobreMi] = useState({ nombre: '', titulo: '', descripcion1: '', descripcion2: '' })
   const [cargando, setCargando] = useState(true)
   const [seccion, setSeccion] = useState('cursos')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
@@ -46,6 +47,7 @@ function Admin() {
     cargarVideos()
     cargarFases()
     cargarNiveles()
+    cargarSobreMi()
   }, [])
 
   const cargarCursos = async () => {
@@ -111,6 +113,26 @@ function Admin() {
       const res = await fetch(`${API_URL}/admin/niveles`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setNiveles(Array.isArray(data) ? data : [])
+    } catch (error) { console.error(error) }
+  }
+
+  const cargarSobreMi = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/sobre-mi`, { headers: { Authorization: `Bearer ${token}` } })
+      const data = await res.json()
+      if (data) setSobreMi({ nombre: data.nombre || '', titulo: data.titulo || '', descripcion1: data.descripcion1 || '', descripcion2: data.descripcion2 || '' })
+    } catch (error) { console.error(error) }
+  }
+
+  const handleSubmitSobreMi = async (e) => {
+    e.preventDefault()
+    try {
+      await fetch(`${API_URL}/admin/sobre-mi`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(sobreMi)
+      })
+      alert('Sobre mí actualizado correctamente')
     } catch (error) { console.error(error) }
   }
 
@@ -334,15 +356,45 @@ function Admin() {
               Cerrar sesión
             </button>
           </div>
+          {/* SOBRE MI */}
+          {seccion === 'sobre-mi' && (
+            <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15">
+              <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Sobre mí</h2>
+              <form onSubmit={handleSubmitSobreMi} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+                  <input value={sobreMi.nombre} onChange={(e) => setSobreMi({ ...sobreMi, nombre: e.target.value })} placeholder="Flor Verazay" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título / Profesión</label>
+                  <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Kinesióloga — Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                </div>
+                <div className="flex flex-col gap-1 md:col-span-2">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 1</label>
+                  <textarea value={sobreMi.descripcion1} onChange={(e) => setSobreMi({ ...sobreMi, descripcion1: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                </div>
+                <div className="flex flex-col gap-1 md:col-span-2">
+                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 2</label>
+                  <textarea value={sobreMi.descripcion2} onChange={(e) => setSobreMi({ ...sobreMi, descripcion2: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                </div>
+                <div className="md:col-span-2">
+                  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                    Guardar cambios
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
         </section>
 
         {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases', 'niveles'].map((tab) => (
+            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases', 'niveles', 'sobre-mi'].map((tab) => (
               <button key={tab} onClick={() => setSeccion(tab)}
                 className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
-                {tab === 'videos-cursos' ? 'Videos Cursos' : tab}
+                {tab === 'videos-cursos' ? 'Videos Cursos' : tab === 'sobre-mi' ? 'Sobre mí' : tab}
               </button>
             ))}
           </div>

@@ -125,13 +125,12 @@ function Cursos() {
                       Comprar ahora
                     </button>
                     
-                    <button
-                      onClick={() => document.getElementById('fases').scrollIntoView({ behavior: 'smooth' })}
-                      className="text-[#D8A48F] text-xs tracking-widest uppercase text-center py-4 hover:opacity-70 transition-opacity"
+                    <Link
+                      to="/clases"
+                      className="w-full text-center text-[#A9A9A2] text-xs tracking-widest uppercase py-2 hover:text-[#7B9B77] transition-colors"
                     >
                       Ver clases online →
-                    </button>
-                    
+                    </Link>
                   </div>
                 </div>
               </div>

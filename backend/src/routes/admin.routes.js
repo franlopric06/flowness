@@ -6,7 +6,8 @@ const {
   getClases, actualizarClase, activarClase, desactivarClase,
   getAvisos, crearAviso, eliminarAviso,
   getFases, crearFase, actualizarFase, eliminarFase,
-  getNiveles, crearNivel, actualizarNivel, eliminarNivel
+  getNiveles, crearNivel, actualizarNivel, eliminarNivel,
+  getSobreMi, actualizarSobreMi
 } = require('../controllers/admin.controller')
 
 router.use(verificarToken)
@@ -41,5 +42,9 @@ router.get('/niveles', getNiveles)
 router.post('/niveles', crearNivel)
 router.put('/niveles/:id', actualizarNivel)
 router.delete('/niveles/:id', eliminarNivel)
+
+// Sobre mi
+router.get('/sobre-mi', getSobreMi)
+router.post('/sobre-mi', actualizarSobreMi)
 
 module.exports = router

@@ -74,6 +74,16 @@ app.get('/api/niveles', async (req, res) => {
   }
 })
 
+// Ruta publica de sobre mi
+app.get('/api/sobre-mi', async (req, res) => {
+  try {
+    const sobreMi = await prisma.sobreMi.findFirst()
+    res.json(sobreMi)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener sobre mi' })
+  }
+})
+
 // Ruta de prueba
 app.get('/', (req, res) => {
   res.json({ mensaje: 'API de Flowness funcionando ✓' })

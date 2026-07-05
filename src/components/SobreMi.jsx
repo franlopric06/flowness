@@ -1,6 +1,25 @@
+import { useState, useEffect } from 'react'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
 function SobreMi() {
+  const [datos, setDatos] = useState(null)
+  const [cargando, setCargando] = useState(true)
+
+  useEffect(() => {
+    fetch(`${API_URL}/sobre-mi`)
+      .then(res => res.json())
+      .then(data => {
+        setDatos(data)
+        setCargando(false)
+      })
+      .catch(() => setCargando(false))
+  }, [])
+
+  if (cargando || !datos) return null
+
   return (
-    <section className="bg-white px-6 pb-4 md:px-16 md:py-10">
+    <section className="bg-white px-6 pt-8 pb-4 md:px-16 md:py-10">
       <p className="text-[#D8A48F] text-xs tracking-widest uppercase mb-2 text-center">
         Sobre mí
       </p>
@@ -12,25 +31,31 @@ function SobreMi() {
       <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-16">
 
         {/* Foto */}
-        <div className="bg-[#E6D5B8] rounded-2xl h-64 flex items-center justify-center md:w-1/3 md:h-80 border border-[#D8A48F]/20">
-          <p className="text-[#A9A9A2] text-xs text-center px-4">
-            [ Foto de Flor Verazay ]
-          </p>
+        <div className="rounded-2xl overflow-hidden md:w-1/3 md:h-80 border border-[#D8A48F]/20">
+          {datos.fotoUrl ? (
+            <img src={datos.fotoUrl} alt={datos.nombre} className="w-full h-full object-cover" />
+          ) : (
+            <div className="bg-[#E6D5B8] h-64 md:h-80 flex items-center justify-center">
+              <p className="text-[#A9A9A2] text-xs text-center px-4">
+                [ Foto de {datos.nombre} ]
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Texto */}
         <div className="md:w-2/3">
           <h3 className="text-[#7B9B77] font-semibold text-xl mb-1">
-            Flor Verazay
+            {datos.nombre}
           </h3>
           <p className="text-[#D8A48F] text-xs tracking-widest uppercase mb-6">
-            Kinesióloga — Creadora del método Flowness
+            {datos.titulo}
           </p>
           <p className="text-[#888] text-sm leading-relaxed mb-4">
-            Flor es kinesióloga de la ciudad de Tinogasta, Catamarca. A lo largo de su trayectoria profesional desarrolló un método propio de movilidad, flexibilidad y mindfulness estructurado en seis fases progresivas, registrado a nivel nacional en las categorías de fitness, salud, formación y educación.
+            {datos.descripcion1}
           </p>
           <p className="text-[#888] text-sm leading-relaxed">
-            Su método nació de la necesidad de ofrecer una alternativa accesible y efectiva para mejorar la calidad de movimiento y el bienestar integral, combinando técnicas de fisioterapia, movimiento funcional y atención plena.
+            {datos.descripcion2}
           </p>
         </div>
 

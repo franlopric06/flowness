@@ -261,6 +261,36 @@ const eliminarNivel = async (req, res) => {
   }
 }
 
+const getSobreMi = async (req, res) => {
+  try {
+    const sobreMi = await prisma.sobreMi.findFirst()
+    res.json(sobreMi)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener sobre mi' })
+  }
+}
+
+const actualizarSobreMi = async (req, res) => {
+  try {
+    const { nombre, titulo, descripcion1, descripcion2 } = req.body
+    const existente = await prisma.sobreMi.findFirst()
+    let sobreMi
+    if (existente) {
+      sobreMi = await prisma.sobreMi.update({
+        where: { id: existente.id },
+        data: { nombre, titulo, descripcion1, descripcion2 }
+      })
+    } else {
+      sobreMi = await prisma.sobreMi.create({
+        data: { nombre, titulo, descripcion1, descripcion2 }
+      })
+    }
+    res.json(sobreMi)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar sobre mi' })
+  }
+}
+
 module.exports = { 
   getCursos,
    crearCurso, 
@@ -281,5 +311,7 @@ module.exports = {
   getNiveles, 
   crearNivel, 
   actualizarNivel, 
-  eliminarNivel
+  eliminarNivel,
+   getSobreMi, 
+  actualizarSobreMi
  }
