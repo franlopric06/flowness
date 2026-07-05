@@ -88,9 +88,9 @@ function Main() {
                 <p className="text-5xl font-light text-[#7B9B77]/20 mb-4">{fase.numero}</p>
                 <p className="text-[#7B9B77] font-semibold mb-2">{fase.nombre}</p>
                 <p className="text-[#A9A9A2] text-sm leading-relaxed">{fase.descripcion}</p>
-                <p className="text-[#D8A48F] text-xs tracking-widest uppercase mt-4 hover:opacity-70">
-                  Ver clase →
-                </p>
+                 <p className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit">
+                   Ver clase →
+                 </p>
               </Link>
             ))}
           </div>
