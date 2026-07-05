@@ -893,7 +893,7 @@ const handleEliminarDocumento = async (id) => {
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-                    <input value={formFase.nombre} onChange={(e) => setFormFase({ ...formFase, nombre: e.target.value })} placeholder="Consciencia Corporal" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    <input value={formFase.nombre} onChange={(e) => setFormFase({ ...formFase, nombre: e.target.value })} placeholder="Anclaje" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
