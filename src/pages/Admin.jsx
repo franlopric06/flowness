@@ -12,6 +12,8 @@ function Admin() {
   const [videos, setVideos] = useState([])
   const [videosCurso, setVideosCurso] = useState([])
   const [cursoSeleccionado, setCursoSeleccionado] = useState('')
+  const [fases, setFases] = useState([])
+  const [niveles, setNiveles] = useState([])
   const [cargando, setCargando] = useState(true)
   const [seccion, setSeccion] = useState('cursos')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
@@ -22,10 +24,11 @@ function Admin() {
   const [formFoto, setFormFoto] = useState({ descripcion: '', fase: '', nivel: '', archivo: null })
   const [formVideo, setFormVideo] = useState({ titulo: '', descripcion: '', fase: '', nivel: '', duracion: '', archivo: null })
   const [formVideoCurso, setFormVideoCurso] = useState({ titulo: '', descripcion: '', orden: '', archivo: null })
-  const [subiendo, setSubiendo] = useState(false)
-  const [fases, setFases] = useState([])
   const [formFase, setFormFase] = useState({ numero: '', nombre: '', descripcion: '' })
   const [editandoFase, setEditandoFase] = useState(null)
+  const [formNivel, setFormNivel] = useState({ numero: '', nombre: '', etiqueta: '', descripcion: '', para: '', incluye: '' })
+  const [editandoNivel, setEditandoNivel] = useState(null)
+  const [subiendo, setSubiendo] = useState(false)
   const navigate = useNavigate()
 
   const token = localStorage.getItem('token')
@@ -42,6 +45,7 @@ function Admin() {
     cargarFotos()
     cargarVideos()
     cargarFases()
+    cargarNiveles()
   }, [])
 
   const cargarCursos = async () => {
@@ -85,56 +89,28 @@ function Admin() {
     } catch (error) { console.error(error) }
   }
 
-  const cargarFases = async () => {
-  try {
-    const res = await fetch(`${API_URL}/admin/fases`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    const data = await res.json()
-    setFases(Array.isArray(data) ? data : [])
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-const handleSubmitFase = async (e) => {
-  e.preventDefault()
-  try {
-    const url = editandoFase ? `${API_URL}/admin/fases/${editandoFase}` : `${API_URL}/admin/fases`
-    const method = editandoFase ? 'PUT' : 'POST'
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(formFase)
-    })
-    setFormFase({ numero: '', nombre: '', descripcion: '' })
-    setEditandoFase(null)
-    cargarFases()
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-const handleEditarFase = (fase) => {
-  setEditandoFase(fase.id)
-  setFormFase({ numero: fase.numero, nombre: fase.nombre, descripcion: fase.descripcion })
-}
-
-const handleEliminarFase = async (id) => {
-  if (!confirm('¿Seguro que querés eliminar esta fase?')) return
-  await fetch(`${API_URL}/admin/fases/${id}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  cargarFases()
-}
-
   const cargarVideosCurso = async (cursoId) => {
     if (!cursoId) return
     try {
       const res = await fetch(`${API_URL}/videos/admin/curso/${cursoId}`, { headers: { Authorization: `Bearer ${token}` } })
       const data = await res.json()
       setVideosCurso(Array.isArray(data) ? data : [])
+    } catch (error) { console.error(error) }
+  }
+
+  const cargarFases = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/fases`, { headers: { Authorization: `Bearer ${token}` } })
+      const data = await res.json()
+      setFases(Array.isArray(data) ? data : [])
+    } catch (error) { console.error(error) }
+  }
+
+  const cargarNiveles = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/niveles`, { headers: { Authorization: `Bearer ${token}` } })
+      const data = await res.json()
+      setNiveles(Array.isArray(data) ? data : [])
     } catch (error) { console.error(error) }
   }
 
@@ -157,7 +133,7 @@ const handleEliminarFase = async (id) => {
     e.preventDefault()
     try {
       await fetch(`${API_URL}/admin/clases/${editandoClase}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(formClase) })
-      setFormClase({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '' })
+      setFormClase({ nombre: '', descripcion: '', precio_vivo: '', precio_grabada: '', duracion: '', videoUrl: '', zoomLink: '' })
       setEditandoClase(null)
       cargarClases()
     } catch (error) { console.error(error) }
@@ -226,16 +202,50 @@ const handleEliminarFase = async (id) => {
     setSubiendo(false)
   }
 
+  const handleSubmitFase = async (e) => {
+    e.preventDefault()
+    try {
+      const url = editandoFase ? `${API_URL}/admin/fases/${editandoFase}` : `${API_URL}/admin/fases`
+      const method = editandoFase ? 'PUT' : 'POST'
+      await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(formFase) })
+      setFormFase({ numero: '', nombre: '', descripcion: '' })
+      setEditandoFase(null)
+      cargarFases()
+    } catch (error) { console.error(error) }
+  }
+
+  const handleSubmitNivel = async (e) => {
+    e.preventDefault()
+    try {
+      const url = editandoNivel ? `${API_URL}/admin/niveles/${editandoNivel}` : `${API_URL}/admin/niveles`
+      const method = editandoNivel ? 'PUT' : 'POST'
+      await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(formNivel) })
+      setFormNivel({ numero: '', nombre: '', etiqueta: '', descripcion: '', para: '', incluye: '' })
+      setEditandoNivel(null)
+      cargarNiveles()
+    } catch (error) { console.error(error) }
+  }
+
   const handleEditar = (curso) => {
     setEditando(curso.id)
     setForm({ nivel: curso.nivel, nombre: curso.nombre, descripcion: curso.descripcion, precio: curso.precio, duracion: curso.duracion, videos: curso.videos })
   }
 
   const handleEditarClase = (clase) => {
-  setEditandoClase(clase.id)
-  setFormClase({ nombre: clase.nombre,descripcion: clase.descripcion, precio_vivo: clase.precio_vivo, precio_grabada: clase.precio_grabada, duracion: clase.duracion,videoUrl: clase.videoUrl || '',zoomLink: clase.zoomLink || ''})
-}
-  
+    setEditandoClase(clase.id)
+    setFormClase({ nombre: clase.nombre, descripcion: clase.descripcion, precio_vivo: clase.precio_vivo, precio_grabada: clase.precio_grabada, duracion: clase.duracion, videoUrl: clase.videoUrl || '', zoomLink: clase.zoomLink || '' })
+  }
+
+  const handleEditarFase = (fase) => {
+    setEditandoFase(fase.id)
+    setFormFase({ numero: fase.numero, nombre: fase.nombre, descripcion: fase.descripcion })
+  }
+
+  const handleEditarNivel = (nivel) => {
+    setEditandoNivel(nivel.id)
+    setFormNivel({ numero: nivel.numero, nombre: nivel.nombre, etiqueta: nivel.etiqueta, descripcion: nivel.descripcion, para: nivel.para, incluye: nivel.incluye })
+  }
+
   const handleEliminar = async (id) => {
     if (!confirm('¿Seguro que querés desactivar este curso?')) return
     await fetch(`${API_URL}/admin/cursos/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
@@ -282,11 +292,23 @@ const handleEliminarFase = async (id) => {
     cargarVideosCurso(cursoSeleccionado)
   }
 
+  const handleEliminarFase = async (id) => {
+    if (!confirm('¿Seguro que querés eliminar esta fase?')) return
+    await fetch(`${API_URL}/admin/fases/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+    cargarFases()
+  }
+
+  const handleEliminarNivel = async (id) => {
+    if (!confirm('¿Seguro que querés eliminar este nivel?')) return
+    await fetch(`${API_URL}/admin/niveles/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+    cargarNiveles()
+  }
+
   const cerrarSesion = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('usuario')
-  window.location.href = '/'
-}
+    localStorage.removeItem('token')
+    localStorage.removeItem('usuario')
+    window.location.href = '/'
+  }
 
   if (cargando) {
     return (
@@ -317,7 +339,7 @@ const handleEliminarFase = async (id) => {
         {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases'].map((tab) => (
+            {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases', 'niveles'].map((tab) => (
               <button key={tab} onClick={() => setSeccion(tab)}
                 className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
                 {tab === 'videos-cursos' ? 'Videos Cursos' : tab}
@@ -402,60 +424,44 @@ const handleEliminarFase = async (id) => {
           {seccion === 'clases' && (
             <>
               {editandoClase && (
-  <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
-    <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Clase</h2>
-    <form onSubmit={handleSubmitClase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <div className="flex flex-col gap-1">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-        <input name="nombre" value={formClase.nombre} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
-        <input name="duracion" value={formClase.duracion} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-      </div>
-      <div className="flex flex-col gap-1 md:col-span-2">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-        <textarea name="descripcion" value={formClase.descripcion} onChange={handleChangeClase} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio en vivo</label>
-        <input name="precio_vivo" value={formClase.precio_vivo} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio grabada</label>
-        <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-      </div>
-      <div className="flex flex-col gap-1 md:col-span-2">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
-        <input
-          name="zoomLink"
-          value={formClase.zoomLink || ''}
-          onChange={handleChangeClase}
-          placeholder="https://zoom.us/j/..."
-          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-        />
-      </div>
-      <div className="flex flex-col gap-1 md:col-span-2">
-        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL de Cloudinary)</label>
-        <input
-          name="videoUrl"
-          value={formClase.videoUrl || ''}
-          onChange={handleChangeClase}
-          placeholder="https://res.cloudinary.com/..."
-          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-        />
-      </div>
-      <div className="flex flex-col gap-3 md:flex-row md:col-span-2">
-        <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-          Guardar cambios
-        </button>
-        <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">
-          Cancelar
-        </button>
-      </div>
-    </form>
-  </div>
-)}
+                <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+                  <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Clase</h2>
+                  <form onSubmit={handleSubmitClase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+                      <input name="nombre" value={formClase.nombre} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Duración</label>
+                      <input name="duracion" value={formClase.duracion} onChange={handleChangeClase} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+                      <textarea name="descripcion" value={formClase.descripcion} onChange={handleChangeClase} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio en vivo</label>
+                      <input name="precio_vivo" value={formClase.precio_vivo} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Precio grabada</label>
+                      <input name="precio_grabada" value={formClase.precio_grabada} onChange={handleChangeClase} type="number" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Link de Zoom (clase en vivo)</label>
+                      <input name="zoomLink" value={formClase.zoomLink || ''} onChange={handleChangeClase} placeholder="https://zoom.us/j/..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Video grabada (URL)</label>
+                      <input name="videoUrl" value={formClase.videoUrl || ''} onChange={handleChangeClase} placeholder="https://res.cloudinary.com/..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                    </div>
+                    <div className="flex flex-col gap-3 md:flex-row md:col-span-2">
+                      <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">Guardar cambios</button>
+                      <button type="button" onClick={() => setEditandoClase(null)} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
+                    </div>
+                  </form>
+                </div>
+              )}
               <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#D8A48F]/15">
                   <h2 className="text-lg font-semibold text-[#7B9B77]">Clases ({clases.length})</h2>
@@ -538,10 +544,6 @@ const handleEliminarFase = async (id) => {
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Fase (opcional)</label>
                     <input value={formFoto.fase} onChange={(e) => setFormFoto({ ...formFoto, fase: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nivel (opcional)</label>
-                    <input value={formFoto.nivel} onChange={(e) => setFormFoto({ ...formFoto, nivel: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                  </div>
                   <div className="md:col-span-2">
                     <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
                       {subiendo ? 'Subiendo...' : 'Subir foto'}
@@ -586,14 +588,6 @@ const handleEliminarFase = async (id) => {
                     <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
                     <textarea value={formVideo.descripcion} onChange={(e) => setFormVideo({ ...formVideo, descripcion: e.target.value })} rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Fase (opcional)</label>
-                    <input value={formVideo.fase} onChange={(e) => setFormVideo({ ...formVideo, fase: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nivel (opcional)</label>
-                    <input value={formVideo.nivel} onChange={(e) => setFormVideo({ ...formVideo, nivel: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                  </div>
                   <div className="md:col-span-2">
                     <button type="submit" disabled={subiendo} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50">
                       {subiendo ? 'Subiendo...' : 'Subir video'}
@@ -624,11 +618,7 @@ const handleEliminarFase = async (id) => {
                 <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Subir Video de Curso</h2>
                 <div className="flex flex-col gap-1 mb-4">
                   <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Seleccioná el curso</label>
-                  <select
-                    value={cursoSeleccionado}
-                    onChange={(e) => { setCursoSeleccionado(e.target.value); cargarVideosCurso(e.target.value) }}
-                    className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-                  >
+                  <select value={cursoSeleccionado} onChange={(e) => { setCursoSeleccionado(e.target.value); cargarVideosCurso(e.target.value) }} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]">
                     <option value="">Elegí un curso</option>
                     {cursos.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                   </select>
@@ -681,77 +671,117 @@ const handleEliminarFase = async (id) => {
           )}
 
           {/* FASES */}
-{seccion === 'fases' && (
-  <>
-    <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
-      <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">
-        {editandoFase ? 'Editar Fase' : 'Agregar Nueva Fase'}
-      </h2>
-      <form onSubmit={handleSubmitFase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Número</label>
-          <input
-            value={formFase.numero}
-            onChange={(e) => setFormFase({ ...formFase, numero: e.target.value })}
-            placeholder="01, 02, 03..."
-            className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-          <input
-            value={formFase.nombre}
-            onChange={(e) => setFormFase({ ...formFase, nombre: e.target.value })}
-            placeholder="Consciencia Corporal"
-            className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]"
-          />
-        </div>
-        <div className="flex flex-col gap-1 md:col-span-2">
-          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
-          <textarea
-            value={formFase.descripcion}
-            onChange={(e) => setFormFase({ ...formFase, descripcion: e.target.value })}
-            placeholder="Descripción de la fase..."
-            rows={3}
-            className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none"
-          />
-        </div>
-        <div className="flex gap-3 md:col-span-2">
-          <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-            {editandoFase ? 'Guardar cambios' : 'Agregar fase'}
-          </button>
-          {editandoFase && (
-            <button type="button" onClick={() => { setEditandoFase(null); setFormFase({ numero: '', nombre: '', descripcion: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">
-              Cancelar
-            </button>
+          {seccion === 'fases' && (
+            <>
+              <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">{editandoFase ? 'Editar Fase' : 'Agregar Nueva Fase'}</h2>
+                <form onSubmit={handleSubmitFase} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Número</label>
+                    <input value={formFase.numero} onChange={(e) => setFormFase({ ...formFase, numero: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+                    <input value={formFase.nombre} onChange={(e) => setFormFase({ ...formFase, nombre: e.target.value })} placeholder="Consciencia Corporal" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+                    <textarea value={formFase.descripcion} onChange={(e) => setFormFase({ ...formFase, descripcion: e.target.value })} placeholder="Descripción de la fase..." rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                  </div>
+                  <div className="flex gap-3 md:col-span-2">
+                    <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                      {editandoFase ? 'Guardar cambios' : 'Agregar fase'}
+                    </button>
+                    {editandoFase && (
+                      <button type="button" onClick={() => { setEditandoFase(null); setFormFase({ numero: '', nombre: '', descripcion: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
+                    )}
+                  </div>
+                </form>
+              </div>
+              <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+                  <h2 className="text-lg font-semibold text-[#7B9B77]">Fases del método ({fases.length})</h2>
+                </div>
+                {fases.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay fases cargadas todavía</p>}
+                {fases.map((fase) => (
+                  <div key={fase.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-[#A9A9A2] text-xs">FASE {fase.numero}</p>
+                      <p className="text-[#555] font-medium">{fase.nombre}</p>
+                      <p className="text-[#888] text-sm">{fase.descripcion}</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <button onClick={() => handleEditarFase(fase)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Editar</button>
+                      <button onClick={() => handleEliminarFase(fase.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
-        </div>
-      </form>
-    </div>
 
-    <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
-      <div className="px-6 py-4 border-b border-[#D8A48F]/15">
-        <h2 className="text-lg font-semibold text-[#7B9B77]">Fases del método ({fases.length})</h2>
-      </div>
-      {fases.length === 0 && (
-        <p className="text-[#A9A9A2] text-sm text-center py-8">No hay fases cargadas todavía</p>
-      )}
-      {fases.map((fase) => (
-        <div key={fase.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-[#A9A9A2] text-xs">FASE {fase.numero}</p>
-            <p className="text-[#555] font-medium">{fase.nombre}</p>
-            <p className="text-[#888] text-sm">{fase.descripcion}</p>
-          </div>
-          <div className="flex gap-3">
-            <button onClick={() => handleEditarFase(fase)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Editar</button>
-            <button onClick={() => handleEliminarFase(fase.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </>
-)}
+          {/* NIVELES */}
+          {seccion === 'niveles' && (
+            <>
+              <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15 mb-6">
+                <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">{editandoNivel ? 'Editar Nivel' : 'Agregar Nuevo Nivel'}</h2>
+                <form onSubmit={handleSubmitNivel} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Número</label>
+                    <input value={formNivel.numero} onChange={(e) => setFormNivel({ ...formNivel, numero: e.target.value })} placeholder="01, 02, 03..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+                    <input value={formNivel.nombre} onChange={(e) => setFormNivel({ ...formNivel, nombre: e.target.value })} placeholder="Flowness Esencial" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Etiqueta</label>
+                    <input value={formNivel.etiqueta} onChange={(e) => setFormNivel({ ...formNivel, etiqueta: e.target.value })} placeholder="Básico, Intermedio, Avanzado" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Para quién es</label>
+                    <input value={formNivel.para} onChange={(e) => setFormNivel({ ...formNivel, para: e.target.value })} placeholder="Personas sin experiencia previa..." className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción</label>
+                    <textarea value={formNivel.descripcion} onChange={(e) => setFormNivel({ ...formNivel, descripcion: e.target.value })} placeholder="Descripción del nivel..." rows={3} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Qué incluye (separado por comas)</label>
+                    <textarea value={formNivel.incluye} onChange={(e) => setFormNivel({ ...formNivel, incluye: e.target.value })} placeholder="Acceso a las 6 fases,Videos explicativos,Acceso de por vida" rows={2} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+                    <p className="text-[#A9A9A2] text-xs">Separar cada ítem con una coma. Ej: Videos explicativos,Guía semanal,Acceso de por vida</p>
+                  </div>
+                  <div className="flex gap-3 md:col-span-2">
+                    <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                      {editandoNivel ? 'Guardar cambios' : 'Agregar nivel'}
+                    </button>
+                    {editandoNivel && (
+                      <button type="button" onClick={() => { setEditandoNivel(null); setFormNivel({ numero: '', nombre: '', etiqueta: '', descripcion: '', para: '', incluye: '' }) }} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-[#D8A48F] transition-colors">Cancelar</button>
+                    )}
+                  </div>
+                </form>
+              </div>
+              <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+                  <h2 className="text-lg font-semibold text-[#7B9B77]">Niveles de formación ({niveles.length})</h2>
+                </div>
+                {niveles.length === 0 && <p className="text-[#A9A9A2] text-sm text-center py-8">No hay niveles cargados todavía</p>}
+                {niveles.map((nivel) => (
+                  <div key={nivel.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-[#A9A9A2] text-xs">NIVEL {nivel.numero} — {nivel.etiqueta}</p>
+                      <p className="text-[#555] font-medium">{nivel.nombre}</p>
+                      <p className="text-[#888] text-sm">{nivel.descripcion}</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <button onClick={() => handleEditarNivel(nivel)} className="text-xs text-[#A9A9A2] hover:text-[#7B9B77] transition-colors">Editar</button>
+                      <button onClick={() => handleEliminarNivel(nivel.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
         </section>
       </main>
