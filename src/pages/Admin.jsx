@@ -814,7 +814,7 @@ const handleEliminarDocumento = async (id) => {
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título</label>
-              <input value={formDocumento.titulo} onChange={(e) => setFormDocumento({ ...formDocumento, titulo: e.target.value })} placeholder="Guía de práctica semanal" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+              <input value={formDocumento.titulo} onChange={(e) => setFormDocumento({ ...formDocumento, titulo: e.target.value })} placeholder="Guía de práctica" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción (opcional)</label>

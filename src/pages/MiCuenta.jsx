@@ -10,6 +10,7 @@ function MiCuenta() {
   const [cargando, setCargando] = useState(true)
   const [seccion, setSeccion] = useState('cursos')
   const [videosActivos, setVideosActivos] = useState({})
+  const [documentosActivos, setDocumentosActivos] = useState({})
   const navigate = useNavigate()
 
   const token = localStorage.getItem('token')
@@ -65,6 +66,22 @@ function MiCuenta() {
     }
   }
 
+  const verDocumentos = async (cursoId) => {
+    if (documentosActivos[cursoId]) {
+      setDocumentosActivos({ ...documentosActivos, [cursoId]: null })
+      return
+    }
+    try {
+      const res = await fetch(`${API_URL}/videos/documentos/curso/${cursoId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setDocumentosActivos({ ...documentosActivos, [cursoId]: data })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   if (cargando) {
     return (
       <main className="pt-20 bg-[#F5F0EB] min-h-screen flex items-center justify-center">
@@ -76,7 +93,7 @@ function MiCuenta() {
   return (
     <>
       <SEO titulo="Mi Cuenta" descripcion="Mis cursos y clases comprados en Flowness" url="/mi-cuenta" />
-      <main className="pt-18 bg-[#F5F0EB] min-h-screen md:pt-34">
+      <main className="pt-20 bg-[#F5F0EB] min-h-screen md:pt-24">
 
         {/* Header */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 py-6 md:px-16">
@@ -118,8 +135,8 @@ function MiCuenta() {
                   <p className="text-5xl mb-4">📚</p>
                   <p className="text-[#555] font-medium mb-2">No tenés cursos comprados</p>
                   <p className="text-[#A9A9A2] text-sm mb-6">Explorá nuestros niveles de formación</p>
-                  <a href="/formacion" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-                    Ver formación
+                  <a href="/cursos" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+                    Ver cursos
                   </a>
                 </div>
               ) : (
@@ -137,7 +154,7 @@ function MiCuenta() {
                             Comprado el {new Date(compra.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="flex gap-3 items-center">
+                        <div className="flex gap-3 items-center flex-wrap">
                           <span className="bg-[#7B9B77]/10 text-[#7B9B77] text-xs px-4 py-2 rounded-full">
                             ✓ Acceso habilitado
                           </span>
@@ -146,6 +163,12 @@ function MiCuenta() {
                             className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:bg-[#5a7a56] transition-colors"
                           >
                             {videosActivos[compra.curso.id] ? 'Ocultar videos' : 'Ver videos'}
+                          </button>
+                          <button
+                            onClick={() => verDocumentos(compra.curso.id)}
+                            className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:opacity-80 transition-colors"
+                          >
+                            {documentosActivos[compra.curso.id] ? 'Ocultar PDFs' : 'Ver PDFs'}
                           </button>
                         </div>
                       </div>
@@ -158,28 +181,60 @@ function MiCuenta() {
                               Próximamente se agregarán los videos de este curso.
                             </p>
                           ) : (
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                             {videosActivos[compra.curso.id].map((video) => (
-                               <div key={video.id} className="bg-[#F5F0EB] rounded-2xl overflow-hidden">
-                                 <video 
-                                   src={video.url} 
-                                   controls 
-                                   className="w-full md:w-96 md:mx-auto max-h-48 object-contain bg-black"
-                                   preload="metadata"
-                                 />
-                                 <div className="px-4 py-3">
-                                   <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
-                                   <p className="text-[#555] font-medium text-sm">{video.titulo}</p>
-                                   {video.descripcion && (
-                                     <p className="text-[#888] text-xs mt-1">{video.descripcion}</p>
-                                   )}
-                                 </div>
-                               </div>
-                             ))}
-                           </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                              {videosActivos[compra.curso.id].map((video) => (
+                                <div key={video.id} className="bg-[#F5F0EB] rounded-2xl overflow-hidden">
+                                  <video
+                                    src={video.url}
+                                    controls
+                                    className="w-full max-h-48 object-contain bg-black"
+                                    preload="metadata"
+                                  />
+                                  <div className="px-4 py-3">
+                                    <p className="text-[#A9A9A2] text-xs">CLASE {video.orden}</p>
+                                    <p className="text-[#555] font-medium text-sm">{video.titulo}</p>
+                                    {video.descripcion && (
+                                      <p className="text-[#888] text-xs mt-1">{video.descripcion}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           )}
                         </div>
                       )}
+
+                      {/* Documentos del curso */}
+                      {documentosActivos[compra.curso.id] && (
+                        <div className="border-t border-[#D8A48F]/15 px-6 py-4">
+                          {documentosActivos[compra.curso.id].length === 0 ? (
+                            <p className="text-[#A9A9A2] text-sm text-center py-4">
+                              No hay documentos disponibles todavía.
+                            </p>
+                          ) : (
+                            <div className="flex flex-col gap-3">
+                              <p className="text-[#A9A9A2] text-xs tracking-widest uppercase mb-2">Documentos del curso</p>
+                              {documentosActivos[compra.curso.id].map((doc) => (
+                                <div key={doc.id} className="flex items-center justify-between bg-[#F5F0EB] rounded-xl px-4 py-3">
+                                  <div>
+                                    <p className="text-[#555] font-medium text-sm">📄 {doc.titulo}</p>
+                                    {doc.descripcion && <p className="text-[#888] text-xs mt-1">{doc.descripcion}</p>}
+                                  </div>
+                                  <a
+                                    href={doc.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:bg-[#5a7a56] transition-colors"
+                                  >
+                                    Descargar
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                     </div>
                   ))}
                 </div>
@@ -187,7 +242,7 @@ function MiCuenta() {
             </>
           )}
 
-       {/* MIS CLASES */}
+          {/* MIS CLASES */}
           {seccion === 'clases' && (
             <>
               {clases.length === 0 ? (
@@ -222,8 +277,8 @@ function MiCuenta() {
 
                         {/* Link de Zoom para clase en vivo */}
                         {reserva.tipo === 'vivo' && reserva.clase.zoomLink && (
-                          
-                           <a href={reserva.clase.zoomLink}
+                          <a
+                            href={reserva.clase.zoomLink}
                             target="_blank"
                             rel="noreferrer"
                             className="bg-blue-500 text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-blue-600 transition-colors w-fit"
