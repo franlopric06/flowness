@@ -229,13 +229,7 @@ function MiCuenta() {
                                     >
                                       Ver PDF
                                     </a>
-                                    <a
-                                      href={doc.url}
-                                      download
-                                      className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:opacity-80 transition-colors"
-                                    >
-                                      Descargar
-                                    </a>
+                                  
                                   </div>
                                 </div>
                               ))}

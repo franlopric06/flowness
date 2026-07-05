@@ -865,7 +865,13 @@ const handleEliminarDocumento = async (id) => {
               <p className="text-[#888] text-sm">{doc.descripcion}</p>
             </div>
             <div className="flex gap-3">
-              <a href={doc.url} target="_blank" rel="noreferrer" className="text-xs text-[#7B9B77] hover:opacity-70 transition-colors">Ver PDF</a>
+             <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}`}
+                   target="_blank"
+                   rel="noreferrer"
+                   className="text-xs text-[#7B9B77] hover:opacity-70 transition-colors"
+                 >
+                   Ver PDF
+                 </a>
               <button onClick={() => handleEliminarDocumento(doc.id)} className="text-xs text-[#A9A9A2] hover:text-red-400 transition-colors">Eliminar</button>
             </div>
           </div>
