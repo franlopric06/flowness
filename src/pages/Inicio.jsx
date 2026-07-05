@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Main from '../layout/Main'
 import SobreMiComponent from '../components/SobreMi'
-import Formacion from './Formacion'
+import Cursos from './Cursos'
 import GaleriaComponent from '../components/Galeria'
 import ContactoComponent from '../components/Contacto'
 import SEO from '../components/SEO'
@@ -44,7 +44,7 @@ function Inicio() {
       )}
 
       <SobreMiComponent />
-      <Formacion />
+      <Cursos />
       <GaleriaComponent />
       <ContactoComponent />
     </>

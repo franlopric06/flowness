@@ -4,7 +4,7 @@ import { getClases } from '../services/api'
 import { crearPreferenciaClase } from '../services/api'
 import SEO from '../components/SEO'
 
-function ClasesOnline() {
+function ComprarClases() {
   const [clases, setClases] = useState([])
   const [seleccionada, setSeleccionada] = useState(null)
   const [cargando, setCargando] = useState(true)
@@ -72,11 +72,11 @@ function ClasesOnline() {
 
   return (
     <>
-      <SEO
-        titulo="Clases Online"
-        descripcion="Reservá tu lugar en una clase online en vivo o comprá la clase grabada de Flowness para verla cuando quieras"
-        url="/clases"
-      />
+    <SEO
+         titulo="Comprar Clases"
+         descripcion="Reservá tu lugar en una clase online en vivo o comprá la clase grabada de Flowness para verla cuando quieras"
+         url="/comprar-clases"
+       />
       <main className="pt-10 bg-[#F5F0EB] min-h-screen md:pt-24">
 
         {/* HERO */}
@@ -178,4 +178,4 @@ function ClasesOnline() {
   )
 }
 
-export default ClasesOnline
+export default ComprarClases
