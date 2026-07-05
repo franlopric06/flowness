@@ -364,51 +364,8 @@ function Admin() {
               Cerrar sesión
             </button>
           </div>
-          {/* SOBRE MI */}
-          {seccion === 'sobre-mi' && (
-            <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15">
-              <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Sobre mí</h2>
-              <form onSubmit={handleSubmitSobreMi} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
-                  <input value={sobreMi.nombre} onChange={(e) => setSobreMi({ ...sobreMi, nombre: e.target.value })} placeholder="Flor Verazay" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título / Profesión</label>
-                  <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
-                </div>
-                <div className="flex flex-col gap-1 md:col-span-2">
-                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 1</label>
-                  <textarea value={sobreMi.descripcion1} onChange={(e) => setSobreMi({ ...sobreMi, descripcion1: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-                </div>
-                <div className="flex flex-col gap-1 md:col-span-2">
-                  <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 2</label>
-                  <textarea value={sobreMi.descripcion2} onChange={(e) => setSobreMi({ ...sobreMi, descripcion2: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
-                </div>
-                <div className="md:col-span-2">
-                  <div className="flex flex-col gap-1 md:col-span-2">
-                   <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Foto</label>
-                   <input
-                    type="file"
-                     accept="image/*"
-                     onChange={(e) => setSobreMi({ ...sobreMi, foto: e.target.files[0] })}
-                     className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none"
-                   />
-                   {sobreMi.fotoUrl && (
-                     <img src={sobreMi.fotoUrl} alt="Foto actual" className="w-24 h-24 object-cover rounded-xl mt-2" />
-                   )}
-                 </div>
-                  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-                    Guardar cambios
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
 
-        </section>
-
-        {/* Tabs */}
+           {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
             {['cursos', 'clases', 'avisos', 'fotos', 'videos', 'videos-cursos', 'fases', 'niveles', 'sobre-mi'].map((tab) => (
@@ -419,6 +376,56 @@ function Admin() {
             ))}
           </div>
         </section>
+
+        <section className="px-6 py-8 md:px-16"></section>
+
+       {/* SOBRE MI */}
+{seccion === 'sobre-mi' && (
+  <div className="bg-white rounded-2xl p-6 border border-[#D8A48F]/15">
+    <h2 className="text-lg font-semibold text-[#7B9B77] mb-4">Editar Sobre mí</h2>
+    <form onSubmit={handleSubmitSobreMi} className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-1">
+          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Nombre</label>
+          <input value={sobreMi.nombre} onChange={(e) => setSobreMi({ ...sobreMi, nombre: e.target.value })} placeholder="Flor Verazay" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Título / Profesión</label>
+          <input value={sobreMi.titulo} onChange={(e) => setSobreMi({ ...sobreMi, titulo: e.target.value })} placeholder="Creadora del método Flowness" className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77]" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 1</label>
+        <textarea value={sobreMi.descripcion1} onChange={(e) => setSobreMi({ ...sobreMi, descripcion1: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Descripción 2</label>
+        <textarea value={sobreMi.descripcion2} onChange={(e) => setSobreMi({ ...sobreMi, descripcion2: e.target.value })} rows={4} className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#7B9B77] resize-none" />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label className="text-[#A9A9A2] text-xs tracking-widest uppercase">Foto</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setSobreMi({ ...sobreMi, foto: e.target.files[0] })}
+          className="bg-[#F5F0EB] border border-[#D8A48F]/30 rounded-xl px-4 py-3 text-sm outline-none"
+        />
+        {sobreMi.fotoUrl && (
+          <img src={sobreMi.fotoUrl} alt="Foto actual" className="w-24 h-24 object-cover rounded-xl mt-2" />
+        )}
+      </div>
+      <div>
+        <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+)}
+
+        </section>
+
+     
 
         <section className="px-6 py-8 md:px-16">
 
