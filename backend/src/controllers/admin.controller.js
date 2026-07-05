@@ -209,6 +209,58 @@ const eliminarFase = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar fase' })
   }
 }
+
+const getNiveles = async (req, res) => {
+  try {
+    const niveles = await prisma.nivel.findMany({
+      where: { activo: true },
+      orderBy: { numero: 'asc' }
+    })
+    res.json(niveles)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener niveles' })
+  }
+}
+
+const crearNivel = async (req, res) => {
+  try {
+    const { numero, nombre, etiqueta, descripcion, para, incluye } = req.body
+    const nivel = await prisma.nivel.create({
+      data: { numero, nombre, etiqueta, descripcion, para, incluye }
+    })
+    res.status(201).json(nivel)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear nivel' })
+  }
+}
+
+const actualizarNivel = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { numero, nombre, etiqueta, descripcion, para, incluye } = req.body
+    const nivel = await prisma.nivel.update({
+      where: { id: parseInt(id) },
+      data: { numero, nombre, etiqueta, descripcion, para, incluye }
+    })
+    res.json(nivel)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar nivel' })
+  }
+}
+
+const eliminarNivel = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.nivel.update({
+      where: { id: parseInt(id) },
+      data: { activo: false }
+    })
+    res.json({ mensaje: 'Nivel eliminado correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar nivel' })
+  }
+}
+
 module.exports = { 
   getCursos,
    crearCurso, 
@@ -225,5 +277,9 @@ module.exports = {
   getFases, 
   crearFase, 
   actualizarFase, 
-  eliminarFase
+  eliminarFase,
+  getNiveles, 
+  crearNivel, 
+  actualizarNivel, 
+  eliminarNivel
  }

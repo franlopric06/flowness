@@ -61,6 +61,19 @@ app.get('/api/fases', async (req, res) => {
   }
 })
 
+// Ruta publica de niveles
+app.get('/api/niveles', async (req, res) => {
+  try {
+    const niveles = await prisma.nivel.findMany({
+      where: { activo: true },
+      orderBy: { numero: 'asc' }
+    })
+    res.json(niveles)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener niveles' })
+  }
+})
+
 // Ruta de prueba
 app.get('/', (req, res) => {
   res.json({ mensaje: 'API de Flowness funcionando ✓' })

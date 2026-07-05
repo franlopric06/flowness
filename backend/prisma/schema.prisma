@@ -128,3 +128,15 @@ model Fase {
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())
 }
+
+model Nivel {
+  id          Int      @id @default(autoincrement())
+  numero      String
+  nombre      String
+  etiqueta    String
+  descripcion String
+  para        String
+  incluye     String
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
