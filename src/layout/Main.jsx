@@ -34,9 +34,12 @@ function Main() {
             <Link to="/formacion" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-4 rounded-full text-center hover:bg-[#5a7a56] transition-colors">
               Explorar cursos
             </Link>
-            <Link to="/fases" className="text-[#D8A48F] text-xs tracking-widest uppercase text-center py-4 hover:opacity-70 transition-opacity">
+            <button
+              onClick={() => document.getElementById('fases').scrollIntoView({ behavior: 'smooth' })}
+              className="text-[#D8A48F] text-xs tracking-widest uppercase text-center py-4 hover:opacity-70 transition-opacity"
+            >
               Ver el método →
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -44,11 +47,14 @@ function Main() {
       {/* STATS */}
       <section className="bg-[#E6D5B8]/30 border-t border-b border-[#D8A48F]/20">
         <div className="grid grid-cols-1 md:grid-cols-3">
-          <Link to="/fases" className="py-8 text-center border-b border-[#D8A48F]/20 md:border-b-0 md:border-r hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer">
-            <p className="text-4xl font-light text-[#7B9B77]">6</p>
-            <p className="text-[10px] tracking-widest uppercase text-[#A9A9A2] mt-2">Fases del método</p>
-            <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mt-1">Ver clases →</p>
-          </Link>
+          <button
+             onClick={() => document.getElementById('fases').scrollIntoView({ behavior: 'smooth' })}
+             className="py-8 text-center border-b border-[#D8A48F]/20 md:border-b-0 md:border-r hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer w-full"
+           >
+             <p className="text-4xl font-light text-[#7B9B77]">6</p>
+             <p className="text-[10px] tracking-widest uppercase text-[#A9A9A2] mt-2">Fases del método</p>
+             <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mt-1">Ver método →</p>
+           </button>
           <Link to="/formacion" className="py-8 text-center border-b border-[#D8A48F]/20 md:border-b-0 md:border-r hover:bg-[#E6D5B8]/50 transition-colors cursor-pointer">
             <p className="text-4xl font-light text-[#7B9B77]">3</p>
             <p className="text-[10px] tracking-widest uppercase text-[#A9A9A2] mt-2">Niveles de formación</p>
@@ -63,7 +69,7 @@ function Main() {
       </section>
 
       {/* FASES */}
-      <section className="bg-white px-6 py-16 md:px-16">
+        <section id="fases" className="bg-white px-6 py-16 md:px-16">
         <p className="text-[10px] tracking-widest uppercase text-[#D8A48F] mb-3 text-center">El método</p>
         <h2 className="text-3xl font-light text-gray-800 text-center mb-12 md:text-4xl">
           Seis fases hacia el <span className="text-[#7B9B77] font-semibold">bienestar</span>
