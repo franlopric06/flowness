@@ -8,7 +8,7 @@ const {
   getAvisos, crearAviso, eliminarAviso,
   getFases, crearFase, actualizarFase, eliminarFase,
   getNiveles, crearNivel, actualizarNivel, eliminarNivel,
-  getSobreMi, actualizarSobreMi
+  getSobreMi, actualizarSobreMi, eliminarSobreMi
 } = require('../controllers/admin.controller')
 
 router.use(verificarToken)
@@ -47,5 +47,6 @@ router.delete('/niveles/:id', eliminarNivel)
 // Sobre mi
 router.get('/sobre-mi', getSobreMi)
 router.post('/sobre-mi', upload.single('foto'), actualizarSobreMi)
+router.delete('/sobre-mi', eliminarSobreMi)
 
 module.exports = router

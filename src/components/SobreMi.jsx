@@ -47,7 +47,7 @@ function SobreMi() {
       <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-16">
 
         {/* Foto */}
-        <div className="rounded-2xl overflow-hidden md:w-1/3 md:h-80 border border-[#D8A48F]/20">
+        <div className="rounded-2xl overflow-hidden md:w-1/3 md:h-96 border border-[#D8A48F]/20">
           {datos.fotoUrl ? (
             <img src={datos.fotoUrl} alt={datos.nombre} className="w-full h-full object-cover" />
           ) : (

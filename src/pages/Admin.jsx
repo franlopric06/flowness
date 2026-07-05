@@ -144,6 +144,18 @@ function Admin() {
   } catch (error) { console.error(error) }
 }
 
+const handleEliminarSobreMi = async () => {
+  if (!confirm('¿Seguro que querés eliminar toda la información de Sobre mí?')) return
+  try {
+    await fetch(`${API_URL}/admin/sobre-mi`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    setSobreMi({ nombre: '', titulo: '', descripcion1: '', descripcion2: '', foto: null, fotoUrl: '' })
+    alert('Información eliminada correctamente')
+  } catch (error) { console.error(error) }
+}
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
   const handleChangeClase = (e) => setFormClase({ ...formClase, [e.target.name]: e.target.value })
 
@@ -414,11 +426,14 @@ function Admin() {
           <img src={sobreMi.fotoUrl} alt="Foto actual" className="w-24 h-24 object-cover rounded-xl mt-2" />
         )}
       </div>
-      <div>
-        <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-          Guardar cambios
-        </button>
-      </div>
+      <div className="flex gap-3">
+  <button type="submit" className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-8 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+    Guardar cambios
+  </button>
+  <button type="button" onClick={handleEliminarSobreMi} className="text-xs text-[#A9A9A2] tracking-widest uppercase hover:text-red-400 transition-colors">
+    Eliminar todo
+  </button>
+</div>
     </form>
   </div>
 )}

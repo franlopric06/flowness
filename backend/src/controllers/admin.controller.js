@@ -307,6 +307,18 @@ const actualizarSobreMi = async (req, res) => {
   }
 }
 
+const eliminarSobreMi = async (req, res) => {
+  try {
+    const existente = await prisma.sobreMi.findFirst()
+    if (existente) {
+      await prisma.sobreMi.delete({ where: { id: existente.id } })
+    }
+    res.json({ mensaje: 'Sobre mí eliminado correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar sobre mi' })
+  }
+}
+
 module.exports = { 
   getCursos,
    crearCurso, 
@@ -329,5 +341,6 @@ module.exports = {
   actualizarNivel, 
   eliminarNivel,
    getSobreMi, 
-  actualizarSobreMi
+  actualizarSobreMi,
+  eliminarSobreMi
  }
