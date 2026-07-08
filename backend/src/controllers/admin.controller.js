@@ -379,6 +379,22 @@ const eliminarHorario = async (req, res) => {
   }
 }
 
+const getUsuarios = async (req, res) => {
+  try {
+    const usuarios = await prisma.usuario.findMany({
+      where: { rol: 'usuario' },
+      include: {
+        compras: { include: { curso: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    res.json(usuarios)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener usuarios' })
+  }
+}
+
+
 module.exports = { 
   getCursos,
    crearCurso, 
@@ -406,5 +422,6 @@ module.exports = {
   eliminarSobreMi,
   getHorarios, 
   crearHorario, 
-  eliminarHorario
+  eliminarHorario,
+  getUsuarios
  }

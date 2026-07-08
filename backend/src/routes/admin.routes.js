@@ -9,7 +9,8 @@ const {
   getFases, crearFase, actualizarFase, eliminarFase,
   getNiveles, crearNivel, actualizarNivel, eliminarNivel,
   getSobreMi, actualizarSobreMi, eliminarSobreMi,
-  getHorarios, crearHorario, eliminarHorario
+  getHorarios, crearHorario, eliminarHorario,
+  getUsuarios
 } = require('../controllers/admin.controller')
 
 router.use(verificarToken)
@@ -55,5 +56,8 @@ router.delete('/niveles/:id', eliminarNivel)
 router.get('/sobre-mi', getSobreMi)
 router.post('/sobre-mi', upload.single('foto'), actualizarSobreMi)
 router.delete('/sobre-mi', eliminarSobreMi)
+
+// Usuarios
+router.get('/usuarios', getUsuarios)
 
 module.exports = router
