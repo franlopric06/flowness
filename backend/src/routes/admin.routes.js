@@ -4,13 +4,14 @@ const { verificarToken, verificarAdmin } = require('../middlewares/auth.middlewa
 const { upload } = require('../config/cloudinary')
 const {
   getCursos, crearCurso, actualizarCurso, eliminarCurso, activarCurso,
-  getClases,  crearClase, actualizarClase, activarClase, desactivarClase,
+  getClases, crearClase, actualizarClase, activarClase, desactivarClase,
   getAvisos, crearAviso, eliminarAviso,
   getFases, crearFase, actualizarFase, eliminarFase,
   getNiveles, crearNivel, actualizarNivel, eliminarNivel,
-  getSobreMi, actualizarSobreMi, eliminarSobreMi
+  getSobreMi, actualizarSobreMi, eliminarSobreMi,
+  getHorarios, crearHorario, eliminarHorario
 } = require('../controllers/admin.controller')
-  
+
 router.use(verificarToken)
 router.use(verificarAdmin)
 
@@ -23,10 +24,15 @@ router.patch('/cursos/:id/activar', activarCurso)
 
 // Clases
 router.get('/clases', getClases)
+router.post('/clases', crearClase)
 router.put('/clases/:id', actualizarClase)
 router.patch('/clases/:id/activar', activarClase)
 router.delete('/clases/:id', desactivarClase)
-router.post('/clases', crearClase)
+
+// Horarios
+router.get('/horarios/:claseId', getHorarios)
+router.post('/horarios', crearHorario)
+router.delete('/horarios/:id', eliminarHorario)
 
 // Avisos
 router.get('/avisos', getAvisos)

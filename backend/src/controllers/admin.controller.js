@@ -338,6 +338,47 @@ const eliminarSobreMi = async (req, res) => {
   }
 }
 
+const getHorarios = async (req, res) => {
+  try {
+    const { claseId } = req.params
+    const horarios = await prisma.horario.findMany({
+      where: { claseId: parseInt(claseId) },
+      orderBy: { dia: 'asc' }
+    })
+    res.json(horarios)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener horarios' })
+  }
+}
+
+const crearHorario = async (req, res) => {
+  try {
+    const { claseId, dia, hora } = req.body
+    const horario = await prisma.horario.create({
+      data: {
+        claseId: parseInt(claseId),
+        dia,
+        hora
+      }
+    })
+    res.status(201).json(horario)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear horario' })
+  }
+}
+
+const eliminarHorario = async (req, res) => {
+  try {
+    const { id } = req.params
+    await prisma.horario.delete({
+      where: { id: parseInt(id) }
+    })
+    res.json({ mensaje: 'Horario eliminado correctamente' })
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar horario' })
+  }
+}
+
 module.exports = { 
   getCursos,
    crearCurso, 
@@ -362,5 +403,8 @@ module.exports = {
   eliminarNivel,
    getSobreMi, 
   actualizarSobreMi,
-  eliminarSobreMi
+  eliminarSobreMi,
+  getHorarios, 
+  crearHorario, 
+  eliminarHorario
  }
