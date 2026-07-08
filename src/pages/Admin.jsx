@@ -31,6 +31,7 @@ function Admin() {
   const [formVideoCurso, setFormVideoCurso] = useState({ titulo: '', descripcion: '', orden: '', archivo: null })
   const [formFase, setFormFase] = useState({ numero: '', nombre: '', descripcion: '' })
   const [editandoFase, setEditandoFase] = useState(null)
+  const [usuarios, setUsuarios] = useState([])
   const [formNivel, setFormNivel] = useState({ numero: '', nombre: '', etiqueta: '', descripcion: '', para: '', incluye: '' })
   const [editandoNivel, setEditandoNivel] = useState(null)
   const [subiendo, setSubiendo] = useState(false)
@@ -50,6 +51,7 @@ function Admin() {
     cargarFotos()
     cargarVideos()
     cargarFases()
+    cargarUsuarios()
     cargarNiveles()
     cargarSobreMi()
   }, [])
@@ -152,6 +154,16 @@ const handleEliminarDocumento = async (id) => {
       setFases(Array.isArray(data) ? data : [])
     } catch (error) { console.error(error) }
   }
+
+  const cargarUsuarios = async () => {
+  try {
+    const res = await fetch(`${API_URL}/admin/usuarios`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await res.json()
+    setUsuarios(Array.isArray(data) ? data : [])
+  } catch (error) { console.error(error) }
+}
 
   const cargarNiveles = async () => {
     try {
@@ -464,7 +476,7 @@ const handleEliminarHorario = async (id) => {
         {/* Tabs */}
         <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {['sobre-mi', 'fotos', 'videos', 'niveles', 'cursos', 'fases', 'clases', 'videos-cursos', 'avisos'].map((tab) => (
+            {['sobre-mi', 'fotos', 'videos', 'niveles', 'cursos', 'fases', 'clases', 'videos-cursos', 'avisos', 'usuarios'].map((tab) => (
               <button key={tab} onClick={() => setSeccion(tab)}
                 className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
                 {tab === 'sobre-mi' ? 'Sobre mí' :
@@ -1083,6 +1095,42 @@ const handleEliminarHorario = async (id) => {
               </div>
             </>
           )}
+
+          {/* USUARIOS */}
+{seccion === 'usuarios' && (
+  <div className="bg-white rounded-2xl border border-[#D8A48F]/15 overflow-hidden">
+    <div className="px-6 py-4 border-b border-[#D8A48F]/15">
+      <h2 className="text-lg font-semibold text-[#7B9B77]">Usuarios registrados ({usuarios.length})</h2>
+    </div>
+    {usuarios.length === 0 && (
+      <p className="text-[#A9A9A2] text-sm text-center py-8">No hay usuarios registrados todavía</p>
+    )}
+    {usuarios.map((usuario) => (
+      <div key={usuario.id} className="flex flex-col gap-2 px-6 py-4 border-b border-[#D8A48F]/10 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-[#555] font-medium">{usuario.nombre}</p>
+          <p className="text-[#888] text-sm">{usuario.email}</p>
+          <p className="text-[#A9A9A2] text-xs mt-1">
+            Registrado el {new Date(usuario.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="flex flex-col gap-1 md:items-end">
+          {usuario.compras.length === 0 ? (
+            <span className="text-xs px-3 py-1 rounded-full bg-[#F5F0EB] text-[#A9A9A2]">
+              Sin compras
+            </span>
+          ) : (
+            usuario.compras.map((compra) => (
+              <span key={compra.id} className="text-xs px-3 py-1 rounded-full bg-[#7B9B77]/10 text-[#7B9B77]">
+                ✓ {compra.curso.nombre}
+              </span>
+            ))
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
         </section>
       </main>
