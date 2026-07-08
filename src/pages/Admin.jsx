@@ -18,7 +18,7 @@ function Admin() {
   const [niveles, setNiveles] = useState([])
   const [sobreMi, setSobreMi] = useState({ nombre: '', titulo: '', descripcion1: '', descripcion2: '', foto: null, fotoUrl: '' })
   const [cargando, setCargando] = useState(true)
-  const [seccion, setSeccion] = useState('cursos')
+  const [seccion, setSeccion] = useState('sobre-mi')
   const [form, setForm] = useState({ nivel: '', nombre: '', descripcion: '', precio: '', duracion: '', videos: '' })
   const [editando, setEditando] = useState(null)
   const [horarios, setHorarios] = useState([])
