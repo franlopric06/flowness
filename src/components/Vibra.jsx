@@ -1,14 +1,7 @@
 import { useState } from 'react'
 
 function Vibra() {
-  const [visible, setVisible] = useState(() => {
-    return !localStorage.getItem('vibra_cerrado')
-  })
-
-  const cerrar = () => {
-    localStorage.setItem('vibra_cerrado', 'true')
-    setVisible(false)
-  }
+  const [visible, setVisible] = useState(true)
 
   if (!visible) return null
 
@@ -16,7 +9,7 @@ function Vibra() {
     <div className="fixed bottom-6 right-4 z-50 bg-white rounded-2xl shadow-xl border border-[#D8A48F]/20 p-3 w-52 md:p-5 md:w-72">
       
       <button
-        onClick={cerrar}
+        onClick={() => setVisible(false)}
         className="absolute top-2 right-3 text-[#A9A9A2] text-xl hover:opacity-60 transition-opacity"
       >
         ×
