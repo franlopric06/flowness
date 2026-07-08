@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import SEO from '../components/SEO'
+import useVibrar from '../hooks/useVibrar'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 function Cursos() {
   const [niveles, setNiveles] = useState([])
   const [cargando, setCargando] = useState(true)
+  const vibrar = useVibrar()
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetch(`${API_URL}/niveles`)
@@ -92,12 +95,12 @@ function Cursos() {
                             ✓ {item.trim()}
                           </span>
                         ))}
-                        <Link
-                          to={`/comprar-cursos?nivel=${nivel.numero}`}
+                        <button
+                          onClick={() => { vibrar(); navigate(`/comprar-cursos?nivel=${nivel.numero}`) }}
                           className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit"
                         >
                           Ver y Comprar →
-                        </Link>
+                        </button>
                       </div>
                     </div>
 
@@ -116,12 +119,12 @@ function Cursos() {
           <p className="text-white/70 text-sm mb-8 max-w-md mx-auto">
             Elegí el nivel que más se adapta a tu momento y comenzá tu camino con Flowness.
           </p>
-          <Link
-            to="/comprar-cursos"
+          <button
+            onClick={() => { vibrar(); navigate('/comprar-cursos') }}
             className="inline-block bg-white text-[#7B9B77] text-xs tracking-widest uppercase px-8 py-4 rounded-full hover:bg-[#F5F0EB] transition-colors"
           >
             Ver precios y comprar →
-          </Link>
+          </button>
         </section>
 
       </main>
