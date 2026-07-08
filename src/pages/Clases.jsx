@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import useVibrar from '../hooks/useVibrar'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 function Clases() {
   const [fases, setFases] = useState([])
+  const vibrar = useVibrar()
 
   useEffect(() => {
     fetch(`${API_URL}/fases`)
@@ -33,18 +34,18 @@ function Clases() {
       </h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {fases.map((fase) => (
-          <Link
+          <div
             key={fase.id}
-           to={`/comprar-clases?fase=${fase.numero}`}
+            onClick={() => { vibrar(); window.location.href = `/clases?fase=${fase.numero}` }}
             className="bg-[#F5F0EB] rounded-2xl p-8 border border-[#D8A48F]/15 hover:shadow-lg hover:border-[#7B9B77]/30 transition-all cursor-pointer"
           >
             <p className="text-5xl font-light text-[#7B9B77]/20 mb-4">{fase.numero}</p>
             <p className="text-[#7B9B77] font-semibold mb-2">{fase.nombre}</p>
             <p className="text-[#A9A9A2] text-sm leading-relaxed">{fase.descripcion}</p>
-            <p className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit">
+            <p className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors w-fit mt-4">
               Ver clase →
             </p>
-          </Link>
+          </div>
         ))}
       </div>
     </section>
