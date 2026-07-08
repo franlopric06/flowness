@@ -474,11 +474,12 @@ const handleEliminarHorario = async (id) => {
         </section>
 
         {/* Tabs */}
-        <section className="bg-white border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto">
-          <div className="flex gap-6 min-w-max">
-            {['sobre-mi', 'fotos', 'videos', 'niveles', 'cursos', 'fases', 'clases', 'videos-cursos', 'avisos', 'usuarios'].map((tab) => (
-              <button key={tab} onClick={() => setSeccion(tab)}
-                className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#7B9B77] text-[#7B9B77]' : 'border-transparent text-[#A9A9A2] hover:text-[#7B9B77]'}`}>
+                  <section className="border-b border-[#D8A48F]/20 px-6 md:px-16 overflow-x-auto" style={{ backgroundColor: '#2a2a2a' }}>
+                  <div className="flex gap-6 min-w-max">
+                  {['sobre-mi', 'fotos', 'videos', 'niveles', 'cursos', 'fases', 'clases', 'videos-cursos', 'avisos', 'usuarios'].map((tab) => (
+                  <button key={tab} onClick={() => setSeccion(tab)}
+                  className={`py-4 text-xs tracking-widest uppercase border-b-2 transition-colors ${seccion === tab ? 'border-[#D8A48F] text-[#D8A48F]' : 'border-transparent hover:text-[#D8A48F]'}`}
+                  style={{ color: seccion === tab ? '#D8A48F' : '#888888' }}>
                 {tab === 'sobre-mi' ? 'Sobre mí' :
                  tab === 'cursos' ? 'Comprar Cursos' :
                  tab === 'clases' ? 'Comprar Clases' :
