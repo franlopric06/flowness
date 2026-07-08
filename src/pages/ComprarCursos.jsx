@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getCursos, crearPreferenciaPago } from '../services/api'
 import SEO from '../components/SEO'
+import useVibrar from '../hooks/useVibrar'
 
 function ComprarCursos() {
   const [cursos, setCursos] = useState([])
@@ -9,6 +10,7 @@ function ComprarCursos() {
   const [searchParams] = useSearchParams()
   const nivelParam = searchParams.get('nivel')
   const refsCursos = useRef({})
+  const vibrar = useVibrar()
 
   useEffect(() => {
     getCursos()
@@ -28,6 +30,7 @@ function ComprarCursos() {
   }, [cargando, nivelParam])
 
   const handleComprar = async (cursoId) => {
+    vibrar()
     const token = localStorage.getItem('token')
     if (!token) {
       window.location.href = '/ingresar'
@@ -54,10 +57,10 @@ function ComprarCursos() {
   return (
     <>
       <SEO
-         titulo="Comprar Cursos"
-         descripcion="Accedé a los cursos grabados de Flowness. Tres niveles de formación en movilidad, flexibilidad y mindfulness con acceso de por vida."
-         url="/comprar-cursos"
-       />
+        titulo="Comprar Cursos"
+        descripcion="Accedé a los cursos grabados de Flowness. Tres niveles de formación en movilidad, flexibilidad y mindfulness con acceso de por vida."
+        url="/comprar-cursos"
+      />
       <main className="pt-20 bg-[#F5F0EB] min-h-screen md:pt-24">
 
         {/* HERO */}
@@ -124,7 +127,6 @@ function ComprarCursos() {
                     >
                       Comprar ahora
                     </button>
-                    
                     <Link
                       to="/clases"
                       className="w-full text-center text-[#A9A9A2] text-xs tracking-widest uppercase py-2 hover:text-[#7B9B77] transition-colors"

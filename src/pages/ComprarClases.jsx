@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { getClases } from '../services/api'
 import { crearPreferenciaClase } from '../services/api'
 import SEO from '../components/SEO'
+import useVibrar from '../hooks/useVibrar'
 
 function ComprarClases() {
   const [clases, setClases] = useState([])
@@ -11,6 +12,7 @@ function ComprarClases() {
   const [searchParams] = useSearchParams()
   const faseParam = searchParams.get('fase')
   const refsClases = useRef({})
+  const vibrar = useVibrar()
 
   useEffect(() => {
     getClases()
@@ -21,7 +23,6 @@ function ComprarClases() {
       .catch(() => setCargando(false))
   }, [])
 
-  // Cuando cargan las clases y hay una fase en la URL, hace scroll a esa clase
   useEffect(() => {
     if (!cargando && faseParam && refsClases.current[faseParam]) {
       setTimeout(() => {
@@ -31,6 +32,7 @@ function ComprarClases() {
   }, [cargando, faseParam])
 
   const handleReservar = async (claseId) => {
+    vibrar()
     const token = localStorage.getItem('token')
     if (!token) {
       window.location.href = '/ingresar'
@@ -47,6 +49,7 @@ function ComprarClases() {
   }
 
   const handleComprarGrabada = async (claseId) => {
+    vibrar()
     const token = localStorage.getItem('token')
     if (!token) {
       window.location.href = '/ingresar'
@@ -72,11 +75,11 @@ function ComprarClases() {
 
   return (
     <>
-    <SEO
-         titulo="Comprar Clases"
-         descripcion="Reservá tu lugar en una clase online en vivo o comprá la clase grabada de Flowness para verla cuando quieras"
-         url="/comprar-clases"
-       />
+      <SEO
+        titulo="Comprar Clases"
+        descripcion="Reservá tu lugar en una clase online en vivo o comprá la clase grabada de Flowness para verla cuando quieras"
+        url="/comprar-clases"
+      />
       <main className="pt-10 bg-[#F5F0EB] min-h-screen md:pt-24">
 
         {/* HERO */}
@@ -141,7 +144,7 @@ function ComprarClases() {
                     {clase.horarios.map((horario, i) => (
                       <button
                         key={i}
-                        onClick={() => setSeleccionada(`${clase.id}-${i}`)}
+                        onClick={() => { vibrar(); setSeleccionada(`${clase.id}-${i}`) }}
                         className={`text-xs px-4 py-2 rounded-full border transition-colors ${
                           seleccionada === `${clase.id}-${i}`
                             ? 'bg-[#7B9B77] text-white border-[#7B9B77]'
