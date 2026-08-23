@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// USUARIOS Y AUTENTICACIÓN
+// ─────────────────────────────────────────────
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       Rol      @default(USUARIO)
+  activo    Boolean  @default(true)
+  creadoEn  DateTime @default(now())
+
+  compras   Compra[]
+}
+
+enum Rol {
+  ADMIN
+  USUARIO
+}
+
+// ─────────────────────────────────────────────
+// CONFIGURACIÓN EDITABLE DEL SITIO
+// claves: hero_titulo, hero_subtitulo, hero_descripcion,
+//         instagram_url, whatsapp_numero, popup_texto, popup_instagram
+// ─────────────────────────────────────────────
+
+model Configuracion {
+  id          Int      @id @default(autoincrement())
+  clave       String   @unique
+  valor       String
+  actualizadoEn DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// FASES DEL MÉTODO
+// Las 6 fases son categorías del método de Flowness
+// Cada fase tiene un video corto de muestra
+// ─────────────────────────────────────────────
+
+model Fase {
+  id          Int      @id @default(autoincrement())
+  numero      Int      @unique
+  nombre      String
+  descripcion String
+  videoUrl    String?
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+
+  clases      Clase[]
+}
+
+// ─────────────────────────────────────────────
+// CLASES
+// Pertenecen a una Fase del método
+// La primera clase es gratis para usuarios registrados
+// Las demás se habilitan al comprar
+// ─────────────────────────────────────────────
+
+model Clase {
+  id          Int      @id @default(autoincrement())
+  faseId      Int
+  nombre      String
+  descripcion String
+  videoUrl    String?
+  precio      Float    @default(0)
+  esGratis    Boolean  @default(false)
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+
+  fase        Fase        @relation(fields: [faseId], references: [id])
+  compras     Compra[]
+  documentos  Documento[]
+}
+
+// ─────────────────────────────────────────────
+// COMPRAS
+// ─────────────────────────────────────────────
+
+model Compra {
+  id            Int        @id @default(autoincrement())
+  usuarioId     Int
+  claseId       Int
+  monto         Float
+  estado        EstadoPago @default(PENDIENTE)
+  mpPagoId      String?
+  creadoEn      DateTime   @default(now())
+
+  usuario       Usuario    @relation(fields: [usuarioId], references: [id])
+  clase         Clase      @relation(fields: [claseId], references: [id])
+}
+
+enum EstadoPago {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}
+
+// ─────────────────────────────────────────────
+// DOCUMENTOS (PDFs adjuntos a clases)
+// ─────────────────────────────────────────────
+
+model Documento {
+  id          Int      @id @default(autoincrement())
+  claseId     Int
+  titulo      String
+  descripcion String?
+  url         String
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+
+  clase       Clase    @relation(fields: [claseId], references: [id])
+}
+
+// ─────────────────────────────────────────────
+// GALERÍA DE FOTOS
+// ─────────────────────────────────────────────
+
+model Foto {
+  id          Int      @id @default(autoincrement())
+  url         String
+  descripcion String?
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────
+// SOBRE MÍ (info de la instructora)
+// ─────────────────────────────────────────────
+
+model SobreMi {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  titulo        String
+  descripcion1  String
+  descripcion2  String
+  fotoUrl       String?
+  actualizadoEn DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// AVISOS
+// ─────────────────────────────────────────────
+
+model Aviso {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  descripcion String
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+}
