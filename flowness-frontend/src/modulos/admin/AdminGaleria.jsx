@@ -69,11 +69,12 @@ function SeccionFotos({ fotos, alCambiar, mostrarMsg }) {
       setSubiendo({ actual: i + 1, total: lista.length })
       try {
         if (lista[i].size > 10 * MB) throw new Error('muy pesada')
-        const { url } = await api.subirImagen(lista[i])
-        if (!url) throw new Error('sin url')
-        await api.crearFoto({ url })
-      } catch {
+        const respuesta = await api.subirImagen(lista[i])
+        if (!respuesta?.url) throw new Error(respuesta?.error || 'sin url')
+        await api.crearFoto({ url: respuesta.url })
+      } catch (err) {
         fallidas++
+        console.error('No se pudo subir la foto:', err.message)
       }
     }
     setSubiendo(null)
@@ -185,14 +186,14 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
     if (archivo.size > 100 * MB) return setError('El video pesa más de 100 MB. Recortalo o bajale la calidad.')
     setSubiendo(true)
     try {
-      const { url } = await api.subirVideo(archivo)
-      if (!url) throw new Error()
-      await api.crearReel({ tipo: 'ARCHIVO', url, descripcion })
+      const respuesta = await api.subirVideo(archivo)
+      if (!respuesta?.url) throw new Error(respuesta?.error)
+      await api.crearReel({ tipo: 'ARCHIVO', url: respuesta.url, descripcion })
       setDescripcion('')
       mostrarMsg('Video subido')
       alCambiar()
-    } catch {
-      setError('No se pudo subir el video. Probá de nuevo.')
+    } catch (err) {
+      setError(err.message ? `No se pudo subir el video. ${err.message}` : 'No se pudo subir el video. Probá de nuevo.')
     } finally {
       setSubiendo(false)
     }
