@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/*
+  Estilos globales dentro de @layer base.
+  Tailwind v4 guarda sus clases (p-5, px-4, mb-6...) en @layer utilities.
+  Cualquier regla escrita FUERA de una capa le gana a todas esas clases,
+  por eso antes el "* { padding: 0; margin: 0 }" anulaba todos los espaciados.
+  El reset de margin/padding ya lo hace Tailwind solo (preflight), no hace falta repetirlo.
+*/
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background-color: #F5F0EB;
-  color: #555;
-  font-family: 'Georgia', serif;
+  body {
+    background-color: #F5F0EB;
+    color: #555;
+    font-family: 'Georgia', serif;
+  }
 }
