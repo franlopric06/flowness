@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, X, Images, Film, Camera } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronsRight, X, Images, Film, Camera } from 'lucide-react'
 import Reel from '../../compartido/componentes/Reel'
+import Carrusel from '../../compartido/componentes/Carrusel'
 import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import { fadeUpScroll, fadeUpScrollDelay, listItem } from '../../compartido/utilidades/animaciones'
@@ -82,30 +83,38 @@ function Galeria() {
             {fotos.length > 0 && (
               <section className="mb-20">
                 <TituloBloque icono={Images} texto="Fotos" />
-                <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-4">
+                {/* Celular: dos filas que se deslizan de costado · Computadora: mosaico */}
+                <Carrusel puntos={false}
+                  claseCelular={`grid ${fotos.length > 4 ? 'grid-rows-2' : 'grid-rows-1'} grid-flow-col auto-cols-[42vw] gap-2`}
+                  claseEscritorio="md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:block md:columns-3 lg:columns-4 md:gap-4">
                   {fotos.map((f, i) => (
                     <motion.button key={f.id} {...listItem(i)} onClick={() => { setDireccion(0); setAbierta(i) }}
-                      className="relative block w-full mb-2 md:mb-4 overflow-hidden rounded-xl md:rounded-2xl break-inside-avoid group">
+                      className="relative block w-full md:mb-4 overflow-hidden rounded-xl md:rounded-2xl break-inside-avoid group">
                       <img src={imagenReducida(f.url, 600)} alt={f.descripcion || 'Foto de Flowness'} loading="lazy"
-                        className="w-full h-auto transition-transform duration-700 group-hover:scale-105" />
+                        className="w-full aspect-square md:aspect-auto object-cover md:h-auto transition-transform duration-700 group-hover:scale-105" />
                       <span className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </motion.button>
                   ))}
-                </div>
+                </Carrusel>
+                {fotos.length > 4 && (
+                  <p className="md:hidden flex items-center justify-center gap-1 text-piedra text-xs mt-3">
+                    Deslizá para ver más <ChevronsRight size={14} className="animate-pulse" />
+                  </p>
+                )}
               </section>
             )}
 
             {reels.length > 0 && (
               <section className={fotos.length > 0 ? 'pt-16 border-t border-terracota/20' : ''}>
                 <TituloBloque icono={Film} texto="Videos" />
-                <div className="flex flex-wrap justify-center gap-6">
+                <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                   {reels.map((reel, i) => (
-                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 3) * 0.1)} className="w-full sm:w-[340px]">
+                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 3) * 0.1)} className="reel-marco">
                       <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
                       {reel.descripcion && <p className="text-texto/70 text-xs text-center mt-3">{reel.descripcion}</p>}
                     </motion.div>
                   ))}
-                </div>
+                </Carrusel>
               </section>
             )}
           </>

@@ -7,6 +7,7 @@ import {
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import Reel from '../../compartido/componentes/Reel'
 import TituloSeccion from '../../compartido/componentes/TituloSeccion'
+import Carrusel from '../../compartido/componentes/Carrusel'
 import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
 import { fadeUpScroll, fadeUpScrollDelay, listItem } from '../../compartido/utilidades/animaciones'
 import { formatearPrecio } from '../../compartido/utilidades/video'
@@ -290,27 +291,27 @@ function Inicio() {
           {fotosDestacadas.length > 0 && (
             <div className="mb-14">
               <p className="flex items-center justify-center gap-2 text-verde text-xs font-semibold tracking-[0.2em] uppercase mb-5"><Images size={16} /> Fotos</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+              <Carrusel claseEscritorio="md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:grid md:grid-cols-3 md:gap-4">
                 {fotosDestacadas.map((foto, i) => (
-                  <motion.div key={foto.id} {...listItem(i)}>
-                    <Link to="/galeria" className="block overflow-hidden rounded-xl md:rounded-2xl group">
+                  <motion.div key={foto.id} {...listItem(i)} className="w-[62vw] max-w-[260px] md:w-auto md:max-w-none">
+                    <Link to="/galeria" className="block overflow-hidden rounded-2xl group">
                       <img src={imagenReducida(foto.url, 500)} alt={foto.descripcion || ''} loading="lazy"
-                        className="w-full aspect-square object-cover transition-transform duration-700 group-hover:scale-105" />
+                        className="w-full aspect-[4/5] md:aspect-square object-cover transition-transform duration-700 group-hover:scale-105" />
                     </Link>
                   </motion.div>
                 ))}
-              </div>
+              </Carrusel>
             </div>
           )}
 
           {reelsDestacados.length > 0 && (
             <div className="mb-14">
               <p className="flex items-center justify-center gap-2 text-verde text-xs font-semibold tracking-[0.2em] uppercase mb-5"><Film size={16} /> Videos</p>
-              <div className="flex flex-wrap justify-center gap-6">
+              <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                 {reelsDestacados.map((reel, i) => (
-                  <motion.div key={reel.id} {...fadeUpScrollDelay(i * 0.1)} className="w-full sm:w-[340px]"><Reel reel={reel} /></motion.div>
+                  <motion.div key={reel.id} {...fadeUpScrollDelay(i * 0.1)}><Reel reel={reel} /></motion.div>
                 ))}
-              </div>
+              </Carrusel>
             </div>
           )}
 

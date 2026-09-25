@@ -284,6 +284,15 @@
     animation: var(--animate-esqueleto);
   }
 
+  /* Marco de los reels: en el celular se ven más chicos (escalados)
+     para que entren varios en el carrusel; en computadora, tamaño real.
+     Instagram necesita al menos 326px de ancho, por eso el video se
+     arma a 340px y se achica con transform. */
+  .reel-marco { --k: 0.68; width: calc(340px * var(--k)); flex-shrink: 0; }
+  @media (min-width: 768px) { .reel-marco { --k: 1; } }
+  .reel-ig-caja { height: calc(700px * var(--k)); overflow: hidden; }
+  .reel-ig { width: 340px; height: 700px; transform: scale(var(--k)); transform-origin: top left; }
+
   /* Oculta la barra de scroll (pestañas que se deslizan en el celular) */
   .no-scrollbar { scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
