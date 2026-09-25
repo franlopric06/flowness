@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock, PlayCircle, FileText, CheckCircle2, Sprout, TrendingUp, Award, GraduationCap, WifiOff, BadgeCheck } from 'lucide-react'
 import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
+import MediaTarjeta from '../../compartido/componentes/MediaTarjeta'
+import MediosDePago from '../../compartido/componentes/MediosDePago'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
 import { fadeUpScrollDelay } from '../../compartido/utilidades/animaciones'
 import { formatearPrecio } from '../../compartido/utilidades/video'
-import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerCursos } from './formacion.servicio'
 
 const ICONOS_NIVEL = [Sprout, TrendingUp, Award]
@@ -38,6 +39,8 @@ function Formacion() {
         </motion.p>
       </CabeceraPagina>
 
+      <MediosDePago className="mb-10" />
+
       <div className="contenedor">
         {cargando ? (
           <EsqueletoGrilla cantidad={3} imagen="aspect-[4/3]" className="grid grid-cols-1 md:grid-cols-3 gap-6" />
@@ -52,14 +55,12 @@ function Formacion() {
               return (
                 <motion.article key={curso.id} {...fadeUpScrollDelay(i * 0.1)} className="card card-elevable group flex flex-col">
                   <Link to={`/formacion/${curso.slug}`} className="relative block aspect-[4/3] bg-gradient-to-br from-verde/30 to-terracota/30 overflow-hidden" tabIndex={-1}>
-                    {curso.portadaUrl ? (
-                      <img src={imagenReducida(curso.portadaUrl, 700)} alt={curso.nombre} loading="lazy" className="zoom h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-full w-full flex flex-col items-center justify-center gap-3">
+                    <MediaTarjeta muestraUrl={curso.muestraUrl} imagenUrl={curso.portadaUrl} alt={curso.nombre}>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                         <span className="w-16 h-16 rounded-full bg-blanco/70 text-verde flex items-center justify-center zoom"><Icono size={30} /></span>
                         <span className="titulo text-verde/60 text-5xl">0{i + 1}</span>
                       </div>
-                    )}
+                    </MediaTarjeta>
                     {curso.subtitulo && <span className="chip chip-claro absolute top-3 left-3">{curso.subtitulo}</span>}
                     {curso.comprado && <span className="chip chip-verde absolute top-3 right-3"><CheckCircle2 size={12} /> Comprado</span>}
                   </Link>

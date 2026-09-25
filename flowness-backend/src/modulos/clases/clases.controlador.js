@@ -38,6 +38,7 @@ const limpiarDatos = (body) => {
   if (body.descripcion !== undefined) datos.descripcion = String(body.descripcion).trim()
   if (body.videoUrl !== undefined) datos.videoUrl = body.videoUrl ? String(body.videoUrl).trim() : null
   if (body.miniaturaUrl !== undefined) datos.miniaturaUrl = body.miniaturaUrl ? String(body.miniaturaUrl).trim() : null
+  if (body.muestraUrl !== undefined) datos.muestraUrl = body.muestraUrl ? String(body.muestraUrl).trim() : null
   if (body.duracion !== undefined) datos.duracion = body.duracion ? String(body.duracion).trim() : null
   if (body.esGratis !== undefined) datos.esGratis = Boolean(body.esGratis)
   if (body.precio !== undefined) datos.precio = Number(body.precio) || 0

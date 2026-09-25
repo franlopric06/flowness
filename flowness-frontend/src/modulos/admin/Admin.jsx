@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Layers, Clapperboard, GraduationCap, Images, Megaphone, UserRound, Settings, Users,
-  Plus, Trash2, Save, Loader2, Upload, ShieldAlert, ExternalLink,
+  Plus, Trash2, Save, Loader2, Upload, ShieldAlert, ExternalLink, X,
 } from 'lucide-react'
 import { avisar } from '../../compartido/utilidades/avisos'
 import { confirmar } from '../../compartido/utilidades/dialogos'
@@ -14,6 +14,8 @@ import AdminFases from './AdminFases'
 import AdminClases from './AdminClases'
 import AdminFormacion from './AdminFormacion'
 import AdminGaleria from './AdminGaleria'
+import CampoVideoMuestra from './CampoVideoMuestra'
+import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 
 const SECCIONES = [
   ['Fases', Layers],
@@ -105,6 +107,19 @@ function Admin() {
     guardar(() => api.eliminarAviso(aviso.id), 'Aviso eliminado')
   }
 
+  const [progresoVideo, setProgresoVideo] = useState(null)
+  const subirVideoSobreMi = async (archivo) => {
+    if (!archivo) return
+    if (archivo.size > 100 * 1024 * 1024) return mostrarMsg('El video pesa más de 100 MB. Subilo a YouTube como No listado y pegá el link.', 'error')
+    setProgresoVideo(0)
+    const { url } = await api.subirVideo(archivo, setProgresoVideo)
+    setProgresoVideo(null)
+    if (url) {
+      setForm((f) => ({ ...f, videoUrl: url }))
+      mostrarMsg('Video subido. Tocá "Guardar" para aplicarlo.', 'info')
+    }
+  }
+
   const subirFotoSobreMi = async (archivo) => {
     if (!archivo) return
     setSubiendoFoto(true)
@@ -133,6 +148,7 @@ function Admin() {
   )
 
   const fotoActual = form.fotoUrl ?? datos.sobreMi?.fotoUrl
+  const videoActual = form.videoUrl ?? datos.sobreMi?.videoUrl
 
   return (
     <main className="min-h-screen pt-20 md:pt-24">
@@ -226,6 +242,25 @@ function Admin() {
                         onChange={(e) => subirFotoSobreMi(e.target.files[0])} />
                     </label>
                   </div>
+                  <div className="md:col-span-2 border-t border-terracota/15 pt-5">
+                    <label className={estiloLabel}>Video de la historia (opcional)</label>
+                    <p className="text-piedra text-xs mb-3">Si cargás un video, se muestra en lugar de la foto: en "Sobre mí" y en el Inicio. Puede ser un link de YouTube (No listado o público) o un archivo.</p>
+                    <div className="grid md:grid-cols-[1fr_auto] gap-3 items-start">
+                      <input value={videoActual || ''} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                        placeholder="https://youtu.be/... o subí el archivo" className="input" />
+                      <div className="flex gap-2">
+                        <label className={`btn btn-chico btn-secundario cursor-pointer ${progresoVideo !== null ? 'opacity-60 pointer-events-none' : ''}`}>
+                          {progresoVideo !== null ? <><Loader2 size={14} className="animate-spin" /> {progresoVideo}%</> : <><Upload size={14} /> Subir video</>}
+                          <input type="file" accept="video/mp4,video/quicktime,video/webm" className="hidden"
+                            onChange={(e) => { subirVideoSobreMi(e.target.files[0]); e.target.value = '' }} />
+                        </label>
+                        {videoActual && (
+                          <button onClick={() => setForm({ ...form, videoUrl: '' })} className="btn btn-chico text-error hover:bg-error/5"><X size={13} /> Quitar</button>
+                        )}
+                      </div>
+                    </div>
+                    {videoActual && <div className="mt-4 max-w-md"><ReproductorVideo url={videoActual} titulo="Video de la historia" /></div>}
+                  </div>
                   <div className="space-y-4">
                     {CAMPOS_SOBRE_MI.map(([campo, label]) => (
                       <div key={campo}>
@@ -260,6 +295,12 @@ function Admin() {
                       )}
                     </div>
                   ))}
+                  <div className="md:col-span-2 border-t border-terracota/15 pt-5">
+                    <CampoVideoMuestra valor={form.hero_video ?? datos.config?.hero_video ?? ''}
+                      alCambiar={(url) => setForm({ ...form, hero_video: url })}
+                      etiqueta="Video de fondo de la portada (opcional)"
+                      ayuda="Horizontal, de 10 a 20 segundos, de Florencia en movimiento. Se ve de fondo en la portada del Inicio, sin sonido y en bucle, con un velo verde encima para que se lean los textos." />
+                  </div>
                   <div className="md:col-span-2">
                     {botonGuardar('Guardar configuración', () => {
                       if (Object.keys(form).length === 0) return mostrarMsg('No hiciste cambios todavía.', 'info')

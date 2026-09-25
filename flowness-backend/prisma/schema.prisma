@@ -53,6 +53,7 @@ model Fase {
   nombre      String
   descripcion String
   videoUrl    String?
+  muestraUrl  String?  // video corto (10-20 s) que se reproduce solo, sin sonido, en la tarjeta
   activo      Boolean  @default(true)
   creadoEn    DateTime @default(now())
 
@@ -76,6 +77,7 @@ model Clase {
   descripcion  String
   videoUrl     String?
   miniaturaUrl String?
+  muestraUrl   String?  // video corto de muestra para la tarjeta (no es la clase completa)
   duracion     String?
   precio       Float    @default(0)
   esGratis     Boolean  @default(false)
@@ -107,6 +109,7 @@ model Curso {
   totalVideos Int?
   precio      Float    @default(0)
   portadaUrl  String?
+  muestraUrl  String?  // video corto de muestra para la tarjeta del nivel
   orden       Int      @default(0)
   activo      Boolean  @default(true)
   creadoEn    DateTime @default(now())
@@ -212,6 +215,7 @@ model SobreMi {
   descripcion1  String
   descripcion2  String
   fotoUrl       String?
+  videoUrl      String?  // video de la historia (YouTube o subido). Si hay video, se muestra en vez de la foto
   actualizadoEn DateTime @updatedAt
 }
 

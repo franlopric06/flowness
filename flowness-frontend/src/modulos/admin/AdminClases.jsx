@@ -3,10 +3,11 @@ import { Plus, Pencil, Eye, EyeOff, Save, Loader2, Upload, X, AlertCircle, Spark
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { esLinkValido, formatearPrecio } from '../../compartido/utilidades/video'
+import CampoVideoMuestra from './CampoVideoMuestra'
 import * as api from './admin.servicio'
 
 const FORM_VACIO = {
-  nombre: '', descripcion: '', videoUrl: '', miniaturaUrl: '',
+  nombre: '', descripcion: '', videoUrl: '', miniaturaUrl: '', muestraUrl: '',
   duracion: '', precio: '', esGratis: false, orden: '', activo: true,
 }
 
@@ -44,6 +45,7 @@ function AdminClases({ mostrarMsg }) {
       descripcion: clase.descripcion || '',
       videoUrl: clase.videoUrl || '',
       miniaturaUrl: clase.miniaturaUrl || '',
+      muestraUrl: clase.muestraUrl || '',
       duracion: clase.duracion || '',
       precio: clase.precio || '',
       esGratis: clase.esGratis,
@@ -145,6 +147,13 @@ function AdminClases({ mostrarMsg }) {
               {form.videoUrl && esLinkValido(form.videoUrl) && (
                 <div className="mt-3 max-w-md"><ReproductorVideo url={form.videoUrl} titulo="Vista previa" /></div>
               )}
+            </div>
+
+            {/* Adelanto en video */}
+            <div className="md:col-span-2">
+              <CampoVideoMuestra valor={form.muestraUrl} alCambiar={(url) => cambiar('muestraUrl', url)}
+                etiqueta="Adelanto de la clase (se ve en la tarjeta)"
+                ayuda="Horizontal, de 10 a 20 segundos, con lo mejor de la clase. Es un video aparte: la clase completa sigue protegida." />
             </div>
 
             {/* Miniatura */}

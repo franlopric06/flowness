@@ -27,3 +27,19 @@ export const urlEmbedInstagram = (url) => {
 // Los PDF guardados en Cloudinary no se abren bien directo en el navegador:
 // se muestran con el visor de Google Docs
 export const urlVisorPdf = (url = '') => `https://docs.google.com/viewer?url=${encodeURIComponent(url)}`
+
+// ── Videos cortos de muestra (tarjetas) ─────────
+// Cloudinary achica el video, lo corta a los primeros 20 segundos, le saca
+// el sonido y lo comprime; así carga rápido aunque el original sea pesado.
+export const esVideoCloudinary = (url = '') => /res\.cloudinary\.com\/.+\/video\/upload\//.test(url)
+
+export const videoMuestra = (url = '', ancho = 720) =>
+  esVideoCloudinary(url)
+    ? url.replace('/upload/', `/upload/eo_20,ac_none,q_auto,vc_auto,c_limit,w_${ancho}/`).replace(/\.[a-z0-9]+$/i, '.mp4')
+    : url
+
+// Imagen fija del primer segundo del video (se ve mientras carga)
+export const portadaVideo = (url = '', ancho = 720) =>
+  esVideoCloudinary(url)
+    ? url.replace('/upload/', `/upload/so_1,q_auto,c_limit,w_${ancho}/`).replace(/\.[a-z0-9]+$/i, '.jpg')
+    : ''

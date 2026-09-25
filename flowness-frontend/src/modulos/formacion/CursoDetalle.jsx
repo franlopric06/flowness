@@ -2,17 +2,19 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  ArrowLeft, ArrowRight, Clock, PlayCircle, FileText, Lock, PlusCircle, ShieldCheck, Loader2, ShoppingBag,
+  ArrowLeft, ArrowRight, Clock, PlayCircle, FileText, Lock, PlusCircle, ShieldCheck, ShoppingBag,
   UserPlus, Users, ListOrdered, CheckCircle2, Hourglass, SearchX, PartyPopper,
 } from 'lucide-react'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
+import VideoMuestra from '../../compartido/componentes/VideoMuestra'
+import SellosConfianza from '../../compartido/componentes/SellosConfianza'
+import MediosDePago from '../../compartido/componentes/MediosDePago'
 import { fadeUp, fadeUpDelay, fadeUpScroll, listItem, tabContent } from '../../compartido/utilidades/animaciones'
 import { avisar } from '../../compartido/utilidades/avisos'
 import { formatearPrecio } from '../../compartido/utilidades/video'
 import { imagenReducida, urlVisorPdf } from '../../compartido/utilidades/medios'
 import { obtenerCurso } from './formacion.servicio'
-import { comprarCurso } from '../pagos/pagos.servicio'
 
 // Página de un nivel de la Formación.
 // - Si todavía no lo compró: página de venta (info, temario y botón Comprar).
@@ -68,33 +70,23 @@ function Volver() {
 // Página de venta
 // ─────────────────────────────────────────────
 function PaginaVenta({ curso }) {
-  const [comprando, setComprando] = useState(false)
   const navigate = useNavigate()
   const hayUsuario = !!localStorage.getItem('token')
   const faltan = Math.max((curso.totalVideos || 0) - curso.lecciones.length, 0)
   const cantidadVideos = curso.totalVideos || curso.lecciones.length
 
-  const comprar = async () => {
+  const comprar = () => {
+    const destino = `/pagar?curso=${curso.id}`
     if (!hayUsuario) {
       avisar('Creá tu cuenta o ingresá para comprar el curso.', 'info')
-      return navigate(`/ingresar?modo=registro&volver=/formacion/${curso.slug}`)
+      return navigate(`/ingresar?modo=registro&volver=${encodeURIComponent(destino)}`)
     }
-    setComprando(true)
-    try {
-      const { init_point } = await comprarCurso(curso.id)
-      avisar('Te llevamos a Mercado Pago…', 'info')
-      window.location.assign(init_point)
-    } catch {
-      // El aviso de error ya lo muestra el cliente de la API
-      setComprando(false)
-    }
+    navigate(destino)
   }
 
   const botonCompra = curso.disponibleParaComprar ? (
-    <button onClick={comprar} disabled={comprando} className="btn btn-primario btn-brillo w-full">
-      {comprando
-        ? <><Loader2 size={16} className="animate-spin" /> Redirigiendo…</>
-        : hayUsuario ? <><ShoppingBag size={16} /> Comprar</> : <><UserPlus size={16} /> Registrate para comprar</>}
+    <button onClick={comprar} className="btn btn-primario btn-brillo w-full">
+      {hayUsuario ? <><ShoppingBag size={16} /> Comprar</> : <><UserPlus size={16} /> Registrate para comprar</>}
     </button>
   ) : (
     <p className="flex items-center justify-center gap-2 text-piedra text-xs tracking-[0.16em] uppercase py-3.5 border border-piedra/40 rounded-full">
@@ -122,12 +114,17 @@ function PaginaVenta({ curso }) {
         </div>
       </header>
 
+      <MediosDePago className="mb-10" />
+
       <div className="contenedor grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
         {/* Información */}
         <div>
-          {curso.portadaUrl && (
-            <motion.img {...fadeUp} src={imagenReducida(curso.portadaUrl, 1100)} alt={curso.nombre}
-              className="w-full aspect-video object-cover rounded-3xl shadow-media mb-10" />
+          {(curso.muestraUrl || curso.portadaUrl) && (
+            <motion.div {...fadeUp} className="relative w-full aspect-video rounded-xl overflow-hidden shadow-media mb-10 bg-arena">
+              {curso.muestraUrl
+                ? <VideoMuestra src={curso.muestraUrl} portada={curso.portadaUrl ? imagenReducida(curso.portadaUrl, 1100) : undefined} ancho={1100} />
+                : <img src={imagenReducida(curso.portadaUrl, 1100)} alt={curso.nombre} className="absolute inset-0 w-full h-full object-cover" />}
+            </motion.div>
           )}
 
           {curso.descripcion && (
@@ -190,6 +187,7 @@ function PaginaVenta({ curso }) {
           <p className="hidden lg:flex items-center justify-center gap-1.5 text-piedra text-[0.7rem] mt-3">
             <ShieldCheck size={13} /> Pagás de forma segura con Mercado Pago
           </p>
+          <SellosConfianza compacto className="mt-5 pt-5 border-t border-terracota/15" />
         </motion.aside>
       </div>
 

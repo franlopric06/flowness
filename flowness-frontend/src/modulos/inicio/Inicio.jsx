@@ -1,11 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   ArrowRight, ChevronDown, Clock, Lock, Megaphone, PlayCircle, Sprout, TrendingUp, Award, Sparkles, Images, Film,
 } from 'lucide-react'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import Medio from '../../compartido/componentes/Medio'
+import MediaTarjeta from '../../compartido/componentes/MediaTarjeta'
+import VideoMuestra from '../../compartido/componentes/VideoMuestra'
+import MediosDePago from '../../compartido/componentes/MediosDePago'
+import FasesEnVideo from './FasesEnVideo'
 import VisorMedios from '../../compartido/componentes/VisorMedios'
 import TituloSeccion from '../../compartido/componentes/TituloSeccion'
 import Carrusel from '../../compartido/componentes/Carrusel'
@@ -21,11 +25,11 @@ import { obtenerGaleria } from '../galeria/galeria.servicio'
 const ICONOS_NIVEL = [Sprout, TrendingUp, Award]
 
 // Título de la portada que aparece letra por letra (o palabra por palabra)
-function TituloAnimado({ texto }) {
+function TituloAnimado({ texto, claro = false }) {
   const partes = texto.includes(' ') ? texto.split(' ') : [...texto]
   const separador = texto.includes(' ') ? ' ' : ''
   return (
-    <h1 className="titulo text-verde text-6xl sm:text-7xl md:text-8xl leading-none" aria-label={texto}>
+    <h1 className={`titulo text-6xl sm:text-7xl md:text-8xl leading-none ${claro ? 'text-blanco drop-shadow-lg' : 'text-verde'}`} aria-label={texto}>
       {partes.map((parte, i) => (
         <motion.span key={i} aria-hidden="true" className="inline-block"
           initial={{ opacity: 0, y: 30, filter: 'blur(6px)' }}
@@ -35,51 +39,6 @@ function TituloAnimado({ texto }) {
         </motion.span>
       ))}
     </h1>
-  )
-}
-
-// Línea de tiempo de las fases: la línea se va dibujando a medida que bajás
-function LineaFases({ fases }) {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 60%'] })
-  const progreso = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
-
-  return (
-    <div ref={ref} className="relative max-w-4xl mx-auto">
-      {/* Línea de fondo y línea que se dibuja */}
-      <span className="absolute left-5 lg:left-1/2 top-2 bottom-2 w-px bg-terracota/25 lg:-translate-x-1/2" aria-hidden="true" />
-      <motion.span style={{ scaleY: progreso }}
-        className="absolute left-5 lg:left-1/2 top-2 bottom-2 w-px bg-verde origin-top lg:-translate-x-1/2" aria-hidden="true" />
-
-      <ol className="space-y-10 lg:space-y-16">
-        {fases.map((fase, i) => {
-          const derecha = i % 2 === 1
-          return (
-            <li key={fase.id} className={`relative pl-16 lg:pl-0 lg:w-1/2 ${derecha ? 'lg:ml-auto lg:pl-14' : 'lg:pr-14 lg:text-right'}`}>
-              {/* Número */}
-              <motion.span
-                initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true, margin: '-40px' }}
-                transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                className={`absolute top-0 left-0 lg:top-1 w-10 h-10 rounded-full bg-verde text-blanco flex items-center justify-center titulo text-lg shadow-media ring-4 ring-crema ${
-                  derecha ? 'lg:-left-5' : 'lg:left-auto lg:-right-5'
-                }`}>
-                {fase.numero}
-              </motion.span>
-
-              <motion.div
-                initial={{ opacity: 0, x: derecha ? 30 : -30 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.5, ease: 'easeOut' }}
-                className="card card-elevable p-5 md:p-6 text-left">
-                <p className="etiqueta mb-1">Fase {fase.numero}</p>
-                <h3 className="titulo text-verde text-2xl mb-3">{fase.nombre}</h3>
-                <p className="text-texto/80 text-sm leading-relaxed whitespace-pre-line">{fase.descripcion}</p>
-                {fase.videoUrl && <div className="mt-4"><ReproductorVideo url={fase.videoUrl} titulo={fase.nombre} /></div>}
-              </motion.div>
-            </li>
-          )
-        })}
-      </ol>
-    </div>
   )
 }
 
@@ -103,6 +62,7 @@ function Inicio() {
   const heroTitulo = configuracion.hero_titulo || 'Flowness'
   const heroSubtitulo = configuracion.hero_subtitulo || 'Movilidad · Flexibilidad · Mindfulness'
   const heroDescripcion = configuracion.hero_descripcion || 'Un método de movilidad, flexibilidad y mindfulness para moverte mejor y sentirte bien, cuerpo y mente en armonía.'
+  const heroVideo = configuracion.hero_video || ''
 
   const listaClases = clases || []
   const hayClaseGratis = listaClases.some((c) => c.esGratis)
@@ -115,18 +75,25 @@ function Inicio() {
 
       {/* ── PORTADA ──────────────────────────── */}
       <section className="relative isolate min-h-[88svh] flex flex-col items-center justify-center text-center px-5 py-16 overflow-hidden">
+        {/* Video de fondo (si está cargado en Configuración) con un velo verde encima */}
+        {heroVideo && (
+          <div className="absolute inset-0 -z-10" aria-hidden="true">
+            <VideoMuestra src={heroVideo} ancho={1600} />
+            <div className="absolute inset-0 bg-gradient-to-b from-verde-oscuro/70 via-verde/55 to-verde-oscuro/80" />
+          </div>
+        )}
         {/* Manchas de color que "respiran" */}
-        <div className="absolute inset-0 -z-10" aria-hidden="true">
+        <div className={`absolute inset-0 -z-10 ${heroVideo ? 'hidden' : ''}`} aria-hidden="true">
           <span className="absolute -top-24 -left-24 w-80 h-80 md:w-[28rem] md:h-[28rem] rounded-full bg-verde/30 blur-3xl animate-respirar" />
           <span className="absolute top-1/3 -right-28 w-72 h-72 md:w-[26rem] md:h-[26rem] rounded-full bg-terracota/35 blur-3xl animate-respirar-lento" />
           <span className="absolute -bottom-24 left-1/4 w-72 h-72 md:w-[24rem] md:h-[24rem] rounded-full bg-arena/70 blur-3xl animate-respirar" />
         </div>
 
-        <motion.p className="etiqueta mb-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <motion.p className={`etiqueta mb-5 ${heroVideo ? '!text-arena' : ''}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           {heroSubtitulo}
         </motion.p>
-        <TituloAnimado texto={heroTitulo} />
-        <motion.p className="text-texto/75 text-sm md:text-lg max-w-xl leading-relaxed mt-6 mb-10 whitespace-pre-line"
+        <TituloAnimado texto={heroTitulo} claro={!!heroVideo} />
+        <motion.p className={`text-sm md:text-lg max-w-xl leading-relaxed mt-6 mb-10 whitespace-pre-line ${heroVideo ? 'text-blanco/90' : 'text-texto/75'}`}
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
           {heroDescripcion}
         </motion.p>
@@ -135,20 +102,22 @@ function Inicio() {
           <Link to="/clases" className="btn btn-primario btn-brillo">
             <PlayCircle size={16} /> {hayClaseGratis ? 'Probá una clase gratis' : 'Ver clases'}
           </Link>
-          <Link to="/formacion" className="btn btn-secundario">Formación profesional</Link>
+          <Link to="/formacion" className={`btn ${heroVideo ? 'btn-contorno-claro' : 'btn-secundario'}`}>Formación profesional</Link>
         </motion.div>
 
         {/* Fundido suave hacia la sección siguiente */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-crema -z-10" aria-hidden="true" />
+        {!heroVideo && <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-crema -z-10" aria-hidden="true" />}
 
-        <a href="#metodo" aria-label="Bajar" className="absolute bottom-6 left-1/2 -translate-x-1/2 text-verde/70 animate-bounce-slow">
+        <a href="#metodo" aria-label="Bajar" className={`absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce-slow ${heroVideo ? 'text-blanco/80' : 'text-verde/70'}`}>
           <ChevronDown size={28} />
         </a>
       </section>
 
+      <MediosDePago />
+
       {/* ── NOVEDADES ────────────────────────── */}
       {avisos.length > 0 && (
-        <section className="contenedor pb-4">
+        <section className="contenedor pt-10 pb-4">
           <div className={`grid gap-4 ${avisos.length > 1 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'}`}>
             {avisos.map((aviso, i) => (
               <motion.article key={aviso.id} {...fadeUpScrollDelay(i * 0.08)} className="card-vidrio p-5 flex gap-4 items-start">
@@ -166,13 +135,15 @@ function Inicio() {
 
       {/* ── EL MÉTODO: LAS FASES ─────────────── */}
       {fases.length > 0 && (
-        <section id="metodo" className="contenedor py-20 md:py-28 scroll-mt-20">
-          <TituloSeccion
-            etiqueta="El método"
-            titulo={`Las ${fases.length} fases de Flowness`}
-            texto="Cada clase recorre estas fases, una después de la otra. Así, en cada práctica trabajás el cuerpo y la mente de forma completa."
-          />
-          <LineaFases fases={fases} />
+        <section id="metodo" className="patron-marca bg-verde py-20 md:py-28 mt-16 scroll-mt-20">
+          <div className="contenedor">
+            <TituloSeccion claro
+              etiqueta="El método"
+              titulo={`Las ${fases.length} fases de Flowness`}
+              texto="Cada clase recorre estas fases, una después de la otra. Así, en cada práctica trabajás el cuerpo y la mente de forma completa."
+            />
+            <FasesEnVideo fases={fases} />
+          </div>
         </section>
       )}
 
@@ -192,9 +163,7 @@ function Inicio() {
                 <motion.div key={clase.id} {...fadeUpScrollDelay(i * 0.1)}>
                   <Link to="/clases" className="card card-elevable group block h-full">
                     <div className="relative aspect-video bg-gradient-to-br from-verde/25 to-terracota/25 flex items-center justify-center overflow-hidden">
-                      {clase.miniaturaUrl
-                        ? <img src={imagenReducida(clase.miniaturaUrl, 600)} alt={clase.nombre} loading="lazy" className="zoom h-full w-full object-cover" />
-                        : <img src="/logo.png" alt="" className="zoom h-14 w-14 opacity-40" />}
+                      <MediaTarjeta muestraUrl={clase.muestraUrl} imagenUrl={clase.miniaturaUrl} alt={clase.nombre} ancho={640} />
                       <span className={`chip absolute top-3 left-3 ${clase.esGratis ? 'chip-terracota' : 'chip-claro'}`}>
                         {clase.esGratis ? <><Sparkles size={12} /> Gratis</> : <><Lock size={11} /> {formatearPrecio(clase.precio)}</>}
                       </span>
@@ -228,18 +197,23 @@ function Inicio() {
             texto="Tres niveles para profesores de educación física, entrenadores y profesionales del movimiento. Método con marca registrada a nivel nacional."
           />
           {cursos === null ? (
-            <EsqueletoGrilla cantidad={3} imagen="h-0" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" />
+            <EsqueletoGrilla cantidad={3} imagen="aspect-[16/10]" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               {cursos.map((curso, i) => {
                 const Icono = ICONOS_NIVEL[i % ICONOS_NIVEL.length]
                 return (
                   <motion.div key={curso.id} {...fadeUpScrollDelay(i * 0.12)}>
-                    <Link to={`/formacion/${curso.slug}`} className="card card-elevable group p-6 md:p-7 flex flex-col h-full">
-                      <div className="flex items-center justify-between mb-5">
-                        <span className="icono-caja bg-verde/15 text-verde group-hover:bg-verde group-hover:text-blanco transition-colors"><Icono size={20} /></span>
-                        <span className="titulo text-5xl text-terracota/30 leading-none">0{i + 1}</span>
+                    <Link to={`/formacion/${curso.slug}`} className="card card-elevable group flex flex-col h-full">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-verde/35 to-terracota/35">
+                        <MediaTarjeta muestraUrl={curso.muestraUrl} imagenUrl={curso.portadaUrl} alt={curso.nombre} ancho={640}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="w-16 h-16 rounded-full bg-blanco/80 text-verde flex items-center justify-center zoom"><Icono size={28} /></span>
+                          </div>
+                        </MediaTarjeta>
+                        <span className="absolute top-3 right-3 titulo text-4xl text-blanco drop-shadow leading-none">0{i + 1}</span>
                       </div>
+                      <div className="p-6 md:p-7 flex flex-col flex-1">
                       <p className="etiqueta mb-1">{curso.subtitulo || `Nivel ${i + 1}`}</p>
                       <h3 className="titulo text-verde text-3xl mb-3">{curso.nombre}</h3>
                       {curso.descripcion && <p className="text-texto/75 text-sm leading-relaxed mb-5 line-clamp-3 flex-1">{curso.descripcion}</p>}
@@ -248,6 +222,7 @@ function Inicio() {
                           {curso.disponibleParaComprar ? formatearPrecio(curso.precio) : 'Próximamente'}
                         </p>
                         <ArrowRight size={18} className="text-verde transition-transform group-hover:translate-x-1" />
+                      </div>
                       </div>
                     </Link>
                   </motion.div>
@@ -261,15 +236,31 @@ function Inicio() {
         </section>
       )}
 
-      {/* ── SOBRE MÍ ─────────────────────────── */}
-      {sobreMi && (
-        <section className="bg-arena/40 py-20 md:py-28">
+      {/* ── SOBRE MÍ / LA HISTORIA ────────────── */}
+      {sobreMi && sobreMi.videoUrl && (
+        <section className="bg-arena/50 py-20 md:py-28">
+          <div className="contenedor max-w-5xl">
+            <TituloSeccion etiqueta="La historia" titulo="Cómo nació Flowness" />
+            <motion.div {...fadeUpScroll} className="rounded-xl overflow-hidden shadow-alta bg-black">
+              <ReproductorVideo url={sobreMi.videoUrl} titulo="La historia de Flowness" />
+            </motion.div>
+            <motion.div {...fadeUpScrollDelay(0.1)} className="text-center max-w-2xl mx-auto mt-10">
+              <h3 className="titulo text-verde text-3xl md:text-4xl mb-1">{sobreMi.nombre}</h3>
+              <p className="text-piedra text-sm tracking-wide mb-5">{sobreMi.titulo}</p>
+              <p className="text-texto/80 text-sm md:text-base leading-relaxed mb-7 line-clamp-4 whitespace-pre-line">{sobreMi.descripcion1}</p>
+              <Link to="/sobre-mi" className="btn btn-secundario">Conocé más sobre mí <ArrowRight size={16} /></Link>
+            </motion.div>
+          </div>
+        </section>
+      )}
+      {sobreMi && !sobreMi.videoUrl && (
+        <section className="bg-arena/50 py-20 md:py-28">
           <div className="contenedor max-w-5xl flex flex-col md:flex-row gap-12 md:gap-16 items-center">
             {sobreMi.fotoUrl && (
               <motion.div {...fadeUpScroll} className="relative shrink-0">
-                <span className="absolute inset-0 translate-x-3 translate-y-3 rounded-[2rem] border-2 border-terracota" aria-hidden="true" />
+                <span className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl border-2 border-terracota" aria-hidden="true" />
                 <img src={imagenReducida(sobreMi.fotoUrl, 600)} alt={sobreMi.nombre}
-                  className="relative w-60 h-72 md:w-72 md:h-88 rounded-[2rem] object-cover shadow-alta" />
+                  className="relative w-60 h-72 md:w-72 md:h-88 rounded-xl object-cover shadow-alta" />
               </motion.div>
             )}
             <motion.div {...fadeUpScrollDelay(0.15)} className="text-center md:text-left">

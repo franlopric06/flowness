@@ -69,6 +69,7 @@
   --animate-bounce-slow: bounce 2s infinite;
   --animate-spin-slow: spin 3s linear infinite;
   --animate-ping-slow: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-desplazar: desplazar 40s linear infinite;
 }
 
 /* Manchas de color que "respiran" en el fondo de la portada */
@@ -82,6 +83,12 @@
 @keyframes brillo {
   0% { transform: translateX(-120%) skewX(-20deg); }
   60%, 100% { transform: translateX(220%) skewX(-20deg); }
+}
+
+/* Franja de medios de pago que se desliza */
+@keyframes desplazar {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* Esqueleto de carga */

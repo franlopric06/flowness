@@ -18,13 +18,14 @@ import Ingresar from '../modulos/auth/Ingresar'
 import MiCuenta from '../modulos/cuenta/MiCuenta'
 import PagoExitoso from '../modulos/pagos/PagoExitoso'
 import PagoFallido from '../modulos/pagos/PagoFallido'
+import Pagar from '../modulos/pagos/Pagar'
 import Admin from '../modulos/admin/Admin'
 
 function App() {
   const ubicacion = useLocation()
   const esAdmin = ubicacion.pathname.startsWith('/admin')
   // En la página de un curso hay una barra de compra fija abajo: no se tapan con los flotantes
-  const sinFlotantes = esAdmin || ubicacion.pathname.startsWith('/formacion/')
+  const sinFlotantes = esAdmin || ubicacion.pathname.startsWith('/formacion/') || ubicacion.pathname === '/pagar'
 
   return (
     // reducedMotion="user": si la persona pidió "reducir movimiento" en su equipo, no se anima nada
@@ -56,6 +57,7 @@ function App() {
           <Route path="/mi-cuenta" element={<MiCuenta />} />
           <Route path="/pago-exitoso" element={<PagoExitoso />} />
           <Route path="/pago-fallido" element={<PagoFallido />} />
+          <Route path="/pagar" element={<Pagar />} />
         </Routes>
       </motion.div>
 

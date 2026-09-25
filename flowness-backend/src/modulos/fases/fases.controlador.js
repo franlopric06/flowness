@@ -9,6 +9,7 @@ const limpiar = (body) => {
   if (body.nombre !== undefined) datos.nombre = String(body.nombre).trim()
   if (body.descripcion !== undefined) datos.descripcion = String(body.descripcion || '').trim()
   if (body.videoUrl !== undefined) datos.videoUrl = body.videoUrl ? String(body.videoUrl).trim() : null
+  if (body.muestraUrl !== undefined) datos.muestraUrl = body.muestraUrl ? String(body.muestraUrl).trim() : null
   if (body.activo !== undefined) datos.activo = Boolean(body.activo)
   return datos
 }

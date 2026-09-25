@@ -4,9 +4,10 @@ import { confirmar } from '../../compartido/utilidades/dialogos'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { esLinkValido } from '../../compartido/utilidades/video'
+import CampoVideoMuestra from './CampoVideoMuestra'
 import * as api from './admin.servicio'
 
-const FORM_VACIO = { numero: '', nombre: '', descripcion: '', videoUrl: '' }
+const FORM_VACIO = { numero: '', nombre: '', descripcion: '', videoUrl: '', muestraUrl: '' }
 const estiloInput = 'input'
 const estiloLabel = 'text-piedra text-[0.68rem] font-semibold tracking-[0.16em] uppercase block mb-1.5'
 const botonVerde = 'btn btn-primario btn-chico'
@@ -38,7 +39,7 @@ function AdminFases({ mostrarMsg }) {
 
   const editar = (fase) => {
     vibrar()
-    setForm({ numero: fase.numero, nombre: fase.nombre, descripcion: fase.descripcion || '', videoUrl: fase.videoUrl || '' })
+    setForm({ numero: fase.numero, nombre: fase.nombre, descripcion: fase.descripcion || '', videoUrl: fase.videoUrl || '', muestraUrl: fase.muestraUrl || '' })
     setEditandoId(fase.id)
     setError('')
     setAbierto(true)
@@ -101,7 +102,12 @@ function AdminFases({ mostrarMsg }) {
                 className="input" />
             </div>
             <div className="md:col-span-2">
-              <label className={estiloLabel}>Video de muestra en YouTube (opcional)</label>
+              <CampoVideoMuestra valor={form.muestraUrl} alCambiar={(url) => cambiar('muestraUrl', url)} formato="aspect-[9/16]"
+                etiqueta="Video corto de la fase (se ve en la tarjeta)"
+                ayuda="Vertical, de 10 a 20 segundos, mostrando el movimiento de esta fase. Se ve de fondo, sin sonido y en bucle." />
+            </div>
+            <div className="md:col-span-2">
+              <label className={estiloLabel}>Video completo en YouTube (opcional)</label>
               <input value={form.videoUrl} onChange={(e) => cambiar('videoUrl', e.target.value)} placeholder="https://youtu.be/..." className={estiloInput} />
               {form.videoUrl && esLinkValido(form.videoUrl) && (
                 <div className="mt-3 max-w-sm"><ReproductorVideo url={form.videoUrl} titulo="Vista previa" /></div>

@@ -3,6 +3,7 @@ import { Plus, Pencil, Eye, EyeOff, Save, Loader2, Upload, X, AlertCircle, FileT
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { esLinkValido, formatearPrecio } from '../../compartido/utilidades/video'
+import CampoVideoMuestra from './CampoVideoMuestra'
 import * as api from './admin.servicio'
 import { urlVisorPdf } from '../../compartido/utilidades/medios'
 
@@ -75,6 +76,7 @@ function FormularioCurso({ curso, mostrarMsg, alGuardar }) {
     totalVideos: curso.totalVideos ?? '',
     precio: curso.precio || '',
     portadaUrl: curso.portadaUrl || '',
+    muestraUrl: curso.muestraUrl || '',
     activo: curso.activo,
   })
   const [guardando, setGuardando] = useState(false)
@@ -150,6 +152,11 @@ function FormularioCurso({ curso, mostrarMsg, alGuardar }) {
             <input type="checkbox" checked={form.activo} onChange={(e) => cambiar('activo', e.target.checked)} />
             Publicado (visible en la página)
           </label>
+        </div>
+        <div className="md:col-span-2">
+          <CampoVideoMuestra valor={form.muestraUrl} alCambiar={(url) => cambiar('muestraUrl', url)}
+            etiqueta="Video corto del nivel (se ve en la tarjeta y en su página)"
+            ayuda="Horizontal, de 10 a 20 segundos, que muestre de qué se trata este nivel." />
         </div>
         <div className="md:col-span-2">
           <label className={estiloLabel}>Imagen de portada</label>

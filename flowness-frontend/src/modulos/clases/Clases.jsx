@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Clock, Lock, PlayCircle, Sparkles, CheckCircle2, ShoppingBag, UserPlus, Loader2, Clapperboard, WifiOff } from 'lucide-react'
+import { Clock, Lock, PlayCircle, Sparkles, CheckCircle2, ShoppingBag, UserPlus, Clapperboard, WifiOff } from 'lucide-react'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
+import MediaTarjeta from '../../compartido/componentes/MediaTarjeta'
+import MediosDePago from '../../compartido/componentes/MediosDePago'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import Modal from '../../compartido/componentes/Modal'
 import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
 import { fadeUpScrollDelay } from '../../compartido/utilidades/animaciones'
 import { avisar } from '../../compartido/utilidades/avisos'
 import { formatearPrecio } from '../../compartido/utilidades/video'
-import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerClases } from './clases.servicio'
-import { crearPreferencia } from '../pagos/pagos.servicio'
 
 // Catálogo de clases: lo ve cualquiera.
 // - Gratis: se ve registrándose.
@@ -23,7 +23,6 @@ function Clases() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
   const [claseAbierta, setClaseAbierta] = useState(null)
-  const [comprando, setComprando] = useState(null)
   const navigate = useNavigate()
   const hayUsuario = !!localStorage.getItem('token')
 
@@ -36,20 +35,12 @@ function Clases() {
 
   const irAIngresar = (modo) => navigate(`/ingresar?modo=${modo}&volver=/clases`)
 
-  const comprar = async (clase) => {
+  const comprar = (clase) => {
     if (!hayUsuario) {
       avisar('Creá tu cuenta o ingresá para comprar la clase.', 'info')
-      return irAIngresar('registro')
+      return navigate(`/ingresar?modo=registro&volver=${encodeURIComponent(`/pagar?clase=${clase.id}`)}`)
     }
-    setComprando(clase.id)
-    try {
-      const { init_point } = await crearPreferencia(clase.id)
-      avisar('Te llevamos a Mercado Pago…', 'info')
-      window.location.assign(init_point)
-    } catch {
-      // El aviso de error ya lo muestra el cliente de la API
-      setComprando(null)
-    }
+    navigate(`/pagar?clase=${clase.id}`)
   }
 
   const accionPrincipal = (clase) => {
@@ -68,10 +59,8 @@ function Clases() {
       )
     }
     return (
-      <button onClick={() => comprar(clase)} disabled={comprando === clase.id} className="btn btn-secundario w-full">
-        {comprando === clase.id
-          ? <><Loader2 size={16} className="animate-spin" /> Redirigiendo…</>
-          : <><ShoppingBag size={16} /> Comprar · {formatearPrecio(clase.precio)}</>}
+      <button onClick={() => comprar(clase)} className="btn btn-secundario w-full">
+        <ShoppingBag size={16} /> Comprar · {formatearPrecio(clase.precio)}
       </button>
     )
   }
@@ -83,6 +72,8 @@ function Clases() {
         titulo="Clases"
         texto="Cada clase recorre las fases del método. Registrate y mirá la primera gratis; las demás las comprás de a una y quedan en tu cuenta para siempre."
       />
+
+      <MediosDePago className="mb-10" />
 
       <div className="contenedor">
         {cargando ? (
@@ -97,13 +88,7 @@ function Clases() {
               <motion.article key={clase.id} {...fadeUpScrollDelay((i % 3) * 0.08)} className="card card-elevable group flex flex-col">
                 {/* Miniatura */}
                 <div className="relative aspect-video bg-gradient-to-br from-verde/25 to-terracota/25 overflow-hidden">
-                  {clase.miniaturaUrl ? (
-                    <img src={imagenReducida(clase.miniaturaUrl, 700)} alt={clase.nombre} loading="lazy" className="zoom h-full w-full object-cover" />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center">
-                      <img src="/logo.png" alt="" className="zoom h-16 w-16 opacity-40" />
-                    </div>
-                  )}
+                  <MediaTarjeta muestraUrl={clase.muestraUrl} imagenUrl={clase.miniaturaUrl} alt={clase.nombre} />
 
                   <div className="absolute top-3 left-3 flex gap-2">
                     {clase.esGratis && <span className="chip chip-terracota"><Sparkles size={12} /> Gratis</span>}

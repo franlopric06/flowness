@@ -4,7 +4,7 @@ import { Children, useRef, useState } from 'react'
 // (con "imán" para que queden alineados) y abajo hay puntitos que muestran
 // en cuál estás. En computadora se usa el diseño que se pase en claseEscritorio
 // (por ejemplo una grilla), así no hace falta deslizar.
-function Carrusel({ children, claseEscritorio = '', claseCelular = 'flex gap-3', puntos = true }) {
+function Carrusel({ children, claseEscritorio = '', claseCelular = 'flex gap-3', puntos = true, claro = false }) {
   const ref = useRef(null)
   const [actual, setActual] = useState(0)
   const cantidad = Children.count(children)
@@ -37,13 +37,13 @@ function Carrusel({ children, claseEscritorio = '', claseCelular = 'flex gap-3',
         {children}
       </div>
       {puntos && cantidad > 8 && (
-        <p className="md:hidden text-center text-piedra text-xs tracking-widest mt-4">{actual + 1} / {cantidad}</p>
+        <p className={`md:hidden text-center text-xs tracking-widest mt-4 ${claro ? 'text-blanco/70' : 'text-piedra'}`}>{actual + 1} / {cantidad}</p>
       )}
       {puntos && cantidad > 1 && cantidad <= 8 && (
         <div className="md:hidden flex justify-center gap-1.5 mt-4" role="tablist" aria-label="Elegir elemento">
           {Array.from({ length: cantidad }).map((_, i) => (
             <button key={i} onClick={() => irA(i)} aria-label={`Ir al ${i + 1}`} aria-selected={actual === i} role="tab"
-              className={`h-1.5 rounded-full transition-all duration-300 ${actual === i ? 'w-6 bg-verde' : 'w-1.5 bg-verde/30'}`} />
+              className={`h-1.5 rounded-full transition-all duration-300 ${actual === i ? `w-6 ${claro ? 'bg-blanco' : 'bg-verde'}` : `w-1.5 ${claro ? 'bg-blanco/40' : 'bg-verde/30'}`}`} />
           ))}
         </div>
       )}

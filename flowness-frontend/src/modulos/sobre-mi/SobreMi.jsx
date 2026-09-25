@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, PlayCircle, Quote, UserRound } from 'lucide-react'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
+import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { fadeUpDelay, fadeUpScroll } from '../../compartido/utilidades/animaciones'
 import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerDatosPublicos } from '../../compartido/servicios/publico.servicio'
@@ -17,7 +18,7 @@ function SobreMi() {
   if (sobreMi === undefined) {
     return (
       <main className="contenedor pt-32 min-h-screen grid md:grid-cols-[320px_1fr] gap-10" role="status" aria-label="Cargando">
-        <div className="esqueleto aspect-[4/5] rounded-[2rem]" />
+        <div className="esqueleto aspect-[4/5] rounded-xl" />
         <div className="space-y-4">
           <div className="esqueleto h-3 w-24" /><div className="esqueleto h-12 w-2/3" />
           <div className="esqueleto h-3 w-full" /><div className="esqueleto h-3 w-5/6" /><div className="esqueleto h-3 w-4/6" />
@@ -38,13 +39,22 @@ function SobreMi() {
           <span className="absolute bottom-0 -right-24 w-80 h-80 rounded-full bg-terracota/25 blur-3xl animate-respirar-lento" />
         </div>
 
-        <div className="contenedor max-w-5xl grid md:grid-cols-[minmax(0,340px)_1fr] gap-12 md:gap-16 items-start">
-          {sobreMi.fotoUrl && (
+        {/* Si hay video de la historia, va arriba y ocupa todo el ancho (en vez de la foto) */}
+        {sobreMi.videoUrl && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="contenedor max-w-4xl mb-12">
+            <div className="rounded-xl overflow-hidden shadow-alta bg-black">
+              <ReproductorVideo url={sobreMi.videoUrl} titulo="La historia de Flowness" />
+            </div>
+          </motion.div>
+        )}
+        <div className={`contenedor grid gap-12 md:gap-16 items-start ${sobreMi.videoUrl ? 'max-w-3xl' : 'max-w-5xl md:grid-cols-[minmax(0,340px)_1fr]'}`}>
+          {sobreMi.fotoUrl && !sobreMi.videoUrl && (
             <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
               className="relative mx-auto md:mx-0 w-64 md:w-full md:sticky md:top-28">
-              <span className="absolute inset-0 translate-x-4 translate-y-4 rounded-[2rem] border-2 border-terracota" aria-hidden="true" />
+              <span className="absolute inset-0 translate-x-4 translate-y-4 rounded-xl border-2 border-terracota" aria-hidden="true" />
               <img src={imagenReducida(sobreMi.fotoUrl, 800)} alt={sobreMi.nombre}
-                className="relative w-full aspect-[4/5] rounded-[2rem] object-cover shadow-alta" />
+                className="relative w-full aspect-[4/5] rounded-xl object-cover shadow-alta" />
             </motion.div>
           )}
 

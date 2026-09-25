@@ -46,7 +46,7 @@ const prepararCurso = (curso, usuario, idsComprados, { conLecciones = false } = 
 const limpiarCurso = (body) => {
   const datos = {}
   const texto = (v) => (v === undefined ? undefined : v ? String(v).trim() : null)
-  for (const campo of ['subtitulo', 'dirigidoA', 'duracion', 'portadaUrl']) {
+  for (const campo of ['subtitulo', 'dirigidoA', 'duracion', 'portadaUrl', 'muestraUrl']) {
     if (body[campo] !== undefined) datos[campo] = texto(body[campo])
   }
   if (body.nombre !== undefined) datos.nombre = String(body.nombre).trim()
