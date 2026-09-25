@@ -21,9 +21,9 @@ export default defineConfig({
         background_color: '#F5F0EB',
         theme_color: '#7B9B77',
         icons: [
-          { src: '/icono-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icono-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icono-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/logo.png', sizes: '192x192', type: 'image/png' },
+          { src: '/logo.png', sizes: '512x512', type: 'image/png' },
+          { src: '/logo.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
