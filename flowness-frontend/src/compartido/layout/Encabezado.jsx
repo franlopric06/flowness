@@ -23,7 +23,7 @@ function Encabezado() {
     localStorage.removeItem('usuario')
     setToken(null)
     setUsuario({})
-    window.location.href = '/'
+    window.location.assign('/')
   }
 
   const esAdmin = usuario?.rol === 'ADMIN'
@@ -56,19 +56,23 @@ function Encabezado() {
           )}
         </ul>
 
-        {esAdmin ? (
-          <Link to="/admin" onClick={vibrar} className="hidden md:block bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-            Panel Admin
-          </Link>
-        ) : token ? (
-          <button onClick={cerrarSesion} className="hidden md:block bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:opacity-80 transition-colors">
-            Cerrar sesión
-          </button>
-        ) : (
-          <Link to="/ingresar" onClick={vibrar} className="hidden md:block bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
-            Ingresar
-          </Link>
-        )}
+        {/* Botones de la derecha (escritorio) */}
+        <div className="hidden md:flex items-center gap-3">
+          {esAdmin && (
+            <Link to="/admin" onClick={vibrar} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+              Panel Admin
+            </Link>
+          )}
+          {token ? (
+            <button onClick={cerrarSesion} className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:opacity-80 transition-colors">
+              Cerrar sesión
+            </button>
+          ) : (
+            <Link to="/ingresar" onClick={vibrar} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-[#5a7a56] transition-colors">
+              Ingresar
+            </Link>
+          )}
+        </div>
 
         <button className="flex flex-col gap-1.5 md:hidden" onClick={() => { vibrar(); setMenuAbierto(!menuAbierto) }}>
           <span className="block w-6 h-0.5 bg-[#7B9B77]"></span>
@@ -89,9 +93,10 @@ function Encabezado() {
           {token && !esAdmin && (
             <li><Link to="/mi-cuenta" onClick={() => { vibrar(); setMenuAbierto(false) }} className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]">Mi cuenta</Link></li>
           )}
-          {esAdmin ? (
+          {esAdmin && (
             <li><Link to="/admin" onClick={() => { vibrar(); setMenuAbierto(false) }} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full">Panel Admin</Link></li>
-          ) : token ? (
+          )}
+          {token ? (
             <li><button onClick={cerrarSesion} className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full">Cerrar sesión</button></li>
           ) : (
             <li><Link to="/ingresar" onClick={() => { vibrar(); setMenuAbierto(false) }} className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-3 rounded-full">Ingresar</Link></li>
