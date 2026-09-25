@@ -1,3 +1,5 @@
+/* Fuente Lato desde Google Fonts (tiene que ir antes que todo) */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 @import "tailwindcss";
 
 /*
@@ -15,6 +17,6 @@
   body {
     background-color: #F5F0EB;
     color: #555;
-    font-family: 'Georgia', serif;
+    font-family: 'Lato', sans-serif;
   }
 }
