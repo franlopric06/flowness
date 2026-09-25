@@ -155,6 +155,7 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
   const [link, setLink] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [subiendo, setSubiendo] = useState(false)
+  const [progreso, setProgreso] = useState(0)
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
   const vibrar = useVibrar()
@@ -185,8 +186,9 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
     if (!archivo.type.startsWith('video/')) return setError('El archivo tiene que ser un video.')
     if (archivo.size > 100 * MB) return setError('El video pesa más de 100 MB. Recortalo o bajale la calidad.')
     setSubiendo(true)
+    setProgreso(0)
     try {
-      const respuesta = await api.subirVideo(archivo)
+      const respuesta = await api.subirVideo(archivo, setProgreso)
       if (!respuesta?.url) throw new Error(respuesta?.error)
       await api.crearReel({ tipo: 'ARCHIVO', url: respuesta.url, descripcion })
       setDescripcion('')
@@ -259,7 +261,7 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
           ) : (
             <>
               <label className={`${botonVerde} inline-block cursor-pointer ${subiendo ? 'opacity-50 pointer-events-none' : ''}`}>
-                {subiendo ? 'Subiendo video… (puede tardar un poco)' : 'Elegir video'}
+                {subiendo ? `Subiendo video… ${progreso}%` : 'Elegir video'}
                 <input type="file" accept="video/mp4,video/quicktime,video/webm" className="hidden"
                   onChange={(e) => { subirArchivo(e.target.files[0]); e.target.value = '' }} />
               </label>

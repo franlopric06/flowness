@@ -85,11 +85,11 @@ function FormularioCurso({ curso, mostrarMsg, alGuardar }) {
     if (!archivo) return
     setSubiendo(true)
     try {
-      const { url } = await api.subirImagen(archivo)
-      if (!url) throw new Error()
+      const { url, error: motivo } = await api.subirImagen(archivo)
+      if (!url) throw new Error(motivo)
       cambiar('portadaUrl', url)
-    } catch {
-      setError('No se pudo subir la imagen.')
+    } catch (err) {
+      setError(`No se pudo subir la imagen. ${err.message || ''}`)
     } finally {
       setSubiendo(false)
     }
@@ -217,11 +217,11 @@ function Lecciones({ curso, mostrarMsg, alGuardar }) {
     setSubiendoPdf(true)
     setError('')
     try {
-      const { url } = await api.subirDocumento(archivo)
-      if (!url) throw new Error()
+      const { url, error: motivo } = await api.subirDocumento(archivo)
+      if (!url) throw new Error(motivo)
       cambiar('pdfUrl', url)
-    } catch {
-      setError('No se pudo subir el PDF.')
+    } catch (err) {
+      setError(`No se pudo subir el PDF. ${err.message || ''}`)
     } finally {
       setSubiendoPdf(false)
     }

@@ -1,4 +1,5 @@
-import { peticion, subirArchivo } from '../../compartido/servicios/cliente'
+import { peticion } from '../../compartido/servicios/cliente'
+import { subirACloudinary } from '../../compartido/servicios/cloudinary'
 
 // El panel admin reutiliza servicios de otros módulos
 export { obtenerConfiguracion, actualizarConfiguracion } from '../../compartido/servicios/configuracion.servicio'
@@ -21,9 +22,11 @@ export const obtenerSobreMi = () => peticion('/admin/sobre-mi')
 export const actualizarSobreMi = (datos) => peticion('/admin/sobre-mi', { method: 'PUT', body: JSON.stringify(datos) })
 
 // Archivos multimedia
-export const subirImagen = (archivo) => subirArchivo('/media/imagen', archivo)
-export const subirVideo = (archivo) => subirArchivo('/media/video', archivo)
-export const subirDocumento = (archivo) => subirArchivo('/media/documento', archivo)
+// Archivos multimedia: se suben directo a Cloudinary. Devuelven { url } o { error }.
+// alProgresar (opcional) recibe el porcentaje subido, de 0 a 100.
+export const subirImagen = (archivo, alProgresar) => subirACloudinary(archivo, 'image', alProgresar)
+export const subirVideo = (archivo, alProgresar) => subirACloudinary(archivo, 'video', alProgresar)
+export const subirDocumento = (archivo, alProgresar) => subirACloudinary(archivo, 'raw', alProgresar)
 
 // Formación (cursos y lecciones)
 export { obtenerCursosAdmin, actualizarCurso, crearLeccion, actualizarLeccion } from '../formacion/formacion.servicio'

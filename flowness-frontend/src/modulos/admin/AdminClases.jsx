@@ -64,8 +64,8 @@ function AdminClases({ mostrarMsg }) {
       const { url, error: err } = await api.subirImagen(archivo)
       if (!url) throw new Error(err)
       cambiar('miniaturaUrl', url)
-    } catch {
-      setError('No se pudo subir la imagen. Probá con otra o pegá un link.')
+    } catch (error) {
+      setError(`No se pudo subir la imagen. ${error.message || ''}`)
     } finally {
       setSubiendoImagen(false)
     }
