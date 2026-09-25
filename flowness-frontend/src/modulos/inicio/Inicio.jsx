@@ -47,7 +47,7 @@ function Inicio() {
   const hayClaseGratis = clases.some((c) => c.esGratis)
   const clasesDestacadas = [...clases].sort((a, b) => Number(b.esGratis) - Number(a.esGratis)).slice(0, 3)
   const fotosDestacadas = galeria.fotos.slice(0, 6)
-  const reelDestacado = galeria.reels[0]
+  const reelsDestacados = galeria.reels.slice(0, 3)
 
   return (
     <main className="pt-20">
@@ -188,14 +188,15 @@ function Inicio() {
         </section>
       )}
 
-      {/* ── GALERÍA ──────────────────────────── */}
-      {(fotosDestacadas.length > 0 || reelDestacado) && (
+      {/* ── GALERÍA: primero fotos, después videos ── */}
+      {(fotosDestacadas.length > 0 || reelsDestacados.length > 0) && (
         <section className="px-6 py-20 md:px-16 bg-white">
           <Titulo etiqueta="Galería" titulo="Momentos" />
-          <div className={`max-w-6xl mx-auto grid gap-4 mb-10 ${reelDestacado && fotosDestacadas.length ? 'grid-cols-1 md:grid-cols-[320px_1fr]' : 'grid-cols-1'}`}>
-            {reelDestacado && <div className="max-w-sm mx-auto w-full"><Reel reel={reelDestacado} /></div>}
-            {fotosDestacadas.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 content-start">
+
+          {fotosDestacadas.length > 0 && (
+            <div className="max-w-5xl mx-auto mb-12">
+              <p className="text-[#7B9B77] text-xs font-semibold tracking-widest uppercase text-center mb-4">Fotos</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {fotosDestacadas.map((foto) => (
                   <Link key={foto.id} to="/galeria" onClick={vibrar} className="block overflow-hidden rounded-xl group">
                     <img src={imagenReducida(foto.url, 500)} alt={foto.descripcion || ''} loading="lazy"
@@ -203,8 +204,20 @@ function Inicio() {
                   </Link>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {reelsDestacados.length > 0 && (
+            <div className="max-w-5xl mx-auto mb-12">
+              <p className="text-[#7B9B77] text-xs font-semibold tracking-widest uppercase text-center mb-4">Videos</p>
+              <div className="flex flex-wrap justify-center gap-6">
+                {reelsDestacados.map((reel) => (
+                  <div key={reel.id} className="w-full sm:w-[300px]"><Reel reel={reel} /></div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="text-center">
             <Link to="/galeria" onClick={vibrar} className={botonBorde}>Ver galería completa</Link>
           </div>

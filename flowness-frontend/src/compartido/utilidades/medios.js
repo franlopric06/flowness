@@ -23,3 +23,7 @@ export const urlEmbedInstagram = (url) => {
   const datos = leerLinkInstagram(url)
   return datos ? `https://www.instagram.com/${datos.tipo}/${datos.codigo}/embed/` : null
 }
+
+// Los PDF guardados en Cloudinary no se abren bien directo en el navegador:
+// se muestran con el visor de Google Docs
+export const urlVisorPdf = (url = '') => `https://docs.google.com/viewer?url=${encodeURIComponent(url)}`

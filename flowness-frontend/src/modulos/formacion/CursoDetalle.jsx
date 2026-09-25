@@ -5,6 +5,7 @@ import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { formatearPrecio } from '../../compartido/utilidades/video'
 import { obtenerCurso } from './formacion.servicio'
 import { comprarCurso } from '../pagos/pagos.servicio'
+import { urlVisorPdf } from '../../compartido/utilidades/medios'
 
 // Página de un nivel de la Formación.
 // - Si todavía no lo compró: página de venta (info, temario y botón Comprar).
@@ -177,7 +178,7 @@ function Aula({ curso }) {
 
                   <div className="flex flex-wrap gap-3">
                     {actual.pdfUrl && (
-                      <a href={actual.pdfUrl} target="_blank" rel="noreferrer" onClick={vibrar}
+                      <a href={urlVisorPdf(actual.pdfUrl)} target="_blank" rel="noreferrer" onClick={vibrar}
                         className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-5 py-2.5 rounded-full hover:opacity-85">
                         📄 Ver material en PDF
                       </a>

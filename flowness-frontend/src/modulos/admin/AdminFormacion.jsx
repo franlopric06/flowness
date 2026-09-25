@@ -3,6 +3,7 @@ import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { esLinkValido, formatearPrecio } from '../../compartido/utilidades/video'
 import * as api from './admin.servicio'
+import { urlVisorPdf } from '../../compartido/utilidades/medios'
 
 const estiloInput = 'w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none focus:border-[#7B9B77]'
 const estiloArea = 'w-full border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#7B9B77]'
@@ -293,7 +294,7 @@ function Lecciones({ curso, mostrarMsg, alGuardar }) {
               <label className={estiloLabel}>Material en PDF</label>
               <div className="flex flex-wrap gap-3 items-center">
                 {form.pdfUrl && (
-                  <a href={form.pdfUrl} target="_blank" rel="noreferrer" className="text-[#7B9B77] text-sm underline">📄 Ver PDF cargado</a>
+                  <a href={urlVisorPdf(form.pdfUrl)} target="_blank" rel="noreferrer" className="text-[#7B9B77] text-sm underline">📄 Ver PDF cargado</a>
                 )}
                 <label className={`${botonBorde} cursor-pointer bg-white`}>
                   {subiendoPdf ? 'Subiendo…' : form.pdfUrl ? 'Reemplazar PDF' : 'Subir PDF'}

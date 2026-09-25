@@ -4,7 +4,7 @@ import Reel from '../../compartido/componentes/Reel'
 import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerGaleria } from './galeria.servicio'
 
-// Galería pública: videos cortos y fotos (con visor a pantalla completa)
+// Galería pública: primero las fotos (con visor a pantalla completa) y después los videos
 function Galeria() {
   const [fotos, setFotos] = useState([])
   const [reels, setReels] = useState([])
@@ -48,25 +48,11 @@ function Galeria() {
         <p className="text-center text-[#A9A9A2]">Muy pronto vas a encontrar fotos y videos acá.</p>
       ) : (
         <>
-          {/* Videos */}
-          {reels.length > 0 && (
-            <section className="mb-16">
-              <h2 className="text-[#7B9B77] text-sm font-semibold tracking-widest uppercase text-center mb-6">Videos</h2>
-              <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
-                {reels.map((reel) => (
-                  <div key={reel.id} className="w-full sm:w-[320px]">
-                    <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
-                    {reel.descripcion && <p className="text-[#A9A9A2] text-xs text-center mt-2">{reel.descripcion}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Fotos */}
           {fotos.length > 0 && (
-            <section>
-              <h2 className="text-[#7B9B77] text-sm font-semibold tracking-widest uppercase text-center mb-6">Fotos</h2>
+            <section className="mb-16">
+              <h2 className="text-[#7B9B77] text-xl font-semibold tracking-widest uppercase text-center mb-2">Fotos</h2>
+              <div className="w-12 h-px bg-[#D8A48F] mx-auto mb-8" />
               <div className="columns-2 md:columns-3 lg:columns-4 gap-3 max-w-6xl mx-auto">
                 {fotos.map((foto, i) => (
                   <button key={foto.id} onClick={() => { vibrar(); setAbierta(i) }}
@@ -78,6 +64,22 @@ function Galeria() {
               </div>
             </section>
           )}
+          {/* Videos */}
+          {reels.length > 0 && (
+            <section className={fotos.length > 0 ? 'pt-16 border-t border-[#D8A48F]/20' : ''}>
+              <h2 className="text-[#7B9B77] text-xl font-semibold tracking-widest uppercase text-center mb-2">Videos</h2>
+              <div className="w-12 h-px bg-[#D8A48F] mx-auto mb-8" />
+              <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+                {reels.map((reel) => (
+                  <div key={reel.id} className="w-full sm:w-[320px]">
+                    <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
+                    {reel.descripcion && <p className="text-[#A9A9A2] text-xs text-center mt-2">{reel.descripcion}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
         </>
       )}
 
