@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   ChevronLeft, ChevronRight, Pencil, Eye, EyeOff, Trash2, Upload, Plus, Loader2, Images, Film, Link2, AlertCircle,
+  CheckCircle2, Download,
 } from 'lucide-react'
 import Medio from '../../compartido/componentes/Medio'
+import IconoInstagram from '../../compartido/componentes/IconoInstagram'
 import { esLinkInstagram } from '../../compartido/utilidades/medios'
 import { confirmar, pedirTexto } from '../../compartido/utilidades/dialogos'
 import * as api from './admin.servicio'
@@ -44,6 +46,11 @@ function AdminGaleria({ mostrarMsg }) {
   const [fotos, setFotos] = useState([])
   const [reels, setReels] = useState([])
   const [pestana, setPestana] = useState('foto')
+  const [instagram, setInstagram] = useState(null) // { conectado, usuario }
+
+  useEffect(() => {
+    api.obtenerEstadoInstagram().then(setInstagram).catch(() => setInstagram({ conectado: false }))
+  }, [])
 
   const cargar = useCallback(() =>
     api.obtenerGaleriaAdmin()
@@ -67,12 +74,28 @@ function AdminGaleria({ mostrarMsg }) {
         En la página todas se muestran del mismo tamaño: el sistema recorta cada foto o video para que queden parejos.
       </p>
 
-      <SeccionMedios key={pestana} clase={pestana} items={pestana === 'foto' ? fotos : reels} alCambiar={cargar} mostrarMsg={mostrarMsg} />
+      {/* Estado de la conexión con Instagram */}
+      {instagram && (
+        instagram.conectado ? (
+          <p className="flex items-center gap-2 text-sm text-verde bg-verde/10 rounded-md px-3 py-2 mb-5">
+            <CheckCircle2 size={16} className="shrink-0" />
+            Instagram conectado{instagram.usuario ? ` (@${instagram.usuario})` : ''}: lo que agregues con link se trae como archivo y se ve en la página con todos los controles.
+          </p>
+        ) : (
+          <p className="flex items-start gap-2 text-sm text-texto/80 bg-arena/50 rounded-md px-3 py-2 mb-5">
+            <IconoInstagram size={16} className="shrink-0 mt-0.5 text-terracota" />
+            Instagram todavía no está conectado: lo que agregues con link se muestra con el recuadro de Instagram, sin pantalla completa ni sonido.
+          </p>
+        )
+      )}
+
+      <SeccionMedios key={pestana} clase={pestana} items={pestana === 'foto' ? fotos : reels} alCambiar={cargar} mostrarMsg={mostrarMsg}
+        instagramConectado={!!instagram?.conectado} />
     </div>
   )
 }
 
-function SeccionMedios({ clase, items, alCambiar, mostrarMsg }) {
+function SeccionMedios({ clase, items, alCambiar, mostrarMsg, instagramConectado }) {
   const c = CONFIG[clase]
   const [origen, setOrigen] = useState('ARCHIVO') // 'ARCHIVO' | 'INSTAGRAM'
   const [link, setLink] = useState('')
@@ -155,6 +178,14 @@ function SeccionMedios({ clase, items, alCambiar, mostrarMsg }) {
     aplicar(() => c.actualizar(item.id, { url: nuevo.trim() }), 'Link actualizado')
   }
 
+  // Pasa algo que está como recuadro de Instagram a archivo real
+  const [trayendo, setTrayendo] = useState(null)
+  const traerArchivo = async (item) => {
+    setTrayendo(item.id)
+    await aplicar(() => api.importarDeInstagram(clase === 'foto' ? 'fotos' : 'reels', item.id), 'Listo: ahora se ve en la página con todos los controles')
+    setTrayendo(null)
+  }
+
   const alternar = (item) => aplicar(
     () => c.actualizar(item.id, { activo: !item.activo }),
     item.activo ? `${Singular} ${c.oculta} del sitio` : `${Singular} ${c.visible} en el sitio`,
@@ -204,7 +235,7 @@ function SeccionMedios({ clase, items, alCambiar, mostrarMsg }) {
         <div className="mt-4">
           {origen === 'INSTAGRAM' ? (
             <button onClick={agregarInstagram} disabled={guardando} className={botonVerde}>
-              {guardando ? <><Loader2 size={14} className="animate-spin" /> Guardando…</> : <><Plus size={14} /> Agregar</>}
+              {guardando ? <><Loader2 size={14} className="animate-spin" /> {instagramConectado ? 'Trayendo de Instagram…' : 'Guardando…'}</> : <><Plus size={14} /> Agregar</>}
             </button>
           ) : (
             <>
@@ -235,7 +266,7 @@ function SeccionMedios({ clase, items, alCambiar, mostrarMsg }) {
             <div key={item.id} className={`medio ${item.activo ? '' : 'opacity-50'}`}>
               <Medio item={{ ...item, descripcion: null }} clase={clase} />
               <p className="text-[11px] text-piedra mt-2 w-full truncate" title={item.descripcion || ''}>
-                {item.tipo === 'INSTAGRAM' ? 'Instagram' : 'Subid' + (c.articulo === 'la' ? 'a' : 'o')}
+                {item.tipo === 'INSTAGRAM' ? 'Recuadro de Instagram' : item.enlace ? 'De Instagram' : 'Subid' + (c.articulo === 'la' ? 'a' : 'o')}
                 {item.descripcion ? ` · ${item.descripcion}` : ''}
                 {!item.activo && ` · ${c.oculta[0].toUpperCase() + c.oculta.slice(1)}`}
               </p>
@@ -243,6 +274,12 @@ function SeccionMedios({ clase, items, alCambiar, mostrarMsg }) {
                 <button onClick={() => mover(i, -1)} disabled={i === 0} className={botonChico} title="Mover antes" aria-label="Mover antes"><ChevronLeft size={16} /></button>
                 <button onClick={() => mover(i, 1)} disabled={i === items.length - 1} className={botonChico} title="Mover después" aria-label="Mover después"><ChevronRight size={16} /></button>
                 <button onClick={() => editarDescripcion(item)} className={botonChico} title="Editar descripción" aria-label="Editar descripción"><Pencil size={14} /></button>
+                {item.tipo === 'INSTAGRAM' && instagramConectado && (
+                  <button onClick={() => traerArchivo(item)} disabled={trayendo === item.id} className={`${botonChico} text-verde`}
+                    title="Traer el archivo de Instagram" aria-label="Traer el archivo de Instagram">
+                    {trayendo === item.id ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                  </button>
+                )}
                 {item.tipo === 'INSTAGRAM' && (
                   <button onClick={() => cambiarLink(item)} className={botonChico} title="Cambiar link" aria-label="Cambiar link"><Link2 size={14} /></button>
                 )}

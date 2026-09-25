@@ -11,3 +11,6 @@ export const eliminarFoto = (id) => peticion(`/galeria/fotos/${id}`, { method: '
 export const crearReel = (datos) => peticion('/galeria/reels', { method: 'POST', body: JSON.stringify(datos) })
 export const actualizarReel = (id, datos) => peticion(`/galeria/reels/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
 export const eliminarReel = (id) => peticion(`/galeria/reels/${id}`, { method: 'DELETE' })
+export const obtenerEstadoInstagram = () => peticion('/galeria/instagram')
+// Pasa algo que está como recuadro de Instagram a archivo real (clase: 'fotos' | 'reels')
+export const importarDeInstagram = (clase, id) => peticion(`/galeria/${clase}/${id}/importar`, { method: 'POST' })

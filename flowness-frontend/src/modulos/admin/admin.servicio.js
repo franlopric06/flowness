@@ -35,4 +35,5 @@ export { obtenerCursosAdmin, actualizarCurso, crearLeccion, actualizarLeccion } 
 export {
   obtenerGaleriaAdmin, crearFoto, actualizarFoto, eliminarFoto,
   crearReel, actualizarReel, eliminarReel,
+  obtenerEstadoInstagram, importarDeInstagram,
 } from '../galeria/galeria.servicio'

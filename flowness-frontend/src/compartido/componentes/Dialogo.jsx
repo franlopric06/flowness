@@ -31,7 +31,7 @@ function Dialogo() {
   return (
     <AnimatePresence>
       {dialogo && (
-        <motion.div {...fadeIn} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] bg-black/50 flex items-end sm:items-center justify-center p-4"
+        <motion.div {...fadeIn} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] bg-black/50 flex items-center justify-center p-4"
           onClick={() => responder(false)}>
           <motion.div {...scaleIn} exit={{ opacity: 0, scale: 0.95 }} role="dialog" aria-modal="true"
             className="card w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>

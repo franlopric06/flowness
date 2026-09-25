@@ -35,6 +35,10 @@ const entorno = {
   mpAccessToken: process.env.MP_ACCESS_TOKEN,
   // URL pública del backend: Mercado Pago avisa los pagos a BACKEND_URL/api/pagos/webhook
   backendUrl: (process.env.BACKEND_URL || '').replace(/\/$/, ''),
+  // Opcional: token de la API de Instagram de la cuenta de Flowness.
+  // Con él, lo que se agrega a la galería con link de Instagram se trae
+  // como archivo real (se ve en la página con todos los controles).
+  instagramToken: (process.env.INSTAGRAM_TOKEN || '').trim(),
 }
 
 export default entorno

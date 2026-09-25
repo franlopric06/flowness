@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, X, Images, Film, Camera } from 'lucide-react'
 import Medio from '../../compartido/componentes/Medio'
+import IconoInstagram from '../../compartido/componentes/IconoInstagram'
+import { usePerfilInstagram } from '../../compartido/hooks/usePerfilInstagram'
 import Carrusel from '../../compartido/componentes/Carrusel'
 import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
@@ -24,6 +26,7 @@ function Galeria() {
   const [cargando, setCargando] = useState(true)
   const [abierta, setAbierta] = useState(null) // índice de la foto abierta en el visor
   const [direccion, setDireccion] = useState(0)
+  const perfilInstagram = usePerfilInstagram()
 
   useEffect(() => {
     obtenerGaleria()
@@ -144,6 +147,12 @@ function Galeria() {
                     className="max-h-[78svh] w-auto rounded-md object-contain select-none" />
                 )}
                 {foto.descripcion && <figcaption className="text-blanco/85 text-sm mt-4 text-center">{foto.descripcion}</figcaption>}
+                {foto.enlace && (
+                  <a href={perfilInstagram} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
+                    className="mt-3 inline-flex items-center gap-2 text-blanco/80 hover:text-blanco text-xs tracking-[0.12em] uppercase">
+                    <IconoInstagram size={14} /> Ver perfil
+                  </a>
+                )}
               </motion.figure>
             </AnimatePresence>
 

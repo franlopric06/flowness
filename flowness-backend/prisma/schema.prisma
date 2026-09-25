@@ -180,6 +180,7 @@ model Foto {
   id          Int      @id @default(autoincrement())
   tipo        String   @default("ARCHIVO") // ARCHIVO (subida a Cloudinary) o INSTAGRAM (link de una publicación)
   url         String
+  enlace      String?  // link de la publicación de Instagram, si vino de ahí
   descripcion String?
   orden       Int      @default(0)
   activo      Boolean  @default(true)
@@ -193,6 +194,7 @@ model Reel {
   id          Int      @id @default(autoincrement())
   tipo        String   @default("INSTAGRAM")
   url         String
+  enlace      String?  // link de la publicación de Instagram, si vino de ahí
   descripcion String?
   orden       Int      @default(0)
   activo      Boolean  @default(true)

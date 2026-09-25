@@ -21,10 +21,10 @@ function Modal({ abierto, alCerrar, titulo, children, ancho = 'max-w-3xl' }) {
     <AnimatePresence>
       {abierto && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+          className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4"
           onClick={alCerrar}>
           <motion.div {...modalSlideUp} exit={{ opacity: 0, y: 40 }} role="dialog" aria-modal="true" aria-label={titulo}
-            className={`bg-blanco w-full ${ancho} rounded-t-3xl sm:rounded-3xl p-5 md:p-7 max-h-[92svh] overflow-y-auto shadow-alta`}
+            className={`bg-blanco w-full ${ancho} rounded-xl p-4 md:p-7 max-h-[90svh] overflow-y-auto shadow-alta`}
             onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-start gap-4 mb-4">
               <h2 className="titulo text-verde text-2xl md:text-3xl">{titulo}</h2>
