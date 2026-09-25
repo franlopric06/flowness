@@ -33,6 +33,8 @@ const entorno = {
     apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
   mpAccessToken: process.env.MP_ACCESS_TOKEN,
+  // URL pública del backend: Mercado Pago avisa los pagos a BACKEND_URL/api/pagos/webhook
+  backendUrl: (process.env.BACKEND_URL || '').replace(/\/$/, ''),
 }
 
 export default entorno

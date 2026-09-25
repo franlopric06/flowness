@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import * as api from './admin.servicio'
+import AdminClases from './AdminClases'
 
 const SECCIONES = ['Fases', 'Clases', 'Avisos', 'Sobre mí', 'Configuración', 'Usuarios']
 
@@ -19,10 +20,6 @@ function Admin() {
   const cargarDatos = async () => {
     try {
       if (seccion === 'Fases') setDatos({ fases: await api.obtenerFases() })
-      if (seccion === 'Clases') {
-        const [clases, fases] = await Promise.all([api.obtenerClases(), api.obtenerFases()])
-        setDatos({ clases, fases })
-      }
       if (seccion === 'Avisos') setDatos({ avisos: await api.obtenerAvisos() })
       if (seccion === 'Sobre mí') setDatos({ sobreMi: await api.obtenerSobreMi() })
       if (seccion === 'Configuración') setDatos({ config: await api.obtenerConfiguracion() })
@@ -85,47 +82,8 @@ function Admin() {
           </div>
         )}
 
-        {/* Clases */}
-        {seccion === 'Clases' && (
-          <div>
-            <h2 className="text-[#7B9B77] font-semibold mb-4">Clases</h2>
-            <div className="bg-white rounded-2xl p-5 mb-6 border border-[#D8A48F]/20">
-              <h3 className="text-sm font-medium mb-3 text-[#555]">Nueva clase</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <select value={form.faseId || ''} onChange={e => setForm({ ...form, faseId: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none">
-                  <option value="">Seleccionar fase</option>
-                  {(datos.fases || []).map(f => <option key={f.id} value={f.id}>Fase {f.numero} — {f.nombre}</option>)}
-                </select>
-                <input placeholder="Nombre" value={form.nombre || ''} onChange={e => setForm({ ...form, nombre: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
-                <textarea placeholder="Descripción" value={form.descripcion || ''} onChange={e => setForm({ ...form, descripcion: e.target.value })} className="border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none col-span-2" rows={2} />
-                <input placeholder="URL del video" value={form.videoUrl || ''} onChange={e => setForm({ ...form, videoUrl: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
-                <input placeholder="Precio (0 si es gratis)" type="number" value={form.precio || ''} onChange={e => setForm({ ...form, precio: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
-                <input placeholder="Orden" type="number" value={form.orden || ''} onChange={e => setForm({ ...form, orden: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
-                <label className="flex items-center gap-2 text-sm text-[#555]">
-                  <input type="checkbox" checked={form.esGratis || false} onChange={e => setForm({ ...form, esGratis: e.target.checked, precio: 0 })} />
-                  Clase gratuita (primera clase)
-                </label>
-              </div>
-              <button onClick={async () => { vibrar(); await api.crearClase(form); setForm({}); cargarDatos(); mostrarMsg('Clase creada') }}
-                className="mt-3 bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-2 rounded-full hover:bg-[#5a7a56] transition-colors">
-                Crear clase
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(datos.clases || []).map(clase => (
-                <div key={clase.id} className="bg-white rounded-2xl p-4 border border-[#D8A48F]/20 flex justify-between items-start">
-                  <div>
-                    <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase">{clase.fase?.nombre}</p>
-                    <p className="text-[#7B9B77] font-semibold text-sm">{clase.nombre}</p>
-                    <p className="text-[#A9A9A2] text-xs">{clase.esGratis ? 'Gratis' : `$${clase.precio}`}</p>
-                  </div>
-                  <button onClick={async () => { vibrar(); await api.eliminarClase(clase.id); cargarDatos() }}
-                    className="text-red-400 text-xs hover:opacity-60 ml-2">✕</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Clases (componente propio) */}
+        {seccion === 'Clases' && <AdminClases mostrarMsg={mostrarMsg} />}
 
         {/* Avisos */}
         {seccion === 'Avisos' && (

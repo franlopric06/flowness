@@ -4,7 +4,7 @@ import { peticion, subirArchivo } from '../../compartido/servicios/cliente'
 export { obtenerConfiguracion, actualizarConfiguracion } from '../../compartido/servicios/configuracion.servicio'
 export {
   obtenerFases, crearFase, actualizarFase, eliminarFase,
-  obtenerClases, crearClase, actualizarClase, eliminarClase,
+  obtenerClases, obtenerClasesAdmin, crearClase, actualizarClase, eliminarClase,
 } from '../clases/clases.servicio'
 
 // Usuarios y compras

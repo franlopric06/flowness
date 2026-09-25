@@ -1,10 +1,14 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import { iniciarSesion, registrar } from './auth.servicio'
 
 function Ingresar() {
-  const [modo, setModo] = useState('login') // 'login' | 'registro'
+  const [parametros] = useSearchParams()
+  const [modo, setModo] = useState(parametros.get('modo') === 'registro' ? 'registro' : 'login') // 'login' | 'registro'
+  // A dónde volver después de ingresar (solo rutas internas del sitio)
+  const volver = parametros.get('volver')
+  const destinoSeguro = volver && volver.startsWith('/') && !volver.startsWith('//') ? volver : null
   const [form, setForm] = useState({ nombre: '', email: '', password: '' })
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -22,7 +26,7 @@ function Ingresar() {
       localStorage.setItem('token', datos.token)
       localStorage.setItem('usuario', JSON.stringify(datos.usuario))
       window.dispatchEvent(new Event('storage'))
-      navigate(datos.usuario.rol === 'ADMIN' ? '/admin' : '/clases')
+      navigate(destinoSeguro || (datos.usuario.rol === 'ADMIN' ? '/admin' : '/clases'))
     } catch (err) {
       setError(err.message)
     } finally {

@@ -16,9 +16,12 @@ export const obtenerMisClases = async (req, res) => {
   try {
     const compras = await prisma.compra.findMany({
       where: { usuarioId: req.usuario.id, estado: 'APROBADO' },
-      include: { clase: { include: { fase: true } } },
+      include: { clase: true },
     })
-    res.json(compras.map(c => c.clase))
+    // Sin duplicados (si compró dos veces la misma) y solo las visibles
+    const vistas = new Map()
+    compras.forEach(({ clase }) => { if (clase.activo) vistas.set(clase.id, clase) })
+    res.json([...vistas.values()])
   } catch {
     res.status(500).json({ error: 'Error al obtener clases' })
   }

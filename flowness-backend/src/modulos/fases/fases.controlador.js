@@ -5,7 +5,6 @@ export const obtenerFases = async (req, res) => {
     const fases = await prisma.fase.findMany({
       where: { activo: true },
       orderBy: { numero: 'asc' },
-      include: { clases: { where: { activo: true }, orderBy: { orden: 'asc' } } },
     })
     res.json(fases)
   } catch {

@@ -61,24 +61,29 @@ model Fase {
 
 // ─────────────────────────────────────────────
 // CLASES
-// Pertenecen a una Fase del método
-// La primera clase es gratis para usuarios registrados
-// Las demás se habilitan al comprar
+// Videos sueltos para todo público. Se compran de a una.
+// Las marcadas como gratis se ven con solo registrarse.
+// El video es un link de YouTube "No listado": el link solo
+// se entrega a quien tiene acceso a la clase.
+// (faseId queda opcional por compatibilidad: las fases ahora
+// son solo texto explicativo y ya no agrupan clases)
 // ─────────────────────────────────────────────
 
 model Clase {
-  id          Int      @id @default(autoincrement())
-  faseId      Int
-  nombre      String
-  descripcion String
-  videoUrl    String?
-  precio      Float    @default(0)
-  esGratis    Boolean  @default(false)
-  orden       Int      @default(0)
-  activo      Boolean  @default(true)
-  creadoEn    DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  faseId       Int?
+  nombre       String
+  descripcion  String
+  videoUrl     String?
+  miniaturaUrl String?
+  duracion     String?
+  precio       Float    @default(0)
+  esGratis     Boolean  @default(false)
+  orden        Int      @default(0)
+  activo       Boolean  @default(true)
+  creadoEn     DateTime @default(now())
 
-  fase        Fase        @relation(fields: [faseId], references: [id])
+  fase        Fase?       @relation(fields: [faseId], references: [id])
   compras     Compra[]
   documentos  Documento[]
 }
