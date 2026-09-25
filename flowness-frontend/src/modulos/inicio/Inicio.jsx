@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import Medio from '../../compartido/componentes/Medio'
+import VisorMedios from '../../compartido/componentes/VisorMedios'
 import TituloSeccion from '../../compartido/componentes/TituloSeccion'
 import Carrusel from '../../compartido/componentes/Carrusel'
 import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
@@ -88,6 +89,8 @@ function Inicio() {
   const [clases, setClases] = useState(null)
   const [cursos, setCursos] = useState(null)
   const [galeria, setGaleria] = useState({ fotos: [], reels: [] })
+  const [fotoAbierta, setFotoAbierta] = useState(null) // índice en el visor
+  const [videoAbierto, setVideoAbierto] = useState(null)
 
   useEffect(() => {
     obtenerDatosPublicos().then(setDatos).catch(() => {})
@@ -119,9 +122,6 @@ function Inicio() {
           <span className="absolute -bottom-24 left-1/4 w-72 h-72 md:w-[24rem] md:h-[24rem] rounded-full bg-arena/70 blur-3xl animate-respirar" />
         </div>
 
-        <motion.img src="/logo.png" alt="" className="w-20 h-20 md:w-24 md:h-24 mb-6"
-          initial={{ opacity: 0, scale: 0.6, rotate: -20 }} animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }} />
         <motion.p className="etiqueta mb-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           {heroSubtitulo}
         </motion.p>
@@ -294,7 +294,7 @@ function Inicio() {
               <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                 {fotosDestacadas.map((foto, i) => (
                   <motion.div key={foto.id} {...listItem(i)} className={i >= 4 ? 'md:hidden' : ''}>
-                    <Link to="/galeria" className="block" aria-label="Ver galería"><Medio item={{ ...foto, descripcion: null }} clase="foto" /></Link>
+                    <Medio item={{ ...foto, descripcion: null }} clase="foto" alAbrir={() => setFotoAbierta(i)} />
                   </motion.div>
                 ))}
               </Carrusel>
@@ -306,7 +306,7 @@ function Inicio() {
               <p className="flex items-center justify-center gap-2 text-verde text-xs font-semibold tracking-[0.2em] uppercase mb-5"><Film size={16} /> Videos</p>
               <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                 {reelsDestacados.map((reel, i) => (
-                  <motion.div key={reel.id} {...fadeUpScrollDelay((i % 4) * 0.1)} className={i >= 4 ? 'md:hidden' : ''}><Medio item={reel} clase="video" /></motion.div>
+                  <motion.div key={reel.id} {...fadeUpScrollDelay((i % 4) * 0.1)} className={i >= 4 ? 'md:hidden' : ''}><Medio item={reel} clase="video" alAbrir={() => setVideoAbierto(i)} /></motion.div>
                 ))}
               </Carrusel>
             </div>
@@ -336,6 +336,9 @@ function Inicio() {
           </div>
         </motion.div>
       </section>
+
+      <VisorMedios items={fotosDestacadas} indice={fotoAbierta} alCambiar={setFotoAbierta} clase="foto" />
+      <VisorMedios items={reelsDestacados} indice={videoAbierto} alCambiar={setVideoAbierto} clase="video" />
     </main>
   )
 }

@@ -94,7 +94,17 @@ function Medio({ item, clase = 'foto', alAbrir, className = '' }) {
       <>
         <iframe src={embed} title={titulo} loading="lazy" scrolling="no" tabIndex={-1} className="medio-ig pointer-events-none" />
         {alAbrir
-          ? <button onClick={alAbrir} aria-label={`Ver ${titulo}`} className="absolute inset-0 w-full h-full" />
+          ? (
+            <button onClick={alAbrir} aria-label={`Ver ${titulo}`} className="absolute inset-0 w-full h-full">
+              {clase === 'video' && (
+                <span className="absolute inset-0 flex items-center justify-center bg-black/10">
+                  <span className="w-14 h-14 rounded-full bg-blanco/90 text-verde flex items-center justify-center shadow-media">
+                    <Play size={24} fill="currentColor" className="ml-1" />
+                  </span>
+                </span>
+              )}
+            </button>
+          )
           : <span className="absolute inset-0" />}
       </>
     )
@@ -117,7 +127,7 @@ function Medio({ item, clase = 'foto', alAbrir, className = '' }) {
       <div className="medio-caja shadow-suave">
         {contenido}
         {deInstagram && <VerPerfil />}
-        {clase === 'foto' && alAbrir && (
+        {alAbrir && (clase === 'foto' || item.tipo === 'INSTAGRAM') && (
           <button onClick={alAbrir} aria-label="Ver en pantalla completa" className={`absolute bottom-2 right-2 ${botonRedondo}`}>
             <Maximize2 size={15} />
           </button>
