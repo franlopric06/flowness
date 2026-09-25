@@ -27,8 +27,8 @@ function Galeria() {
   useEffect(() => {
     obtenerGaleria()
       .then((datos) => {
-        setFotos(datos.fotos)
-        setReels(datos.reels)
+        setFotos(datos?.fotos || [])
+        setReels(datos?.reels || [])
       })
       .catch(() => {})
       .finally(() => setCargando(false))
@@ -100,7 +100,7 @@ function Galeria() {
                 <TituloBloque icono={Film} texto="Videos" />
                 <div className="flex flex-wrap justify-center gap-6">
                   {reels.map((reel, i) => (
-                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 3) * 0.1)} className="w-full sm:w-[320px]">
+                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 3) * 0.1)} className="w-full sm:w-[340px]">
                       <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
                       {reel.descripcion && <p className="text-texto/70 text-xs text-center mt-3">{reel.descripcion}</p>}
                     </motion.div>

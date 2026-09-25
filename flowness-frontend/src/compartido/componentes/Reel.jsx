@@ -18,7 +18,7 @@ function Reel({ reel, titulo = 'Reel' }) {
   return (
     <div className="w-full overflow-hidden rounded-2xl bg-blanco border border-terracota/20">
       <iframe src={embed} title={titulo} loading="lazy" scrolling="no" allowFullScreen
-        className="block w-full h-[640px] border-0" />
+        className="block w-full h-[700px] border-0" />
     </div>
   )
 }

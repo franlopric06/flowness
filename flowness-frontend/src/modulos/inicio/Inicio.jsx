@@ -308,7 +308,7 @@ function Inicio() {
               <p className="flex items-center justify-center gap-2 text-verde text-xs font-semibold tracking-[0.2em] uppercase mb-5"><Film size={16} /> Videos</p>
               <div className="flex flex-wrap justify-center gap-6">
                 {reelsDestacados.map((reel, i) => (
-                  <motion.div key={reel.id} {...fadeUpScrollDelay(i * 0.1)} className="w-full sm:w-[300px]"><Reel reel={reel} /></motion.div>
+                  <motion.div key={reel.id} {...fadeUpScrollDelay(i * 0.1)} className="w-full sm:w-[340px]"><Reel reel={reel} /></motion.div>
                 ))}
               </div>
             </div>

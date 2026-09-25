@@ -65,7 +65,7 @@ function Encabezado() {
   const links = token && !esAdmin ? [...LINKS, ['/mi-cuenta', 'Mi cuenta']] : LINKS
 
   const estiloLink = ({ isActive }) =>
-    `relative py-1 text-[0.7rem] font-medium tracking-[0.18em] uppercase transition-colors ${
+    `relative py-1 whitespace-nowrap text-[0.68rem] font-medium tracking-[0.14em] xl:tracking-[0.18em] uppercase transition-colors ${
       isActive ? 'text-blanco' : 'text-blanco/75 hover:text-blanco'
     } after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-terracota after:transition-all ${
       isActive ? 'after:w-full' : 'after:w-0 hover:after:w-full'
@@ -79,25 +79,25 @@ function Encabezado() {
         compacto || menuAbierto ? 'bg-verde/95 backdrop-blur-md shadow-media' : 'bg-verde'
       }`}
     >
-      <nav className={`contenedor flex items-center justify-between transition-[height] duration-300 ${compacto ? 'h-16' : 'h-16 md:h-20'}`}>
+      <nav className={`contenedor max-w-7xl flex gap-4 items-center justify-between transition-[height] duration-300 ${compacto ? 'h-16' : 'h-16 md:h-20'}`}>
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3" aria-label="Flowness, ir al inicio">
+        <Link to="/" className="flex items-center gap-3 shrink-0" aria-label="Flowness, ir al inicio">
           <img src="/logo-blanco.png" alt="" className={`transition-all duration-300 ${compacto ? 'h-10 w-10' : 'h-11 w-11 md:h-14 md:w-14'}`} />
           <span className="flex flex-col leading-none">
             <span className="titulo text-blanco text-xl md:text-2xl">FLOWNESS</span>
-            <span className="hidden sm:block lg:hidden xl:block text-blanco/70 text-[0.55rem] tracking-[0.2em] uppercase mt-1">Movilidad · Flexibilidad · Mindfulness</span>
+            <span className="hidden sm:block lg:hidden text-blanco/70 text-[0.55rem] tracking-[0.2em] uppercase mt-1">Movilidad · Flexibilidad · Mindfulness</span>
           </span>
         </Link>
 
         {/* Links (computadora) */}
-        <ul className="hidden lg:flex items-center gap-5 xl:gap-7">
+        <ul className="hidden lg:flex items-center gap-5 xl:gap-7 mx-auto">
           {links.map(([ruta, texto]) => (
             <li key={ruta}><NavLink to={ruta} end={ruta === '/'} className={estiloLink}>{texto}</NavLink></li>
           ))}
         </ul>
 
         {/* Botones (computadora) */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-2 shrink-0 whitespace-nowrap">
           {esAdmin && (
             <Link to="/admin" className="btn btn-chico btn-claro"><LayoutDashboard size={14} /> Panel</Link>
           )}
