@@ -4,11 +4,10 @@ import Reel from '../../compartido/componentes/Reel'
 import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerGaleria } from './galeria.servicio'
 
-// Galería pública: fotos (con visor a pantalla completa) y videos cortos
+// Galería pública: videos cortos y fotos (con visor a pantalla completa)
 function Galeria() {
   const [fotos, setFotos] = useState([])
   const [reels, setReels] = useState([])
-  const [pestana, setPestana] = useState('fotos')
   const [cargando, setCargando] = useState(true)
   const [abierta, setAbierta] = useState(null) // índice de la foto abierta en el visor
   const vibrar = useVibrar()
@@ -18,8 +17,6 @@ function Galeria() {
       .then((datos) => {
         setFotos(datos.fotos)
         setReels(datos.reels)
-        // Si no hay fotos pero sí videos, arranca en videos
-        if (datos.fotos.length === 0 && datos.reels.length > 0) setPestana('videos')
       })
       .catch(() => {})
       .finally(() => setCargando(false))
@@ -40,52 +37,48 @@ function Galeria() {
     return () => window.removeEventListener('keydown', alApretar)
   }, [abierta, cerrar, mover])
 
-  const botonPestana = (clave, texto, cantidad) => (
-    <button onClick={() => { vibrar(); setPestana(clave) }}
-      className={`text-xs tracking-widest uppercase px-6 py-2 rounded-full transition-colors ${
-        pestana === clave ? 'bg-[#7B9B77] text-white' : 'border border-[#7B9B77] text-[#7B9B77] hover:bg-[#7B9B77]/10'
-      }`}>
-      {texto} {cantidad > 0 && <span className="opacity-70">· {cantidad}</span>}
-    </button>
-  )
-
   return (
     <main className="pt-32 min-h-screen px-4 md:px-16 pb-16">
       <p className="text-[#D8A48F] text-xs tracking-widest uppercase text-center mb-2">Momentos</p>
       <h1 className="text-[#7B9B77] text-3xl md:text-4xl font-bold text-center tracking-widest mb-8">Galería</h1>
 
-      <div className="flex justify-center gap-3 mb-10">
-        {botonPestana('fotos', 'Fotos', fotos.length)}
-        {botonPestana('videos', 'Videos', reels.length)}
-      </div>
-
       {cargando ? (
         <p className="text-center text-[#A9A9A2]">Cargando…</p>
-      ) : pestana === 'fotos' ? (
-        fotos.length === 0 ? (
-          <p className="text-center text-[#A9A9A2]">Muy pronto vas a encontrar fotos acá.</p>
-        ) : (
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-3 max-w-6xl mx-auto">
-            {fotos.map((foto, i) => (
-              <button key={foto.id} onClick={() => { vibrar(); setAbierta(i) }}
-                className="block w-full mb-3 overflow-hidden rounded-xl break-inside-avoid group">
-                <img src={imagenReducida(foto.url, 600)} alt={foto.descripcion || 'Foto de Flowness'} loading="lazy"
-                  className="w-full h-auto transition-transform duration-500 group-hover:scale-105" />
-              </button>
-            ))}
-          </div>
-        )
-      ) : reels.length === 0 ? (
-        <p className="text-center text-[#A9A9A2]">Muy pronto vas a encontrar videos acá.</p>
+      ) : fotos.length === 0 && reels.length === 0 ? (
+        <p className="text-center text-[#A9A9A2]">Muy pronto vas a encontrar fotos y videos acá.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {reels.map((reel) => (
-            <div key={reel.id}>
-              <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
-              {reel.descripcion && <p className="text-[#A9A9A2] text-xs text-center mt-2">{reel.descripcion}</p>}
-            </div>
-          ))}
-        </div>
+        <>
+          {/* Videos */}
+          {reels.length > 0 && (
+            <section className="mb-16">
+              <h2 className="text-[#7B9B77] text-sm font-semibold tracking-widest uppercase text-center mb-6">Videos</h2>
+              <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+                {reels.map((reel) => (
+                  <div key={reel.id} className="w-full sm:w-[320px]">
+                    <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
+                    {reel.descripcion && <p className="text-[#A9A9A2] text-xs text-center mt-2">{reel.descripcion}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Fotos */}
+          {fotos.length > 0 && (
+            <section>
+              <h2 className="text-[#7B9B77] text-sm font-semibold tracking-widest uppercase text-center mb-6">Fotos</h2>
+              <div className="columns-2 md:columns-3 lg:columns-4 gap-3 max-w-6xl mx-auto">
+                {fotos.map((foto, i) => (
+                  <button key={foto.id} onClick={() => { vibrar(); setAbierta(i) }}
+                    className="block w-full mb-3 overflow-hidden rounded-xl break-inside-avoid group">
+                    <img src={imagenReducida(foto.url, 600)} alt={foto.descripcion || 'Foto de Flowness'} loading="lazy"
+                      className="w-full h-auto transition-transform duration-500 group-hover:scale-105" />
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {/* Visor de fotos */}

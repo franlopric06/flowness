@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import * as api from './admin.servicio'
+import AdminFases from './AdminFases'
 import AdminClases from './AdminClases'
 import AdminFormacion from './AdminFormacion'
 import AdminGaleria from './AdminGaleria'
@@ -21,7 +22,6 @@ function Admin() {
 
   const cargarDatos = async () => {
     try {
-      if (seccion === 'Fases') setDatos({ fases: await api.obtenerFases() })
       if (seccion === 'Avisos') setDatos({ avisos: await api.obtenerAvisos() })
       if (seccion === 'Sobre mí') setDatos({ sobreMi: await api.obtenerSobreMi() })
       if (seccion === 'Configuración') setDatos({ config: await api.obtenerConfiguracion() })
@@ -51,38 +51,8 @@ function Admin() {
           ))}
         </div>
 
-        {/* Fases */}
-        {seccion === 'Fases' && (
-          <div>
-            <h2 className="text-[#7B9B77] font-semibold mb-4">Fases del método</h2>
-            <div className="bg-white rounded-2xl p-5 mb-6 border border-[#D8A48F]/20">
-              <h3 className="text-sm font-medium mb-3 text-[#555]">Nueva fase</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input placeholder="Número (1-6)" type="number" value={form.numero || ''} onChange={e => setForm({ ...form, numero: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
-                <input placeholder="Nombre" value={form.nombre || ''} onChange={e => setForm({ ...form, nombre: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
-                <textarea placeholder="Descripción" value={form.descripcion || ''} onChange={e => setForm({ ...form, descripcion: e.target.value })} className="border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none col-span-2" rows={3} />
-                <input placeholder="URL del video de muestra" value={form.videoUrl || ''} onChange={e => setForm({ ...form, videoUrl: e.target.value })} className="border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none col-span-2" />
-              </div>
-              <button onClick={async () => { vibrar(); await api.crearFase(form); setForm({}); cargarDatos(); mostrarMsg('Fase creada') }}
-                className="mt-3 bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-2 rounded-full hover:bg-[#5a7a56] transition-colors">
-                Crear fase
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(datos.fases || []).map(fase => (
-                <div key={fase.id} className="bg-white rounded-2xl p-4 border border-[#D8A48F]/20 flex justify-between items-start">
-                  <div>
-                    <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase">Fase {fase.numero}</p>
-                    <p className="text-[#7B9B77] font-semibold text-sm">{fase.nombre}</p>
-                    <p className="text-[#A9A9A2] text-xs mt-1">{fase.descripcion}</p>
-                  </div>
-                  <button onClick={async () => { vibrar(); await api.eliminarFase(fase.id); cargarDatos() }}
-                    className="text-red-400 text-xs hover:opacity-60 ml-2">✕</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Fases (componente propio) */}
+        {seccion === 'Fases' && <AdminFases mostrarMsg={mostrarMsg} />}
 
         {/* Clases (componente propio) */}
         {seccion === 'Clases' && <AdminClases mostrarMsg={mostrarMsg} />}

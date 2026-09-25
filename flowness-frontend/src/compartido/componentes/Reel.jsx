@@ -7,7 +7,7 @@ function Reel({ reel, titulo = 'Reel' }) {
     const portada = reel.url.replace(/\.[a-z0-9]+$/i, '.jpg')
     return (
       <div className="w-full aspect-[9/16] overflow-hidden rounded-2xl bg-black">
-        <video src={reel.url} poster={portada} controls playsInline preload="none"
+        <video src={reel.url} poster={portada} controls playsInline preload="metadata"
           controlsList="nodownload" className="h-full w-full object-cover" title={titulo} />
       </div>
     )
