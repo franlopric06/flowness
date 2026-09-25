@@ -18,6 +18,7 @@ export const obtenerCompras = async (req, res) => {
       include: {
         usuario: { select: { nombre: true, email: true } },
         clase: { select: { nombre: true } },
+        curso: { select: { nombre: true } },
       },
       orderBy: { creadoEn: 'desc' },
     })

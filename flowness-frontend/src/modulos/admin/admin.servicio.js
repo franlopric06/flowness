@@ -24,3 +24,6 @@ export const actualizarSobreMi = (datos) => peticion('/admin/sobre-mi', { method
 export const subirImagen = (archivo) => subirArchivo('/media/imagen', archivo)
 export const subirVideo = (archivo) => subirArchivo('/media/video', archivo)
 export const subirDocumento = (archivo) => subirArchivo('/media/documento', archivo)
+
+// Formación (cursos y lecciones)
+export { obtenerCursosAdmin, actualizarCurso, crearLeccion, actualizarLeccion } from '../formacion/formacion.servicio'

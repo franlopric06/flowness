@@ -3,25 +3,48 @@ import { Link } from 'react-router-dom'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { obtenerClases } from '../clases/clases.servicio'
+import { obtenerCursos } from '../formacion/formacion.servicio'
 
 function MiCuenta() {
   const [misClases, setMisClases] = useState([])
+  const [misCursos, setMisCursos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [claseAbierta, setClaseAbierta] = useState(null)
   const vibrar = useVibrar()
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
 
   useEffect(() => {
-    obtenerClases()
-      .then((clases) => setMisClases(clases.filter((c) => c.tieneAcceso)))
-      .catch(() => {})
-      .finally(() => setCargando(false))
+    Promise.all([
+      obtenerClases().then((clases) => setMisClases(clases.filter((c) => c.tieneAcceso))).catch(() => {}),
+      obtenerCursos().then((cursos) => setMisCursos(cursos.filter((c) => c.comprado))).catch(() => {}),
+    ]).finally(() => setCargando(false))
   }, [])
 
   return (
     <main className="pt-32 min-h-screen px-6 md:px-16 pb-16">
       <h1 className="text-[#7B9B77] text-3xl font-bold tracking-widest mb-2">Hola, {usuario.nombre}</h1>
-      <p className="text-[#A9A9A2] text-sm mb-10">Tus clases disponibles:</p>
+
+      {/* Formación comprada */}
+      {misCursos.length > 0 && (
+        <section className="mb-12">
+          <p className="text-[#A9A9A2] text-sm mb-4">Tu formación:</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
+            {misCursos.map((curso) => (
+              <Link key={curso.id} to={`/formacion/${curso.slug}`} onClick={vibrar}
+                className="bg-white rounded-2xl p-5 border border-[#7B9B77]/20 hover:shadow-md transition-shadow">
+                <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mb-1">{curso.subtitulo || 'Formación'}</p>
+                <h3 className="text-[#7B9B77] font-semibold text-sm tracking-widest uppercase mb-2">{curso.nombre}</h3>
+                <p className="text-[#A9A9A2] text-xs">
+                  {curso.leccionesPublicadas} {curso.leccionesPublicadas === 1 ? 'lección disponible' : 'lecciones disponibles'}
+                  {curso.totalVideos ? ` de ${curso.totalVideos}` : ''} · Ir al curso →
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <p className="text-[#A9A9A2] text-sm mb-4">Tus clases disponibles:</p>
 
       {cargando ? (
         <p className="text-[#A9A9A2]">Cargando…</p>

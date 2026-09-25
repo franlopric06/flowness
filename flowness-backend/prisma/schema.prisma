@@ -89,20 +89,65 @@ model Clase {
 }
 
 // ─────────────────────────────────────────────
+// FORMACIÓN (cursos para profesionales)
+// 3 niveles: Esencial, Avanza y Pro. Cada nivel se compra por separado.
+// Quien compra un curso ve todas sus lecciones publicadas, también las
+// que Florencia suba después. totalVideos es la cantidad prevista:
+// las que faltan se muestran como "Próximamente".
+// ─────────────────────────────────────────────
+
+model Curso {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  nombre      String
+  subtitulo   String?
+  descripcion String   @default("")
+  dirigidoA   String?
+  duracion    String?
+  totalVideos Int?
+  precio      Float    @default(0)
+  portadaUrl  String?
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+
+  lecciones   Leccion[]
+  compras     Compra[]
+}
+
+// Cada lección: un video de YouTube "No listado" + su PDF explicativo
+model Leccion {
+  id          Int      @id @default(autoincrement())
+  cursoId     Int
+  titulo      String
+  descripcion String?
+  videoUrl    String?
+  pdfUrl      String?
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+
+  curso       Curso    @relation(fields: [cursoId], references: [id])
+}
+
+// ─────────────────────────────────────────────
 // COMPRAS
+// Una compra es de una clase (claseId) o de un curso (cursoId).
 // ─────────────────────────────────────────────
 
 model Compra {
   id            Int        @id @default(autoincrement())
   usuarioId     Int
-  claseId       Int
+  claseId       Int?
+  cursoId       Int?
   monto         Float
   estado        EstadoPago @default(PENDIENTE)
   mpPagoId      String?
   creadoEn      DateTime   @default(now())
 
   usuario       Usuario    @relation(fields: [usuarioId], references: [id])
-  clase         Clase      @relation(fields: [claseId], references: [id])
+  clase         Clase?     @relation(fields: [claseId], references: [id])
+  curso         Curso?     @relation(fields: [cursoId], references: [id])
 }
 
 enum EstadoPago {

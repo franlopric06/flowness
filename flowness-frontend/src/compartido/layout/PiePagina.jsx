@@ -11,7 +11,7 @@ function PiePagina() {
           <p className="text-[#A9A9A2] text-xs tracking-widest uppercase mt-1">Movilidad · Flexibilidad · Mindfulness</p>
         </div>
         <ul className="flex gap-6 list-none flex-wrap justify-center">
-          {[['/', 'Inicio'], ['/clases', 'Clases'], ['/sobre-mi', 'Sobre mí'], ['/galeria', 'Galería'], ['/contacto', 'Contacto']].map(([ruta, label]) => (
+          {[['/', 'Inicio'], ['/clases', 'Clases'], ['/formacion', 'Formación'], ['/sobre-mi', 'Sobre mí'], ['/galeria', 'Galería'], ['/contacto', 'Contacto']].map(([ruta, label]) => (
             <li key={ruta}>
               <Link to={ruta} onClick={vibrar} className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">
                 {label}

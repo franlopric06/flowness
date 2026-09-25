@@ -20,7 +20,7 @@ export const obtenerMisClases = async (req, res) => {
     })
     // Sin duplicados (si compró dos veces la misma) y solo las visibles
     const vistas = new Map()
-    compras.forEach(({ clase }) => { if (clase.activo) vistas.set(clase.id, clase) })
+    compras.forEach(({ clase }) => { if (clase?.activo) vistas.set(clase.id, clase) })
     res.json([...vistas.values()])
   } catch {
     res.status(500).json({ error: 'Error al obtener clases' })

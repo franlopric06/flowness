@@ -44,7 +44,7 @@ function Encabezado() {
         </div>
 
         <ul className="hidden md:flex gap-8 list-none">
-          {[['/', 'Inicio'], ['/clases', 'Clases'], ['/sobre-mi', 'Sobre mí'], ['/galeria', 'Galería'], ['/contacto', 'Contacto']].map(([ruta, label]) => (
+          {[['/', 'Inicio'], ['/clases', 'Clases'], ['/formacion', 'Formación'], ['/sobre-mi', 'Sobre mí'], ['/galeria', 'Galería'], ['/contacto', 'Contacto']].map(([ruta, label]) => (
             <li key={ruta}>
               <Link to={ruta} onClick={vibrar} className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77] transition-colors">
                 {label}
@@ -83,7 +83,7 @@ function Encabezado() {
 
       {menuAbierto && (
         <ul className="md:hidden bg-[#F5F0EB] flex flex-col items-center gap-6 py-6 list-none border-t border-[#D8A48F]/20">
-          {[['/', 'Inicio'], ['/clases', 'Clases'], ['/sobre-mi', 'Sobre mí'], ['/galeria', 'Galería'], ['/contacto', 'Contacto']].map(([ruta, label]) => (
+          {[['/', 'Inicio'], ['/clases', 'Clases'], ['/formacion', 'Formación'], ['/sobre-mi', 'Sobre mí'], ['/galeria', 'Galería'], ['/contacto', 'Contacto']].map(([ruta, label]) => (
             <li key={ruta}>
               <Link to={ruta} onClick={() => { vibrar(); setMenuAbierto(false) }} className="text-[#A9A9A2] text-xs tracking-widest uppercase hover:text-[#7B9B77]">
                 {label}

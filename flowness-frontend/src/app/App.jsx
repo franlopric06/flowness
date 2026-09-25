@@ -6,6 +6,8 @@ import PopupFlowness from '../compartido/componentes/PopupFlowness'
 import BotonWhatsapp from '../compartido/componentes/BotonWhatsapp'
 import Inicio from '../modulos/inicio/Inicio'
 import Clases from '../modulos/clases/Clases'
+import Formacion from '../modulos/formacion/Formacion'
+import CursoDetalle from '../modulos/formacion/CursoDetalle'
 import SobreMi from '../modulos/sobre-mi/SobreMi'
 import Galeria from '../modulos/galeria/Galeria'
 import Contacto from '../modulos/contacto/Contacto'
@@ -29,6 +31,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Inicio />} />
               <Route path="/clases" element={<Clases />} />
+              <Route path="/formacion" element={<Formacion />} />
+              <Route path="/formacion/:slug" element={<CursoDetalle />} />
               <Route path="/sobre-mi" element={<SobreMi />} />
               <Route path="/galeria" element={<Galeria />} />
               <Route path="/contacto" element={<Contacto />} />
