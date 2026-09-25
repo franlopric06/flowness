@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { Plus, Pencil, Eye, EyeOff, Save, Loader2, Upload, X, AlertCircle, FileText, PlayCircle, VideoOff, ExternalLink } from 'lucide-react'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { esLinkValido, formatearPrecio } from '../../compartido/utilidades/video'
 import * as api from './admin.servicio'
 import { urlVisorPdf } from '../../compartido/utilidades/medios'
 
-const estiloInput = 'w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none focus:border-[#7B9B77]'
-const estiloArea = 'w-full border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#7B9B77]'
-const estiloLabel = 'text-[#A9A9A2] text-[11px] tracking-widest uppercase block mb-1'
-const botonVerde = 'bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-5 py-2 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50'
-const botonBorde = 'border border-[#7B9B77] text-[#7B9B77] text-[11px] tracking-widest uppercase px-4 py-1.5 rounded-full hover:bg-[#7B9B77]/10'
+const estiloInput = 'input'
+const estiloArea = 'input'
+const estiloLabel = 'text-piedra text-[0.68rem] font-semibold tracking-[0.16em] uppercase block mb-1.5'
+const botonVerde = 'btn btn-primario btn-chico'
+const botonBorde = 'btn btn-secundario btn-chico'
 
 // Sección "Formación" del panel: editar los 3 niveles y cargar sus lecciones.
 function AdminFormacion({ mostrarMsg }) {
@@ -17,33 +18,33 @@ function AdminFormacion({ mostrarMsg }) {
   const [cursoId, setCursoId] = useState(null)
   const [error, setError] = useState('')
 
-  const cargar = () =>
+  const cargar = useCallback(() =>
     api.obtenerCursosAdmin()
       .then((lista) => {
         setCursos(lista)
         setCursoId((actual) => actual ?? lista[0]?.id ?? null)
       })
-      .catch(() => setError('No se pudo cargar la formación'))
+      .catch(() => setError('No se pudo cargar la formación')), [])
 
-  useEffect(() => { cargar() }, [])
+  useEffect(() => { cargar() }, [cargar])
 
   const curso = cursos.find((c) => c.id === cursoId)
 
   return (
     <div>
-      <h2 className="text-[#7B9B77] font-semibold mb-4">Formación</h2>
-      {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+      <h2 className="titulo text-verde text-3xl mb-4">Formación</h2>
+      {error && <p className="flex items-center gap-2 text-error text-sm bg-error/5 rounded-md px-3 py-2 mb-4"><AlertCircle size={15} className="shrink-0" />{error}</p>}
 
       {/* Selector de nivel */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         {cursos.map((c) => (
           <button key={c.id} onClick={() => setCursoId(c.id)}
-            className={`text-left rounded-2xl p-4 border transition-colors ${
-              c.id === cursoId ? 'bg-[#7B9B77] text-white border-[#7B9B77]' : 'bg-white border-[#D8A48F]/20 hover:border-[#7B9B77]'
+            className={`text-left rounded-2xl p-4 border transition-all ${
+              c.id === cursoId ? 'bg-verde text-blanco border-verde shadow-media' : 'bg-blanco border-terracota/20 hover:border-verde hover:-translate-y-0.5'
             }`}>
-            <p className={`text-[10px] tracking-widest uppercase ${c.id === cursoId ? 'text-white/80' : 'text-[#D8A48F]'}`}>{c.subtitulo || 'Nivel'}</p>
-            <p className="font-semibold text-sm">{c.nombre}</p>
-            <p className={`text-[11px] mt-1 ${c.id === cursoId ? 'text-white/80' : 'text-[#A9A9A2]'}`}>
+            <p className={`text-[10px] tracking-widest uppercase ${c.id === cursoId ? 'text-blanco/80' : 'text-terracota'}`}>{c.subtitulo || 'Nivel'}</p>
+            <p className="titulo text-2xl">{c.nombre}</p>
+            <p className={`text-[11px] mt-1 ${c.id === cursoId ? 'text-blanco/80' : 'text-piedra'}`}>
               {c.precio > 0 ? formatearPrecio(c.precio) : 'Sin precio (próximamente)'} · {c.lecciones.filter((l) => l.activo).length} lecciones · {c.ventas} ventas
               {!c.activo && ' · Oculto'}
             </p>
@@ -113,8 +114,8 @@ function FormularioCurso({ curso, mostrarMsg, alGuardar }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-5 mb-6 border border-[#D8A48F]/20">
-      <h3 className="text-sm font-semibold mb-4 text-[#555]">Información del curso</h3>
+    <div className="card p-5 md:p-6 mb-6">
+      <h3 className="titulo text-verde text-2xl mb-4">Información del curso</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className={estiloLabel}>Nombre</label>
@@ -145,7 +146,7 @@ function FormularioCurso({ curso, mostrarMsg, alGuardar }) {
           <input type="number" min="0" value={form.precio} onChange={(e) => cambiar('precio', e.target.value)} placeholder="Sin precio = Próximamente" className={estiloInput} />
         </div>
         <div className="flex items-end pb-2">
-          <label className="flex items-center gap-2 text-sm text-[#555] cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-texto cursor-pointer">
             <input type="checkbox" checked={form.activo} onChange={(e) => cambiar('activo', e.target.checked)} />
             Publicado (visible en la página)
           </label>
@@ -153,19 +154,19 @@ function FormularioCurso({ curso, mostrarMsg, alGuardar }) {
         <div className="md:col-span-2">
           <label className={estiloLabel}>Imagen de portada</label>
           <div className="flex flex-wrap gap-3 items-center">
-            {form.portadaUrl && <img src={form.portadaUrl} alt="" className="h-20 aspect-video object-cover rounded-lg border border-[#D8A48F]/20" />}
+            {form.portadaUrl && <img src={form.portadaUrl} alt="" className="h-20 aspect-video object-cover rounded-lg border border-terracota/20" />}
             <label className={`${botonBorde} cursor-pointer`}>
-              {subiendo ? 'Subiendo…' : 'Subir imagen'}
+              {subiendo ? <><Loader2 size={14} className="animate-spin" /> Subiendo…</> : <><Upload size={14} /> Subir imagen</>}
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" disabled={subiendo}
                 onChange={(e) => subirPortada(e.target.files[0])} />
             </label>
-            {form.portadaUrl && <button onClick={() => cambiar('portadaUrl', '')} className="text-red-400 text-xs">Quitar</button>}
+            {form.portadaUrl && <button onClick={() => cambiar('portadaUrl', '')} className="btn btn-chico text-error hover:bg-error/5"><X size={13} /> Quitar</button>}
           </div>
         </div>
       </div>
-      {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
+      {error && <p className="flex items-center gap-2 text-error text-sm bg-error/5 rounded-md px-3 py-2 mt-4"><AlertCircle size={15} className="shrink-0" />{error}</p>}
       <button onClick={guardar} disabled={guardando || subiendo} className={`${botonVerde} mt-5`}>
-        {guardando ? 'Guardando…' : 'Guardar curso'}
+        {guardando ? <><Loader2 size={14} className="animate-spin" /> Guardando…</> : <><Save size={14} /> Guardar curso</>}
       </button>
     </div>
   )
@@ -221,6 +222,7 @@ function Lecciones({ curso, mostrarMsg, alGuardar }) {
       const { url, error: motivo } = await api.subirDocumento(archivo)
       if (!url) throw new Error(motivo)
       cambiar('pdfUrl', url)
+      mostrarMsg('PDF subido')
     } catch (err) {
       setError(`No se pudo subir el PDF. ${err.message || ''}`)
     } finally {
@@ -253,39 +255,39 @@ function Lecciones({ curso, mostrarMsg, alGuardar }) {
       await api.actualizarLeccion(leccion.id, { activo: !leccion.activo })
       mostrarMsg(leccion.activo ? 'Lección ocultada' : 'Lección publicada')
       alGuardar()
-    } catch (err) {
-      mostrarMsg(err.message)
+    } catch {
+      // el aviso de error lo muestra el cliente de la API
     }
   }
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-[#D8A48F]/20">
+    <div className="card p-5 md:p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-[#555]">
+        <h3 className="titulo text-verde text-2xl">
           Lecciones · {curso.lecciones.filter((l) => l.activo).length}{curso.totalVideos ? ` de ${curso.totalVideos}` : ''}
         </h3>
-        {!abierto && <button onClick={nueva} className={botonVerde}>+ Nueva lección</button>}
+        {!abierto && <button onClick={nueva} className={botonVerde}><Plus size={14} /> Nueva lección</button>}
       </div>
 
       {abierto && (
-        <div className="bg-[#F5F0EB] rounded-2xl p-4 mb-5">
-          <h4 className="text-sm font-semibold mb-3 text-[#555]">{editandoId ? 'Editar lección' : 'Nueva lección'}</h4>
+        <div className="bg-crema rounded-2xl p-4 mb-5">
+          <h4 className="titulo text-verde text-xl mb-3">{editandoId ? 'Editar lección' : 'Nueva lección'}</h4>
           <div className="grid grid-cols-1 md:grid-cols-[1fr_140px] gap-4">
             <div>
               <label className={estiloLabel}>Título</label>
-              <input value={form.titulo} onChange={(e) => cambiar('titulo', e.target.value)} className={`${estiloInput} bg-white`} />
+              <input value={form.titulo} onChange={(e) => cambiar('titulo', e.target.value)} className={`${estiloInput} bg-blanco`} />
             </div>
             <div>
               <label className={estiloLabel}>Orden</label>
-              <input type="number" min="0" value={form.orden} onChange={(e) => cambiar('orden', e.target.value)} className={`${estiloInput} bg-white`} />
+              <input type="number" min="0" value={form.orden} onChange={(e) => cambiar('orden', e.target.value)} className={`${estiloInput} bg-blanco`} />
             </div>
             <div className="md:col-span-2">
               <label className={estiloLabel}>Descripción (opcional)</label>
-              <textarea rows={2} value={form.descripcion} onChange={(e) => cambiar('descripcion', e.target.value)} className={`${estiloArea} bg-white`} />
+              <textarea rows={2} value={form.descripcion} onChange={(e) => cambiar('descripcion', e.target.value)} className={`${estiloArea} bg-blanco`} />
             </div>
             <div className="md:col-span-2">
               <label className={estiloLabel}>Link del video en YouTube (No listado)</label>
-              <input value={form.videoUrl} onChange={(e) => cambiar('videoUrl', e.target.value)} placeholder="https://youtu.be/..." className={`${estiloInput} bg-white`} />
+              <input value={form.videoUrl} onChange={(e) => cambiar('videoUrl', e.target.value)} placeholder="https://youtu.be/..." className={`${estiloInput} bg-blanco`} />
               {form.videoUrl && esLinkValido(form.videoUrl) && (
                 <div className="mt-3 max-w-sm"><ReproductorVideo url={form.videoUrl} titulo="Vista previa" /></div>
               )}
@@ -294,51 +296,50 @@ function Lecciones({ curso, mostrarMsg, alGuardar }) {
               <label className={estiloLabel}>Material en PDF</label>
               <div className="flex flex-wrap gap-3 items-center">
                 {form.pdfUrl && (
-                  <a href={urlVisorPdf(form.pdfUrl)} target="_blank" rel="noreferrer" className="text-[#7B9B77] text-sm underline">📄 Ver PDF cargado</a>
+                  <a href={urlVisorPdf(form.pdfUrl)} target="_blank" rel="noreferrer" className="btn btn-chico text-verde hover:bg-verde/10"><FileText size={14} /> Ver PDF cargado <ExternalLink size={12} /></a>
                 )}
-                <label className={`${botonBorde} cursor-pointer bg-white`}>
-                  {subiendoPdf ? 'Subiendo…' : form.pdfUrl ? 'Reemplazar PDF' : 'Subir PDF'}
+                <label className={`${botonBorde} cursor-pointer bg-blanco`}>
+                  {subiendoPdf ? <><Loader2 size={14} className="animate-spin" /> Subiendo…</> : <><Upload size={14} /> {form.pdfUrl ? 'Reemplazar PDF' : 'Subir PDF'}</>}
                   <input type="file" accept="application/pdf" className="hidden" disabled={subiendoPdf}
                     onChange={(e) => subirPdf(e.target.files[0])} />
                 </label>
-                {form.pdfUrl && <button onClick={() => cambiar('pdfUrl', '')} className="text-red-400 text-xs">Quitar</button>}
+                {form.pdfUrl && <button onClick={() => cambiar('pdfUrl', '')} className="btn btn-chico text-error hover:bg-error/5"><X size={13} /> Quitar</button>}
               </div>
             </div>
-            <label className="flex items-center gap-2 text-sm text-[#555] cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-texto cursor-pointer">
               <input type="checkbox" checked={form.activo} onChange={(e) => cambiar('activo', e.target.checked)} />
               Publicada (la ven los alumnos)
             </label>
           </div>
-          {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
+          {error && <p className="flex items-center gap-2 text-error text-sm bg-error/5 rounded-md px-3 py-2 mt-4"><AlertCircle size={15} className="shrink-0" />{error}</p>}
           <div className="flex gap-3 mt-4">
             <button onClick={guardar} disabled={guardando || subiendoPdf} className={botonVerde}>
-              {guardando ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Crear lección'}
+              {guardando ? <><Loader2 size={14} className="animate-spin" /> Guardando…</> : <><Save size={14} /> {editandoId ? 'Guardar cambios' : 'Crear lección'}</>}
             </button>
-            <button onClick={() => { vibrar(); cerrar() }} className="text-[#A9A9A2] text-xs tracking-widest uppercase px-4 py-2">Cancelar</button>
+            <button onClick={() => { vibrar(); cerrar() }} className="btn btn-chico text-texto/60 hover:text-texto">Cancelar</button>
           </div>
         </div>
       )}
 
       {curso.lecciones.length === 0 ? (
-        <p className="text-[#A9A9A2] text-sm">Todavía no hay lecciones en este curso.</p>
+        <p className="text-piedra text-sm">Todavía no hay lecciones en este curso.</p>
       ) : (
         <ol className="flex flex-col gap-2">
           {curso.lecciones.map((leccion) => (
-            <li key={leccion.id} className={`flex flex-col sm:flex-row sm:items-center gap-2 border border-[#D8A48F]/20 rounded-xl px-4 py-3 ${leccion.activo ? '' : 'opacity-60'}`}>
+            <li key={leccion.id} className={`flex flex-col sm:flex-row sm:items-center gap-2 border border-terracota/20 rounded-xl px-4 py-3 bg-blanco ${leccion.activo ? '' : 'opacity-60'}`}>
               <div className="flex-1 min-w-0">
-                <p className="text-[#7B9B77] text-sm font-medium truncate">{leccion.orden}. {leccion.titulo}</p>
-                <p className="text-[11px] text-[#A9A9A2]">
-                  {leccion.videoUrl ? '▶ Video' : <span className="text-red-400">Sin video</span>}
-                  {' · '}
-                  {leccion.pdfUrl ? '📄 PDF' : 'Sin PDF'}
-                  {!leccion.activo && <span className="text-red-400"> · Oculta</span>}
+                <p className="text-verde text-sm font-semibold truncate">{leccion.orden}. {leccion.titulo}</p>
+                <p className="flex flex-wrap gap-3 text-[11px] text-piedra mt-0.5">
+                  {leccion.videoUrl ? <span className="flex items-center gap-1"><PlayCircle size={12} /> Video</span> : <span className="flex items-center gap-1 text-error"><VideoOff size={12} /> Sin video</span>}
+                  <span className="flex items-center gap-1"><FileText size={12} /> {leccion.pdfUrl ? 'PDF' : 'Sin PDF'}</span>
+                  {!leccion.activo && <span className="flex items-center gap-1 text-error"><EyeOff size={12} /> Oculta</span>}
                 </p>
               </div>
               <div className="flex gap-2 shrink-0">
-                <button onClick={() => editar(leccion)} className={botonBorde}>Editar</button>
+                <button onClick={() => editar(leccion)} className={botonBorde}><Pencil size={13} /> Editar</button>
                 <button onClick={() => cambiarVisibilidad(leccion)}
-                  className="border border-[#A9A9A2] text-[#A9A9A2] text-[11px] tracking-widest uppercase px-4 py-1.5 rounded-full hover:bg-[#A9A9A2]/10">
-                  {leccion.activo ? 'Ocultar' : 'Publicar'}
+                  className="btn btn-chico border border-piedra/60 text-texto/70 hover:bg-crema">
+                  {leccion.activo ? <><EyeOff size={13} /> Ocultar</> : <><Eye size={13} /> Publicar</>}
                 </button>
               </div>
             </li>

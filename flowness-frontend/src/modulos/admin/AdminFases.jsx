@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { Plus, Pencil, Trash2, Save, Loader2, AlertCircle, PlayCircle } from 'lucide-react'
+import { confirmar } from '../../compartido/utilidades/dialogos'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { esLinkValido } from '../../compartido/utilidades/video'
 import * as api from './admin.servicio'
 
 const FORM_VACIO = { numero: '', nombre: '', descripcion: '', videoUrl: '' }
-const estiloInput = 'w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none focus:border-[#7B9B77]'
-const estiloLabel = 'text-[#A9A9A2] text-[11px] tracking-widest uppercase block mb-1'
-const botonVerde = 'bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-5 py-2 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50'
+const estiloInput = 'input'
+const estiloLabel = 'text-piedra text-[0.68rem] font-semibold tracking-[0.16em] uppercase block mb-1.5'
+const botonVerde = 'btn btn-primario btn-chico'
 
 // Sección "Fases" del panel: las 6 fases que se explican en el Inicio.
 function AdminFases({ mostrarMsg }) {
@@ -19,8 +21,8 @@ function AdminFases({ mostrarMsg }) {
   const [error, setError] = useState('')
   const vibrar = useVibrar()
 
-  const cargar = () => api.obtenerFases().then(setFases).catch(() => setError('No se pudieron cargar las fases'))
-  useEffect(() => { cargar() }, [])
+  const cargar = useCallback(() => api.obtenerFases().then(setFases).catch(() => setError('No se pudieron cargar las fases')), [])
+  useEffect(() => { cargar() }, [cargar])
 
   const cambiar = (campo, valor) => setForm((f) => ({ ...f, [campo]: valor }))
 
@@ -65,24 +67,25 @@ function AdminFases({ mostrarMsg }) {
   }
 
   const eliminar = async (fase) => {
-    if (!window.confirm(`¿Eliminar la fase ${fase.numero}?`)) return
-    vibrar()
-    await api.eliminarFase(fase.id)
-    mostrarMsg('Fase eliminada')
-    cargar()
+    if (!(await confirmar(`¿Eliminar la fase ${fase.numero} (${fase.nombre})?`, { textoConfirmar: 'Eliminar' }))) return
+    try {
+      await api.eliminarFase(fase.id)
+      mostrarMsg('Fase eliminada')
+      cargar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-[#7B9B77] font-semibold">Las 6 fases del método</h2>
-        {!abierto && fases.length < 6 && <button onClick={nueva} className={botonVerde}>+ Nueva fase</button>}
+        <h2 className="titulo text-verde text-3xl">Las 6 fases del método</h2>
+        {!abierto && fases.length < 6 && <button onClick={nueva} className={botonVerde}><Plus size={14} /> Nueva fase</button>}
       </div>
-      <p className="text-[#A9A9A2] text-xs mb-5">Se muestran en el Inicio para explicar por qué etapas pasa cada clase y qué beneficio da cada una.</p>
+      <p className="text-piedra text-xs mb-5">Se muestran en el Inicio para explicar por qué etapas pasa cada clase y qué beneficio da cada una.</p>
 
       {abierto && (
-        <div className="bg-white rounded-2xl p-5 mb-6 border border-[#D8A48F]/20">
-          <h3 className="text-sm font-semibold mb-4 text-[#555]">{editandoId ? 'Editar fase' : 'Nueva fase'}</h3>
+        <div className="card p-5 md:p-6 mb-6">
+          <h3 className="titulo text-verde text-2xl mb-4">{editandoId ? 'Editar fase' : 'Nueva fase'}</h3>
           <div className="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4">
             <div>
               <label className={estiloLabel}>Número</label>
@@ -95,7 +98,7 @@ function AdminFases({ mostrarMsg }) {
             <div className="md:col-span-2">
               <label className={estiloLabel}>Qué se trabaja y qué beneficio da</label>
               <textarea rows={4} value={form.descripcion} onChange={(e) => cambiar('descripcion', e.target.value)}
-                className="w-full border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#7B9B77]" />
+                className="input" />
             </div>
             <div className="md:col-span-2">
               <label className={estiloLabel}>Video de muestra en YouTube (opcional)</label>
@@ -105,30 +108,35 @@ function AdminFases({ mostrarMsg }) {
               )}
             </div>
           </div>
-          {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
+          {error && <p className="flex items-center gap-2 text-error text-sm bg-error/5 rounded-md px-3 py-2 mt-4"><AlertCircle size={15} className="shrink-0" />{error}</p>}
           <div className="flex gap-3 mt-5">
             <button onClick={guardar} disabled={guardando} className={botonVerde}>
-              {guardando ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Crear fase'}
+              {guardando ? <><Loader2 size={14} className="animate-spin" /> Guardando…</> : <><Save size={14} /> {editandoId ? 'Guardar cambios' : 'Crear fase'}</>}
             </button>
-            <button onClick={() => { vibrar(); cerrar() }} className="text-[#A9A9A2] text-xs tracking-widest uppercase px-4 py-2">Cancelar</button>
+            <button onClick={() => { vibrar(); cerrar() }} className="btn btn-chico text-texto/60 hover:text-texto">Cancelar</button>
           </div>
         </div>
       )}
 
       {fases.length === 0 ? (
-        <p className="text-[#A9A9A2] text-sm">Todavía no hay fases cargadas. Tocá "Nueva fase" para crear la primera.</p>
+        <p className="text-piedra text-sm">Todavía no hay fases cargadas. Tocá "Nueva fase" para crear la primera.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {fases.map((fase) => (
-            <div key={fase.id} className="bg-white rounded-2xl p-4 border border-[#D8A48F]/20">
-              <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase">Fase {fase.numero}{fase.videoUrl && ' · con video'}</p>
-              <p className="text-[#7B9B77] font-semibold text-sm">{fase.nombre}</p>
-              <p className="text-[#A9A9A2] text-xs mt-1 line-clamp-3">{fase.descripcion}</p>
+            <div key={fase.id} className="card card-elevable p-5">
+              <div className="flex items-start gap-3">
+                <span className="w-10 h-10 shrink-0 rounded-full bg-verde text-blanco flex items-center justify-center titulo text-lg">{fase.numero}</span>
+                <div className="min-w-0">
+                  <p className="titulo text-verde text-xl">{fase.nombre}</p>
+                  {fase.videoUrl && <p className="flex items-center gap-1 text-terracota text-[0.65rem] tracking-widest uppercase"><PlayCircle size={12} /> Con video</p>}
+                </div>
+              </div>
+              <p className="text-texto/60 text-xs mt-3 line-clamp-3">{fase.descripcion}</p>
               <div className="flex gap-2 mt-3">
                 <button onClick={() => editar(fase)}
-                  className="border border-[#7B9B77] text-[#7B9B77] text-[11px] tracking-widest uppercase px-4 py-1.5 rounded-full hover:bg-[#7B9B77]/10">Editar</button>
+                  className="btn btn-secundario btn-chico"><Pencil size={13} /> Editar</button>
                 <button onClick={() => eliminar(fase)}
-                  className="border border-red-300 text-red-400 text-[11px] tracking-widest uppercase px-4 py-1.5 rounded-full hover:bg-red-50">Eliminar</button>
+                  className="btn btn-chico border border-error/40 text-error hover:bg-error/5"><Trash2 size={13} /> Eliminar</button>
               </div>
             </div>
           ))}

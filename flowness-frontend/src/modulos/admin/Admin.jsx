@@ -1,147 +1,297 @@
-import { useState, useEffect } from 'react'
-import { useVibrar } from '../../compartido/hooks/useVibrar'
+import { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import {
+  Layers, Clapperboard, GraduationCap, Images, Megaphone, UserRound, Settings, Users,
+  Plus, Trash2, Save, Loader2, Upload, ShieldAlert, ExternalLink,
+} from 'lucide-react'
+import { avisar } from '../../compartido/utilidades/avisos'
+import { confirmar } from '../../compartido/utilidades/dialogos'
+import { tabContent } from '../../compartido/utilidades/animaciones'
+import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import * as api from './admin.servicio'
 import AdminFases from './AdminFases'
 import AdminClases from './AdminClases'
 import AdminFormacion from './AdminFormacion'
 import AdminGaleria from './AdminGaleria'
 
-const SECCIONES = ['Fases', 'Clases', 'Formación', 'Galería', 'Avisos', 'Sobre mí', 'Configuración', 'Usuarios']
+const SECCIONES = [
+  ['Fases', Layers],
+  ['Clases', Clapperboard],
+  ['Formación', GraduationCap],
+  ['Galería', Images],
+  ['Avisos', Megaphone],
+  ['Sobre mí', UserRound],
+  ['Configuración', Settings],
+  ['Usuarios', Users],
+]
+
+const estiloLabel = 'text-piedra text-[0.68rem] font-semibold tracking-[0.16em] uppercase block mb-1.5'
+
+const CAMPOS_SOBRE_MI = [
+  ['nombre', 'Nombre'],
+  ['titulo', 'Título (ej: Profesora de Educación Física)'],
+  ['descripcion1', 'Texto principal'],
+  ['descripcion2', 'Texto destacado (frase o cita)'],
+]
+
+const CAMPOS_CONFIG = [
+  ['hero_titulo', 'Título de la portada'],
+  ['hero_subtitulo', 'Subtítulo de la portada'],
+  ['hero_descripcion', 'Descripción de la portada'],
+  ['instagram_url', 'Link de Instagram'],
+  ['whatsapp_numero', 'Número de WhatsApp (con código de país, sin +)'],
+  ['popup_instagram', 'Usuario de Instagram para el cartel'],
+  ['popup_texto', 'Texto del cartel de Instagram'],
+]
+
+// Los avisos de éxito / error se muestran con el sistema de avisos del sitio
+const mostrarMsg = (texto, tipo = 'exito') => avisar(texto, tipo)
 
 function Admin() {
   const [seccion, setSeccion] = useState('Fases')
   const [datos, setDatos] = useState({})
   const [form, setForm] = useState({})
-  const [msg, setMsg] = useState('')
-  const vibrar = useVibrar()
+  const [guardando, setGuardando] = useState(false)
+  const [subiendoFoto, setSubiendoFoto] = useState(false)
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
 
-  useEffect(() => {
-    cargarDatos()
+  // Qué datos pide cada sección que se maneja acá mismo
+  const cargarDatos = useCallback(() => {
+    const pedidos = {
+      'Avisos': ['avisos', api.obtenerAvisos],
+      'Sobre mí': ['sobreMi', api.obtenerSobreMi],
+      'Configuración': ['config', api.obtenerConfiguracion],
+      'Usuarios': ['usuarios', api.obtenerUsuarios],
+    }
+    const pedido = pedidos[seccion]
+    if (!pedido) return Promise.resolve()
+    const [clave, pedir] = pedido
+    return pedir()
+      .then((valor) => setDatos({ [clave]: valor }))
+      .catch(() => mostrarMsg('No se pudieron cargar los datos', 'error'))
   }, [seccion])
 
-  const cargarDatos = async () => {
-    try {
-      if (seccion === 'Avisos') setDatos({ avisos: await api.obtenerAvisos() })
-      if (seccion === 'Sobre mí') setDatos({ sobreMi: await api.obtenerSobreMi() })
-      if (seccion === 'Configuración') setDatos({ config: await api.obtenerConfiguracion() })
-      if (seccion === 'Usuarios') setDatos({ usuarios: await api.obtenerUsuarios() })
-    } catch {}
+  useEffect(() => { cargarDatos() }, [cargarDatos])
+
+  const cambiarSeccion = (s) => {
+    setSeccion(s)
+    setForm({})
+    setDatos({})
   }
 
-  const mostrarMsg = (texto) => { setMsg(texto); setTimeout(() => setMsg(''), 3000) }
+  // Ejecuta una acción de guardado con indicador de carga y aviso de éxito
+  const guardar = async (accion, mensaje) => {
+    setGuardando(true)
+    try {
+      await accion()
+      setForm({})
+      await cargarDatos()
+      mostrarMsg(mensaje)
+    } catch {
+      // El aviso de error ya lo muestra el cliente de la API
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  const publicarAviso = () => {
+    if (!form.titulo?.trim()) return mostrarMsg('Poné un título para el aviso.', 'alerta')
+    guardar(() => api.crearAviso(form), 'Aviso publicado')
+  }
+
+  const eliminarAviso = async (aviso) => {
+    if (!(await confirmar(`¿Eliminar el aviso "${aviso.titulo}"?`, { textoConfirmar: 'Eliminar' }))) return
+    guardar(() => api.eliminarAviso(aviso.id), 'Aviso eliminado')
+  }
+
+  const subirFotoSobreMi = async (archivo) => {
+    if (!archivo) return
+    setSubiendoFoto(true)
+    const { url } = await api.subirImagen(archivo)
+    setSubiendoFoto(false)
+    if (url) {
+      setForm((f) => ({ ...f, fotoUrl: url }))
+      mostrarMsg('Foto subida. Tocá "Guardar" para aplicarla.', 'info')
+    }
+  }
 
   if (usuario.rol !== 'ADMIN') {
-    return <main className="pt-32 min-h-screen flex items-center justify-center"><p className="text-[#A9A9A2]">Acceso denegado.</p></main>
+    return (
+      <main className="contenedor pt-32 min-h-screen">
+        <EstadoVacio icono={ShieldAlert} error titulo="Acceso denegado" texto="Esta sección es solo para la administración del sitio.">
+          <Link to="/" className="btn btn-secundario">Ir al inicio</Link>
+        </EstadoVacio>
+      </main>
+    )
   }
 
-  return (
-    <main className="pt-24 min-h-screen bg-[#F5F0EB]">
-      <div className="max-w-6xl mx-auto px-4 pb-16">
-        <h1 className="text-[#7B9B77] text-2xl font-bold tracking-widest mb-6">Panel Admin</h1>
-        {msg && <div className="bg-[#7B9B77]/10 border border-[#7B9B77]/20 text-[#7B9B77] text-sm px-4 py-3 rounded-xl mb-4">{msg}</div>}
+  const botonGuardar = (texto, alHacer) => (
+    <button onClick={alHacer} disabled={guardando} className="btn btn-primario btn-chico">
+      {guardando ? <><Loader2 size={14} className="animate-spin" /> Guardando…</> : <><Save size={14} /> {texto}</>}
+    </button>
+  )
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {SECCIONES.map(s => (
-            <button key={s} onClick={() => { vibrar(); setSeccion(s); setForm({}) }}
-              className={`text-xs tracking-widest uppercase px-5 py-2 rounded-full transition-colors ${seccion === s ? 'bg-[#7B9B77] text-white' : 'border border-[#7B9B77] text-[#7B9B77] hover:bg-[#7B9B77]/10'}`}>
-              {s}
-            </button>
-          ))}
+  const fotoActual = form.fotoUrl ?? datos.sobreMi?.fotoUrl
+
+  return (
+    <main className="min-h-screen pt-20 md:pt-24">
+      <div className="contenedor pb-20">
+        <div className="flex flex-wrap items-end justify-between gap-3 mt-4 mb-6">
+          <div>
+            <p className="etiqueta mb-1">Hola, {usuario.nombre?.split(' ')[0]}</p>
+            <h1 className="titulo text-verde text-4xl md:text-5xl">Panel de administración</h1>
+          </div>
+          <Link to="/" target="_blank" className="btn btn-chico btn-secundario"><ExternalLink size={14} /> Ver sitio</Link>
         </div>
 
-        {/* Fases (componente propio) */}
-        {seccion === 'Fases' && <AdminFases mostrarMsg={mostrarMsg} />}
-
-        {/* Clases (componente propio) */}
-        {seccion === 'Clases' && <AdminClases mostrarMsg={mostrarMsg} />}
-        {seccion === 'Formación' && <AdminFormacion mostrarMsg={mostrarMsg} />}
-        {seccion === 'Galería' && <AdminGaleria mostrarMsg={mostrarMsg} />}
-
-        {/* Avisos */}
-        {seccion === 'Avisos' && (
-          <div>
-            <div className="bg-white rounded-2xl p-5 mb-6 border border-[#D8A48F]/20">
-              <input placeholder="Título" value={form.titulo || ''} onChange={e => setForm({ ...form, titulo: e.target.value })} className="w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none mb-3" />
-              <textarea placeholder="Descripción" value={form.descripcion || ''} onChange={e => setForm({ ...form, descripcion: e.target.value })} className="w-full border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none mb-3" rows={3} />
-              <button onClick={async () => { vibrar(); await api.crearAviso(form); setForm({}); cargarDatos(); mostrarMsg('Aviso publicado') }}
-                className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-2 rounded-full">Publicar aviso</button>
-            </div>
-            {(datos.avisos || []).map(a => (
-              <div key={a.id} className="bg-white rounded-2xl p-4 mb-3 border border-[#D8A48F]/20 flex justify-between">
-                <div><p className="font-medium text-sm">{a.titulo}</p><p className="text-[#A9A9A2] text-xs">{a.descripcion}</p></div>
-                <button onClick={async () => { vibrar(); await api.eliminarAviso(a.id); cargarDatos() }} className="text-red-400 text-xs">✕</button>
-              </div>
-            ))}
+        {/* Pestañas: en el celular se deslizan de costado */}
+        <nav className="sticky top-16 md:top-20 z-20 -mx-5 px-5 md:mx-0 md:px-0 py-3 mb-6 bg-crema/90 backdrop-blur-md">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar md:flex-wrap">
+            {SECCIONES.map(([s, Icono]) => {
+              const activa = seccion === s
+              return (
+                <button key={s} onClick={() => cambiarSeccion(s)}
+                  className={`relative shrink-0 inline-flex items-center gap-2 text-[0.68rem] font-semibold tracking-[0.14em] uppercase px-4 py-2.5 rounded-full transition-colors ${
+                    activa ? 'text-blanco' : 'text-verde bg-blanco border border-verde/30 hover:border-verde'
+                  }`}>
+                  {activa && <motion.span layoutId="pestanaAdmin" className="absolute inset-0 bg-verde rounded-full -z-0" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
+                  <Icono size={15} className="relative" /><span className="relative">{s}</span>
+                </button>
+              )
+            })}
           </div>
-        )}
+        </nav>
 
-        {/* Sobre mí */}
-        {seccion === 'Sobre mí' && (
-          <div className="bg-white rounded-2xl p-5 border border-[#D8A48F]/20">
-            {['nombre', 'titulo', 'descripcion1', 'descripcion2', 'fotoUrl'].map(campo => (
-              <div key={campo} className="mb-3">
-                <label className="text-[#A9A9A2] text-xs tracking-widest uppercase block mb-1">{campo}</label>
-                {campo.startsWith('descripcion') ? (
-                  <textarea value={form[campo] ?? datos.sobreMi?.[campo] ?? ''} onChange={e => setForm({ ...form, [campo]: e.target.value })} className="w-full border border-[#D8A48F]/30 rounded-xl px-4 py-2 text-sm outline-none" rows={3} />
+        <AnimatePresence mode="wait">
+          <motion.section key={seccion} {...tabContent}>
+            {seccion === 'Fases' && <AdminFases mostrarMsg={mostrarMsg} />}
+            {seccion === 'Clases' && <AdminClases mostrarMsg={mostrarMsg} />}
+            {seccion === 'Formación' && <AdminFormacion mostrarMsg={mostrarMsg} />}
+            {seccion === 'Galería' && <AdminGaleria mostrarMsg={mostrarMsg} />}
+
+            {/* Avisos */}
+            {seccion === 'Avisos' && (
+              <div>
+                <h2 className="titulo text-verde text-3xl mb-2">Avisos</h2>
+                <p className="text-piedra text-xs mb-5">Se muestran como "Novedades" en el Inicio.</p>
+                <div className="card p-5 md:p-6 mb-6 space-y-3">
+                  <div>
+                    <label className={estiloLabel}>Título</label>
+                    <input value={form.titulo || ''} onChange={(e) => setForm({ ...form, titulo: e.target.value })} className="input" />
+                  </div>
+                  <div>
+                    <label className={estiloLabel}>Descripción</label>
+                    <textarea rows={3} value={form.descripcion || ''} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} className="input" />
+                  </div>
+                  <button onClick={publicarAviso} disabled={guardando} className="btn btn-primario btn-chico">
+                    {guardando ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Publicar aviso
+                  </button>
+                </div>
+                {(datos.avisos || []).length === 0 ? (
+                  <p className="text-piedra text-sm">No hay avisos publicados.</p>
                 ) : (
-                  <input value={form[campo] ?? datos.sobreMi?.[campo] ?? ''} onChange={e => setForm({ ...form, [campo]: e.target.value })} className="w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none" />
+                  <ul className="space-y-3">
+                    {datos.avisos.map((a) => (
+                      <li key={a.id} className="card p-4 flex gap-4 items-start">
+                        <span className="icono-caja bg-terracota/15 text-terracota"><Megaphone size={18} /></span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm text-texto">{a.titulo}</p>
+                          <p className="text-texto/60 text-xs whitespace-pre-line">{a.descripcion}</p>
+                        </div>
+                        <button onClick={() => eliminarAviso(a)} aria-label="Eliminar aviso" title="Eliminar"
+                          className="w-9 h-9 shrink-0 inline-flex items-center justify-center rounded-full text-error hover:bg-error/10 transition-colors">
+                          <Trash2 size={16} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </div>
-            ))}
-            <button onClick={async () => { vibrar(); await api.actualizarSobreMi({ ...datos.sobreMi, ...form }); cargarDatos(); mostrarMsg('Guardado') }}
-              className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-2 rounded-full">Guardar</button>
-          </div>
-        )}
+            )}
 
-        {/* Configuración */}
-        {seccion === 'Configuración' && (
-          <div className="bg-white rounded-2xl p-5 border border-[#D8A48F]/20">
-            <p className="text-[#A9A9A2] text-xs mb-4">Editá los textos e info del sitio:</p>
-            {[
-              ['hero_titulo', 'Título del hero'],
-              ['hero_subtitulo', 'Subtítulo del hero'],
-              ['hero_descripcion', 'Descripción del hero'],
-              ['instagram_url', 'URL de Instagram'],
-              ['whatsapp_numero', 'Número de WhatsApp (con código de país, sin +)'],
-              ['popup_instagram', 'Usuario de Instagram para el popup'],
-              ['popup_texto', 'Texto del popup'],
-            ].map(([clave, label]) => (
-              <div key={clave} className="mb-3">
-                <label className="text-[#A9A9A2] text-xs tracking-widest uppercase block mb-1">{label}</label>
-                <input
-                  value={form[clave] ?? datos.config?.[clave] ?? ''}
-                  onChange={e => setForm({ ...form, [clave]: e.target.value })}
-                  className="w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none"
-                />
+            {/* Sobre mí */}
+            {seccion === 'Sobre mí' && (
+              <div>
+                <h2 className="titulo text-verde text-3xl mb-5">Sobre mí</h2>
+                <div className="card p-5 md:p-6 grid md:grid-cols-[200px_1fr] gap-6">
+                  <div>
+                    <label className={estiloLabel}>Foto</label>
+                    <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-arena/40 flex items-center justify-center mb-3">
+                      {fotoActual ? <img src={fotoActual} alt="" className="w-full h-full object-cover" /> : <UserRound size={40} className="text-piedra" />}
+                    </div>
+                    <label className="btn btn-chico btn-secundario w-full cursor-pointer">
+                      {subiendoFoto ? <><Loader2 size={14} className="animate-spin" /> Subiendo…</> : <><Upload size={14} /> Cambiar foto</>}
+                      <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" disabled={subiendoFoto}
+                        onChange={(e) => subirFotoSobreMi(e.target.files[0])} />
+                    </label>
+                  </div>
+                  <div className="space-y-4">
+                    {CAMPOS_SOBRE_MI.map(([campo, label]) => (
+                      <div key={campo}>
+                        <label className={estiloLabel}>{label}</label>
+                        {campo.startsWith('descripcion') ? (
+                          <textarea rows={campo === 'descripcion1' ? 6 : 3} value={form[campo] ?? datos.sobreMi?.[campo] ?? ''}
+                            onChange={(e) => setForm({ ...form, [campo]: e.target.value })} className="input" />
+                        ) : (
+                          <input value={form[campo] ?? datos.sobreMi?.[campo] ?? ''} onChange={(e) => setForm({ ...form, [campo]: e.target.value })} className="input" />
+                        )}
+                      </div>
+                    ))}
+                    {botonGuardar('Guardar', () => guardar(() => api.actualizarSobreMi({ ...datos.sobreMi, ...form }), 'Sobre mí guardado'))}
+                  </div>
+                </div>
               </div>
-            ))}
-            <button onClick={async () => { vibrar(); await api.actualizarConfiguracion(form); setForm({}); cargarDatos(); mostrarMsg('Configuración guardada') }}
-              className="bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-6 py-2 rounded-full">Guardar configuración</button>
-          </div>
-        )}
+            )}
 
-        {/* Usuarios */}
-        {seccion === 'Usuarios' && (
-          <div className="bg-white rounded-2xl p-5 border border-[#D8A48F]/20">
-            <table className="w-full text-sm">
-              <thead><tr className="text-[#A9A9A2] text-xs tracking-widest uppercase border-b border-[#D8A48F]/20">
-                <th className="pb-2 text-left">Nombre</th><th className="pb-2 text-left">Email</th><th className="pb-2 text-left">Rol</th>
-              </tr></thead>
-              <tbody>
-                {(datos.usuarios || []).map(u => (
-                  <tr key={u.id} className="border-b border-[#F5F0EB]">
-                    <td className="py-2">{u.nombre}</td>
-                    <td className="py-2 text-[#A9A9A2]">{u.email}</td>
-                    <td className="py-2"><span className={`text-xs px-2 py-1 rounded-full ${u.rol === 'ADMIN' ? 'bg-[#7B9B77]/20 text-[#7B9B77]' : 'bg-[#D8A48F]/20 text-[#D8A48F]'}`}>{u.rol}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+            {/* Configuración */}
+            {seccion === 'Configuración' && (
+              <div>
+                <h2 className="titulo text-verde text-3xl mb-2">Configuración</h2>
+                <p className="text-piedra text-xs mb-5">Textos y datos de contacto del sitio.</p>
+                <div className="card p-5 md:p-6 grid md:grid-cols-2 gap-4">
+                  {CAMPOS_CONFIG.map(([clave, label]) => (
+                    <div key={clave} className={clave === 'hero_descripcion' || clave === 'popup_texto' ? 'md:col-span-2' : ''}>
+                      <label className={estiloLabel}>{label}</label>
+                      {clave === 'hero_descripcion' ? (
+                        <textarea rows={3} value={form[clave] ?? datos.config?.[clave] ?? ''} onChange={(e) => setForm({ ...form, [clave]: e.target.value })} className="input" />
+                      ) : (
+                        <input value={form[clave] ?? datos.config?.[clave] ?? ''} onChange={(e) => setForm({ ...form, [clave]: e.target.value })} className="input" />
+                      )}
+                    </div>
+                  ))}
+                  <div className="md:col-span-2">
+                    {botonGuardar('Guardar configuración', () => {
+                      if (Object.keys(form).length === 0) return mostrarMsg('No hiciste cambios todavía.', 'info')
+                      guardar(() => api.actualizarConfiguracion(form), 'Configuración guardada')
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
+            {/* Usuarios */}
+            {seccion === 'Usuarios' && (
+              <div>
+                <h2 className="titulo text-verde text-3xl mb-5">Usuarios <span className="text-piedra text-xl">· {(datos.usuarios || []).length}</span></h2>
+                <ul className="card divide-y divide-terracota/10">
+                  {(datos.usuarios || []).map((u) => (
+                    <li key={u.id} className="flex items-center gap-3 px-4 py-3">
+                      <span className="w-9 h-9 shrink-0 rounded-full bg-verde/15 text-verde flex items-center justify-center font-semibold text-sm">
+                        {u.nombre?.[0]?.toUpperCase() || '?'}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-texto truncate">{u.nombre}</p>
+                        <p className="text-xs text-piedra truncate">{u.email}</p>
+                      </div>
+                      <span className={`chip ${u.rol === 'ADMIN' ? 'chip-verde' : 'bg-terracota/15 text-terracota'}`}>{u.rol === 'ADMIN' ? 'Admin' : 'Alumna/o'}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </motion.section>
+        </AnimatePresence>
       </div>
     </main>
   )

@@ -5,8 +5,8 @@ import { obtenerIdYoutube } from '../utilidades/video'
 function ReproductorVideo({ url, titulo = 'Video' }) {
   if (!url) {
     return (
-      <div className="aspect-video w-full rounded-xl bg-[#F5F0EB] flex items-center justify-center">
-        <p className="text-[#A9A9A2] text-sm">El video estará disponible próximamente.</p>
+      <div className="aspect-video w-full rounded-xl bg-arena/40 flex items-center justify-center">
+        <p className="text-piedra text-sm">El video estará disponible próximamente.</p>
       </div>
     )
   }

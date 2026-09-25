@@ -1,22 +1,320 @@
-/* Fuente Poppins desde Google Fonts (tiene que ir antes que todo) */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* ═══════════════════════════════════════════════════════════════
+   FLOWNESS — Sistema de diseño
+   Todo lo visual del sitio se define acá: colores, fuentes, radios,
+   sombras, componentes (botones, tarjetas, inputs…) y animaciones.
+   Basado en el Manual de Identidad de Marca (mayo 2025).
+   Diseño "mobile first": las clases base son para celular y con
+   md: / lg: se adapta a tablet y computadora.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Fuentes del manual:
+   - Títulos: SS Abigail. Si conseguís el archivo, ponelo en
+     public/fuentes/ss-abigail.woff2 y descomentá el @font-face de abajo.
+     Mientras tanto se usa Italiana (Google Fonts), que es muy parecida.
+   - Textos: Montserrat. */
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Montserrat:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /*
-  Estilos globales dentro de @layer base.
-  Tailwind v4 guarda sus clases (p-5, px-4, mb-6...) en @layer utilities.
-  Cualquier regla escrita FUERA de una capa le gana a todas esas clases,
-  por eso antes el "* { padding: 0; margin: 0 }" anulaba todos los espaciados.
-  El reset de margin/padding ya lo hace Tailwind solo (preflight), no hace falta repetirlo.
+@font-face {
+  font-family: 'SS Abigail';
+  src: url('/fuentes/ss-abigail.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
 */
+
+/* ───────────────────────────────────────────────
+   TOKENS (se usan como clases: bg-verde, text-terracota, font-titulo…)
+   ─────────────────────────────────────────────── */
+@theme {
+  /* Paleta del manual */
+  --color-verde: #7B9B77;          /* Verde suave — color principal */
+  --color-verde-oscuro: #5F7C5B;   /* Verde un poco más oscuro para hover */
+  --color-terracota: #D8A48F;      /* Terracota tenue — acentos */
+  --color-crema: #F5F0EB;          /* Fondo principal */
+  --color-arena: #E6D5B8;          /* Beige arena — fondos secundarios */
+  --color-piedra: #A9A9A2;         /* Gris piedra — textos secundarios */
+  --color-blanco: #FEFEFE;         /* Blanco cálido */
+  --color-texto: #4A4A45;          /* Texto principal (gris piedra oscurecido para leer bien) */
+
+  /* Estados (mensajes de éxito, error y aviso) */
+  --color-exito: #10B981;
+  --color-error: #E11D48;
+  --color-alerta: #EA580C;
+
+  /* Tipografías */
+  --font-titulo: 'SS Abigail', 'Italiana', Georgia, serif;
+  --font-texto: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Bordes redondeados */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Sombras suaves, con un toque verde */
+  --shadow-suave: 0 1px 4px rgba(74, 90, 70, 0.08);
+  --shadow-media: 0 6px 20px rgba(74, 90, 70, 0.10);
+  --shadow-alta: 0 16px 40px rgba(74, 90, 70, 0.16);
+
+  /* Animaciones propias (clases animate-…) */
+  --animate-respirar: respirar 14s ease-in-out infinite;
+  --animate-respirar-lento: respirar 20s ease-in-out infinite reverse;
+  --animate-brillo: brillo 3.5s ease-in-out infinite;
+  --animate-esqueleto: esqueleto 1.4s ease-in-out infinite;
+  --animate-pulse-slow: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce-slow: bounce 2s infinite;
+  --animate-spin-slow: spin 3s linear infinite;
+  --animate-ping-slow: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Manchas de color que "respiran" en el fondo de la portada */
+@keyframes respirar {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(6%, -5%) scale(1.08); }
+  66% { transform: translate(-5%, 4%) scale(0.95); }
+}
+
+/* Brillo que recorre los botones principales */
+@keyframes brillo {
+  0% { transform: translateX(-120%) skewX(-20deg); }
+  60%, 100% { transform: translateX(220%) skewX(-20deg); }
+}
+
+/* Esqueleto de carga */
+@keyframes esqueleto {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ───────────────────────────────────────────────
+   BASE
+   ─────────────────────────────────────────────── */
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
-    background-color: #F5F0EB;
-    color: #555;
-    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-crema);
+    color: var(--color-texto);
+    font-family: var(--font-texto);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Títulos con la fuente del manual (fina y elegante) */
+  h1, h2, .titulo {
+    font-family: var(--font-titulo);
+    font-weight: 400 !important;
+    letter-spacing: 0.04em;
+  }
+
+  ::selection {
+    background: var(--color-terracota);
+    color: var(--color-blanco);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-terracota);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* ───────────────────────────────────────────────
+   COMPONENTES REUTILIZABLES
+   ─────────────────────────────────────────────── */
+@layer components {
+  /* Contenedor de página */
+  .contenedor {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .contenedor { padding-inline: 2.5rem; }
+  }
+
+  /* Etiqueta pequeña sobre los títulos (ej: "PARA TODO PÚBLICO") */
+  .etiqueta {
+    font-family: var(--font-texto);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-terracota);
+  }
+
+  /* Botones */
+  .btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: var(--radius-full);
+    font-family: var(--font-texto);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; pointer-events: none; }
+
+  .btn-primario { background: var(--color-verde); color: var(--color-blanco); box-shadow: var(--shadow-suave); }
+  .btn-primario:hover { background: var(--color-verde-oscuro); box-shadow: var(--shadow-media); }
+
+  .btn-acento { background: var(--color-terracota); color: var(--color-blanco); }
+  .btn-acento:hover { filter: brightness(0.95); box-shadow: var(--shadow-media); }
+
+  .btn-secundario { border: 1.5px solid var(--color-verde); color: var(--color-verde); background: transparent; }
+  .btn-secundario:hover { background: color-mix(in srgb, var(--color-verde) 10%, transparent); }
+
+  .btn-claro { background: var(--color-blanco); color: var(--color-verde); }
+  .btn-claro:hover { background: var(--color-crema); }
+
+  .btn-contorno-claro { border: 1.5px solid rgba(254, 254, 254, 0.8); color: var(--color-blanco); background: transparent; }
+  .btn-contorno-claro:hover { background: rgba(254, 254, 254, 0.12); }
+
+  .btn-chico { padding: 0.45rem 1rem; font-size: 0.65rem; letter-spacing: 0.12em; }
+
+  /* Brillo que recorre el botón (usar en los llamados principales) */
+  .btn-brillo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    animation: var(--animate-brillo);
+    pointer-events: none;
+  }
+
+  /* Tarjetas */
+  .card {
+    background: var(--color-blanco);
+    border: 1px solid color-mix(in srgb, var(--color-terracota) 18%, transparent);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-suave);
+    overflow: hidden;
+  }
+
+  /* Tarjeta que se eleva al pasar el mouse, con zoom suave en la imagen */
+  .card-elevable {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+  .card-elevable:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-alta);
+  }
+  .card-elevable img.zoom {
+    transition: transform 0.7s ease;
+  }
+  .card-elevable:hover img.zoom {
+    transform: scale(1.05);
+  }
+
+  /* Tarjeta semitransparente tipo vidrio (como en el manual) */
+  .card-vidrio {
+    background: rgba(254, 254, 254, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(216, 164, 143, 0.35);
+    border-radius: var(--radius-xl);
+  }
+
+  /* Chips / etiquetas de estado */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: var(--radius-full);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+  }
+  .chip-verde { background: var(--color-verde); color: var(--color-blanco); }
+  .chip-terracota { background: var(--color-terracota); color: var(--color-blanco); }
+  .chip-claro { background: rgba(254, 254, 254, 0.92); color: var(--color-verde); }
+
+  /* Ícono con fondo cuadrado de color */
+  .icono-caja {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+  }
+
+  /* Campos de formulario */
+  .input {
+    width: 100%;
+    background: var(--color-blanco);
+    border: 1.5px solid color-mix(in srgb, var(--color-terracota) 35%, transparent);
+    border-radius: var(--radius-md);
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    color: var(--color-texto);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input:focus {
+    border-color: var(--color-verde);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-verde) 18%, transparent);
+  }
+  .input::placeholder { color: var(--color-piedra); }
+
+  /* Esqueleto de carga */
+  .esqueleto {
+    background: color-mix(in srgb, var(--color-arena) 60%, var(--color-crema));
+    border-radius: var(--radius-md);
+    animation: var(--animate-esqueleto);
+  }
+
+  /* Oculta la barra de scroll (pestañas que se deslizan en el celular) */
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Patrón decorativo con el ícono de la marca (pie de página) */
+  .patron-marca {
+    position: relative;
+    isolation: isolate;
+  }
+  .patron-marca::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: url('/logo-terracota.png');
+    background-size: 64px 64px;
+    background-repeat: space;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+}
+
+/* ───────────────────────────────────────────────
+   ACCESIBILIDAD: si el usuario activó "reducir movimiento"
+   en su celular o computadora, se apagan las animaciones.
+   ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

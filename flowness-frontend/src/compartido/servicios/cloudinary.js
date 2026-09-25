@@ -1,4 +1,5 @@
 import { peticion } from './cliente'
+import { avisar } from '../utilidades/avisos'
 
 // Sube un archivo directo desde el navegador a Cloudinary.
 // 1. Le pide al servidor una firma (permiso) para ese tipo de archivo.
@@ -34,11 +35,16 @@ export const subirACloudinary = async (archivo, tipo, alProgresar) => {
       if (xhr.status >= 200 && xhr.status < 300 && datos?.secure_url) {
         resolver({ url: datos.secure_url })
       } else {
-        resolver({ error: datos?.error?.message || `Cloudinary rechazó el archivo (código ${xhr.status})` })
+        const error = datos?.error?.message || `Cloudinary rechazó el archivo (código ${xhr.status})`
+        avisar(`No se pudo subir el archivo: ${error}`, 'error')
+        resolver({ error })
       }
     }
 
-    xhr.onerror = () => resolver({ error: 'Se cortó la conexión mientras se subía el archivo' })
+    xhr.onerror = () => {
+      avisar('Se cortó la conexión mientras se subía el archivo', 'error')
+      resolver({ error: 'Se cortó la conexión mientras se subía el archivo' })
+    }
     xhr.send(form)
   })
 }

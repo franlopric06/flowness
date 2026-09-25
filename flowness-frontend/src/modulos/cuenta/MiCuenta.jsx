@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useVibrar } from '../../compartido/hooks/useVibrar'
+import { motion } from 'framer-motion'
+import { ArrowRight, GraduationCap, PlayCircle, Sparkles, CheckCircle2, Clapperboard } from 'lucide-react'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
+import Modal from '../../compartido/componentes/Modal'
+import EstadoVacio from '../../compartido/componentes/EstadoVacio'
+import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
+import { fadeUpDelay, fadeUpScrollDelay } from '../../compartido/utilidades/animaciones'
+import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerClases } from '../clases/clases.servicio'
 import { obtenerCursos } from '../formacion/formacion.servicio'
+
+function TituloBloque({ icono: Icono, children }) {
+  return (
+    <h2 className="flex items-center gap-3 titulo text-verde text-3xl mb-6">
+      <Icono size={22} className="text-terracota" /> {children}
+    </h2>
+  )
+}
 
 function MiCuenta() {
   const [misClases, setMisClases] = useState([])
   const [misCursos, setMisCursos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [claseAbierta, setClaseAbierta] = useState(null)
-  const vibrar = useVibrar()
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
 
   useEffect(() => {
@@ -21,69 +34,86 @@ function MiCuenta() {
   }, [])
 
   return (
-    <main className="pt-32 min-h-screen px-6 md:px-16 pb-16">
-      <h1 className="text-[#7B9B77] text-3xl font-bold tracking-widest mb-2">Hola, {usuario.nombre}</h1>
-
-      {/* Formación comprada */}
-      {misCursos.length > 0 && (
-        <section className="mb-12">
-          <p className="text-[#A9A9A2] text-sm mb-4">Tu formación:</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
-            {misCursos.map((curso) => (
-              <Link key={curso.id} to={`/formacion/${curso.slug}`} onClick={vibrar}
-                className="bg-white rounded-2xl p-5 border border-[#7B9B77]/20 hover:shadow-md transition-shadow">
-                <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mb-1">{curso.subtitulo || 'Formación'}</p>
-                <h3 className="text-[#7B9B77] font-semibold text-sm tracking-widest uppercase mb-2">{curso.nombre}</h3>
-                <p className="text-[#A9A9A2] text-xs">
-                  {curso.leccionesPublicadas} {curso.leccionesPublicadas === 1 ? 'lección disponible' : 'lecciones disponibles'}
-                  {curso.totalVideos ? ` de ${curso.totalVideos}` : ''} · Ir al curso →
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <p className="text-[#A9A9A2] text-sm mb-4">Tus clases disponibles:</p>
-
-      {cargando ? (
-        <p className="text-[#A9A9A2]">Cargando…</p>
-      ) : misClases.length === 0 ? (
-        <p className="text-[#A9A9A2]">
-          Todavía no tenés clases.{' '}
-          <Link to="/clases" onClick={vibrar} className="text-[#7B9B77] underline">Ver clases disponibles</Link>
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
-          {misClases.map((clase) => (
-            <button key={clase.id} onClick={() => { vibrar(); setClaseAbierta(clase) }}
-              className="text-left bg-white rounded-2xl overflow-hidden border border-[#7B9B77]/20 hover:shadow-md transition-shadow">
-              <div className="aspect-video bg-gradient-to-br from-[#7B9B77]/25 to-[#D8A48F]/25 flex items-center justify-center">
-                {clase.miniaturaUrl
-                  ? <img src={clase.miniaturaUrl} alt={clase.nombre} loading="lazy" className="h-full w-full object-cover" />
-                  : <img src="/logo.png" alt="" className="h-14 w-14 opacity-40" />}
-              </div>
-              <div className="p-4">
-                <p className="text-[#D8A48F] text-[10px] tracking-widest uppercase mb-1">{clase.esGratis ? 'Gratis' : 'Comprada'}</p>
-                <h3 className="text-[#7B9B77] font-semibold text-sm tracking-widest uppercase">{clase.nombre}</h3>
-              </div>
-            </button>
-          ))}
+    <main className="min-h-screen pb-20">
+      <header className="relative isolate overflow-hidden pt-28 md:pt-36 pb-10">
+        <span className="absolute -top-20 -right-16 w-80 h-80 rounded-full bg-terracota/25 blur-3xl animate-respirar -z-10" aria-hidden="true" />
+        <div className="contenedor">
+          <motion.p {...fadeUpDelay(0)} className="etiqueta mb-2">Mi cuenta</motion.p>
+          <motion.h1 {...fadeUpDelay(0.08)} className="titulo text-verde text-5xl md:text-6xl">Hola, {usuario.nombre?.split(' ')[0] || 'bienvenida/o'}</motion.h1>
+          <motion.p {...fadeUpDelay(0.16)} className="text-texto/70 mt-3">Acá tenés todo lo que es tuyo, para ver cuando quieras.</motion.p>
         </div>
-      )}
+      </header>
 
-      {claseAbierta && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setClaseAbierta(null)}>
-          <div className="bg-white rounded-2xl max-w-3xl w-full p-4 md:p-6" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-start gap-4 mb-4">
-              <h2 className="text-[#7B9B77] font-bold text-lg tracking-widest">{claseAbierta.nombre}</h2>
-              <button onClick={() => { vibrar(); setClaseAbierta(null) }} aria-label="Cerrar"
-                className="text-[#A9A9A2] text-2xl leading-none hover:opacity-60">×</button>
+      <div className="contenedor space-y-16">
+        {/* Formación comprada */}
+        {misCursos.length > 0 && (
+          <section>
+            <TituloBloque icono={GraduationCap}>Tu formación</TituloBloque>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {misCursos.map((curso, i) => {
+                const total = curso.totalVideos || curso.leccionesPublicadas || 0
+                const porcentaje = total ? Math.round(((curso.leccionesPublicadas || 0) / total) * 100) : 0
+                return (
+                  <motion.div key={curso.id} {...fadeUpScrollDelay(i * 0.08)}>
+                    <Link to={`/formacion/${curso.slug}`} className="card card-elevable group block p-6 h-full">
+                      <p className="etiqueta mb-1">{curso.subtitulo || 'Formación'}</p>
+                      <h3 className="titulo text-verde text-3xl mb-4">{curso.nombre}</h3>
+                      <div className="h-1.5 rounded-full bg-arena/60 overflow-hidden mb-2">
+                        <div className="h-full bg-verde rounded-full" style={{ width: `${porcentaje}%` }} />
+                      </div>
+                      <p className="text-piedra text-xs mb-5">
+                        {curso.leccionesPublicadas} {curso.leccionesPublicadas === 1 ? 'lección disponible' : 'lecciones disponibles'}
+                        {curso.totalVideos ? ` de ${curso.totalVideos}` : ''}
+                      </p>
+                      <span className="inline-flex items-center gap-2 text-verde text-xs font-semibold tracking-[0.16em] uppercase">
+                        Ir al curso <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                      </span>
+                    </Link>
+                  </motion.div>
+                )
+              })}
             </div>
-            <ReproductorVideo url={claseAbierta.videoUrl} titulo={claseAbierta.nombre} />
-          </div>
-        </div>
-      )}
+          </section>
+        )}
+
+        {/* Clases */}
+        <section>
+          <TituloBloque icono={PlayCircle}>Tus clases</TituloBloque>
+          {cargando ? (
+            <EsqueletoGrilla cantidad={3} />
+          ) : misClases.length === 0 ? (
+            <EstadoVacio icono={Clapperboard} titulo="Todavía no tenés clases" texto="Empezá con la clase gratis o elegí la que más te guste.">
+              <Link to="/clases" className="btn btn-primario">Ver clases <ArrowRight size={16} /></Link>
+            </EstadoVacio>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {misClases.map((clase, i) => (
+                <motion.button key={clase.id} {...fadeUpScrollDelay((i % 3) * 0.08)} onClick={() => setClaseAbierta(clase)}
+                  className="card card-elevable group text-left">
+                  <div className="relative aspect-video bg-gradient-to-br from-verde/25 to-terracota/25 flex items-center justify-center overflow-hidden">
+                    {clase.miniaturaUrl
+                      ? <img src={imagenReducida(clase.miniaturaUrl, 600)} alt={clase.nombre} loading="lazy" className="zoom h-full w-full object-cover" />
+                      : <img src="/logo.png" alt="" className="zoom h-14 w-14 opacity-40" />}
+                    <span className="absolute inset-0 flex items-center justify-center bg-verde/0 group-hover:bg-verde/25 transition-colors">
+                      <PlayCircle size={50} className="text-blanco drop-shadow opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <span className={`chip mb-2 ${clase.esGratis ? 'chip-terracota' : 'chip-verde'}`}>
+                      {clase.esGratis ? <><Sparkles size={11} /> Gratis</> : <><CheckCircle2 size={11} /> Comprada</>}
+                    </span>
+                    <h3 className="titulo text-verde text-2xl">{clase.nombre}</h3>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
+      <Modal abierto={!!claseAbierta} alCerrar={() => setClaseAbierta(null)} titulo={claseAbierta?.nombre}>
+        {claseAbierta && <ReproductorVideo url={claseAbierta.videoUrl} titulo={claseAbierta.nombre} />}
+      </Modal>
     </main>
   )
 }

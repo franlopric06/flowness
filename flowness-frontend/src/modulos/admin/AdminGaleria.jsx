@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { ChevronLeft, ChevronRight, Pencil, Eye, EyeOff, Trash2, Upload, Plus, Loader2, Images, Film, Link2, AlertCircle } from 'lucide-react'
 import { useVibrar } from '../../compartido/hooks/useVibrar'
 import Reel from '../../compartido/componentes/Reel'
 import { imagenReducida, esLinkInstagram } from '../../compartido/utilidades/medios'
+import { confirmar, pedirTexto } from '../../compartido/utilidades/dialogos'
 import * as api from './admin.servicio'
 
-const estiloInput = 'w-full border border-[#D8A48F]/30 rounded-full px-4 py-2 text-sm outline-none focus:border-[#7B9B77]'
-const estiloLabel = 'text-[#A9A9A2] text-[11px] tracking-widest uppercase block mb-1'
-const botonVerde = 'bg-[#7B9B77] text-white text-xs tracking-widest uppercase px-5 py-2 rounded-full hover:bg-[#5a7a56] transition-colors disabled:opacity-50'
-const botonChico = 'border border-[#A9A9A2]/60 text-[#555] text-xs w-8 h-8 rounded-full hover:bg-[#F5F0EB] disabled:opacity-30'
+const estiloInput = 'input'
+const estiloLabel = 'text-piedra text-[0.68rem] font-semibold tracking-[0.16em] uppercase block mb-1.5'
+const botonVerde = 'btn btn-primario btn-chico'
+const botonChico = 'w-8 h-8 inline-flex items-center justify-center rounded-full border border-piedra/40 text-texto hover:bg-crema transition-colors disabled:opacity-30'
 const MB = 1024 * 1024
 
 // Intercambia el orden de dos elementos y guarda los dos
@@ -26,23 +28,21 @@ function AdminGaleria({ mostrarMsg }) {
   const [pestana, setPestana] = useState('fotos')
   const vibrar = useVibrar()
 
-  const cargar = () =>
+  const cargar = useCallback(() =>
     api.obtenerGaleriaAdmin()
       .then((datos) => { setFotos(datos.fotos); setReels(datos.reels) })
-      .catch(() => mostrarMsg('No se pudo cargar la galería'))
+      .catch(() => mostrarMsg('No se pudo cargar la galería', 'error')), [mostrarMsg])
 
-  useEffect(() => { cargar() }, [])
+  useEffect(() => { cargar() }, [cargar])
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-5">
-        <h2 className="text-[#7B9B77] font-semibold mr-2">Galería</h2>
-        {[['fotos', `Fotos · ${fotos.length}`], ['videos', `Videos · ${reels.length}`]].map(([clave, texto]) => (
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <h2 className="titulo text-verde text-3xl mr-2">Galería</h2>
+        {[['fotos', `Fotos · ${fotos.length}`, Images], ['videos', `Videos · ${reels.length}`, Film]].map(([clave, texto, Icono]) => (
           <button key={clave} onClick={() => { vibrar(); setPestana(clave) }}
-            className={`text-[11px] tracking-widest uppercase px-4 py-1.5 rounded-full ${
-              pestana === clave ? 'bg-[#D8A48F] text-white' : 'border border-[#D8A48F] text-[#D8A48F]'
-            }`}>
-            {texto}
+            className={`btn btn-chico ${pestana === clave ? 'btn-acento' : 'border border-terracota text-terracota hover:bg-terracota/10'}`}>
+            <Icono size={14} /> {texto}
           </button>
         ))}
       </div>
@@ -78,7 +78,7 @@ function SeccionFotos({ fotos, alCambiar, mostrarMsg }) {
       }
     }
     setSubiendo(null)
-    mostrarMsg(fallidas ? `Se subieron ${lista.length - fallidas} de ${lista.length} fotos (las de más de 10 MB no se suben)` : 'Fotos subidas')
+    mostrarMsg(fallidas ? `Se subieron ${lista.length - fallidas} de ${lista.length} fotos (las de más de 10 MB no se suben)` : lista.length === 1 ? 'Foto subida' : `${lista.length} fotos subidas`, fallidas ? 'alerta' : 'exito')
     alCambiar()
   }
 
@@ -86,57 +86,67 @@ function SeccionFotos({ fotos, alCambiar, mostrarMsg }) {
 
   const mover = async (i, paso) => {
     vibrar()
-    await intercambiar(fotos, i, i + paso, guardar)
-    alCambiar()
+    try {
+      await intercambiar(fotos, i, i + paso, guardar)
+      mostrarMsg('Orden actualizado')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   const editarDescripcion = async (foto) => {
-    const texto = window.prompt('Descripción de la foto (opcional):', foto.descripcion || '')
+    const texto = await pedirTexto('Descripción de la foto (opcional):', foto.descripcion || '')
     if (texto === null) return
-    await guardar(foto.id, { descripcion: texto })
-    alCambiar()
+    try {
+      await guardar(foto.id, { descripcion: texto })
+      mostrarMsg('Descripción guardada')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   const alternar = async (foto) => {
     vibrar()
-    await guardar(foto.id, { activo: !foto.activo })
-    alCambiar()
+    try {
+      await guardar(foto.id, { activo: !foto.activo })
+      mostrarMsg(foto.activo ? 'Foto oculta del sitio' : 'Foto visible en el sitio')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   const eliminar = async (foto) => {
-    if (!window.confirm('¿Eliminar esta foto? No se puede deshacer.')) return
-    vibrar()
-    await api.eliminarFoto(foto.id)
-    mostrarMsg('Foto eliminada')
-    alCambiar()
+    if (!(await confirmar('¿Eliminar esta foto? No se puede deshacer.', { textoConfirmar: 'Eliminar' }))) return
+    try {
+      await api.eliminarFoto(foto.id)
+      mostrarMsg('Foto eliminada')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-[#D8A48F]/20">
-      <label className={`${botonVerde} inline-block cursor-pointer mb-2 ${subiendo ? 'opacity-50 pointer-events-none' : ''}`}>
-        {subiendo ? `Subiendo ${subiendo.actual} de ${subiendo.total}…` : '+ Subir fotos'}
+    <div className="card p-5 md:p-6">
+      <label className={`${botonVerde} cursor-pointer mb-2 ${subiendo ? 'opacity-50 pointer-events-none' : ''}`}>
+        {subiendo ? <><Loader2 size={14} className="animate-spin" /> Subiendo {subiendo.actual} de {subiendo.total}…</> : <><Upload size={14} /> Subir fotos</>}
         <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
           onChange={(e) => { subir(e.target.files); e.target.value = '' }} />
       </label>
-      <p className="text-[#A9A9A2] text-[11px] mb-5">Podés elegir varias a la vez. Máximo 10 MB cada una.</p>
+      <p className="text-piedra text-[11px] mb-5">Podés elegir varias a la vez. Máximo 10 MB cada una.</p>
 
       {fotos.length === 0 ? (
-        <p className="text-[#A9A9A2] text-sm">Todavía no hay fotos.</p>
+        <p className="text-piedra text-sm">Todavía no hay fotos.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {fotos.map((foto, i) => (
-            <div key={foto.id} className={`border border-[#D8A48F]/20 rounded-xl overflow-hidden ${foto.activo ? '' : 'opacity-50'}`}>
+            <div key={foto.id} className={`border border-terracota/20 rounded-xl overflow-hidden bg-blanco ${foto.activo ? '' : 'opacity-50'}`}>
               <img src={imagenReducida(foto.url, 400)} alt="" className="w-full aspect-square object-cover" />
               <div className="p-2">
-                <p className="text-[11px] text-[#A9A9A2] truncate mb-2" title={foto.descripcion || ''}>
+                <p className="text-[11px] text-piedra truncate mb-2" title={foto.descripcion || ''}>
                   {foto.descripcion || 'Sin descripción'}{!foto.activo && ' · Oculta'}
                 </p>
                 <div className="flex flex-wrap gap-1">
-                  <button onClick={() => mover(i, -1)} disabled={i === 0} className={botonChico} title="Mover antes">‹</button>
-                  <button onClick={() => mover(i, 1)} disabled={i === fotos.length - 1} className={botonChico} title="Mover después">›</button>
-                  <button onClick={() => editarDescripcion(foto)} className={botonChico} title="Descripción">✎</button>
-                  <button onClick={() => alternar(foto)} className={botonChico} title={foto.activo ? 'Ocultar' : 'Mostrar'}>{foto.activo ? '👁' : '◌'}</button>
-                  <button onClick={() => eliminar(foto)} className={`${botonChico} text-red-400`} title="Eliminar">✕</button>
+                  <button onClick={() => mover(i, -1)} disabled={i === 0} className={botonChico} title="Mover antes" aria-label="Mover antes"><ChevronLeft size={16} /></button>
+                  <button onClick={() => mover(i, 1)} disabled={i === fotos.length - 1} className={botonChico} title="Mover después" aria-label="Mover después"><ChevronRight size={16} /></button>
+                  <button onClick={() => editarDescripcion(foto)} className={botonChico} title="Descripción" aria-label="Editar descripción"><Pencil size={14} /></button>
+                  <button onClick={() => alternar(foto)} className={botonChico} title={foto.activo ? 'Ocultar' : 'Mostrar'}>{foto.activo ? <Eye size={15} /> : <EyeOff size={15} />}</button>
+                  <button onClick={() => eliminar(foto)} className={`${botonChico} text-error`} title="Eliminar" aria-label="Eliminar"><Trash2 size={14} /></button>
                 </div>
               </div>
             </div>
@@ -203,36 +213,41 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
 
   const mover = async (i, paso) => {
     vibrar()
-    await intercambiar(reels, i, i + paso, guardar)
-    alCambiar()
+    try {
+      await intercambiar(reels, i, i + paso, guardar)
+      mostrarMsg('Orden actualizado')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   const alternar = async (reel) => {
     vibrar()
-    await guardar(reel.id, { activo: !reel.activo })
-    alCambiar()
+    try {
+      await guardar(reel.id, { activo: !reel.activo })
+      mostrarMsg(reel.activo ? 'Video oculto del sitio' : 'Video visible en el sitio')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   const eliminar = async (reel) => {
-    if (!window.confirm('¿Eliminar este video de la galería?')) return
-    vibrar()
-    await api.eliminarReel(reel.id)
-    mostrarMsg('Video eliminado')
-    alCambiar()
+    if (!(await confirmar('¿Eliminar este video de la galería?', { textoConfirmar: 'Eliminar' }))) return
+    try {
+      await api.eliminarReel(reel.id)
+      mostrarMsg('Video eliminado')
+      alCambiar()
+    } catch { /* el aviso de error lo muestra el cliente */ }
   }
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-[#D8A48F]/20">
+    <div className="card p-5 md:p-6">
       {/* Agregar */}
-      <div className="bg-[#F5F0EB] rounded-2xl p-4 mb-6">
-        <p className="text-sm font-semibold text-[#555] mb-3">Agregar video</p>
+      <div className="bg-crema rounded-2xl p-4 mb-6">
+        <p className="text-sm font-semibold text-texto mb-3">Agregar video</p>
         <div className="flex gap-2 mb-4">
           {[['INSTAGRAM', 'Link de Instagram'], ['ARCHIVO', 'Subir desde el equipo']].map(([clave, texto]) => (
             <button key={clave} onClick={() => { setOrigen(clave); setError('') }}
-              className={`text-[11px] tracking-widest uppercase px-4 py-1.5 rounded-full ${
-                origen === clave ? 'bg-[#7B9B77] text-white' : 'bg-white border border-[#7B9B77] text-[#7B9B77]'
-              }`}>
-              {texto}
+              className={`btn btn-chico ${origen === clave ? 'btn-primario' : 'bg-blanco border border-verde text-verde'}`}>
+              {clave === 'INSTAGRAM' ? <Link2 size={14} /> : <Upload size={14} />} {texto}
             </button>
           ))}
         </div>
@@ -241,31 +256,36 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
           {origen === 'INSTAGRAM' && (
             <div className="md:col-span-2">
               <label className={estiloLabel}>Link del reel</label>
-              <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://www.instagram.com/reel/..." className={`${estiloInput} bg-white`} />
-              <p className="text-[#A9A9A2] text-[11px] mt-1 px-2">En Instagram: tocá los tres puntitos del reel → Copiar enlace.</p>
+              <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://www.instagram.com/reel/..." className={`${estiloInput} bg-blanco`} />
+              <p className="text-piedra text-[11px] mt-1 px-2">En Instagram: tocá los tres puntitos del reel → Copiar enlace.</p>
             </div>
           )}
           <div className="md:col-span-2">
             <label className={estiloLabel}>Descripción (opcional)</label>
-            <input value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className={`${estiloInput} bg-white`} />
+            <input value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className={`${estiloInput} bg-blanco`} />
           </div>
         </div>
 
-        {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
+        {error && <p className="flex items-center gap-2 text-error text-sm bg-error/5 rounded-md px-3 py-2 mt-3"><AlertCircle size={15} className="shrink-0" />{error}</p>}
 
         <div className="mt-4">
           {origen === 'INSTAGRAM' ? (
             <button onClick={agregarInstagram} disabled={guardando} className={botonVerde}>
-              {guardando ? 'Guardando…' : 'Agregar reel'}
+              {guardando ? <><Loader2 size={14} className="animate-spin" /> Guardando…</> : <><Plus size={14} /> Agregar reel</>}
             </button>
           ) : (
             <>
-              <label className={`${botonVerde} inline-block cursor-pointer ${subiendo ? 'opacity-50 pointer-events-none' : ''}`}>
-                {subiendo ? `Subiendo video… ${progreso}%` : 'Elegir video'}
+              <label className={`${botonVerde} cursor-pointer ${subiendo ? 'opacity-50 pointer-events-none' : ''}`}>
+                {subiendo ? <><Loader2 size={14} className="animate-spin" /> Subiendo video… {progreso}%</> : <><Upload size={14} /> Elegir video</>}
                 <input type="file" accept="video/mp4,video/quicktime,video/webm" className="hidden"
                   onChange={(e) => { subirArchivo(e.target.files[0]); e.target.value = '' }} />
               </label>
-              <p className="text-[#A9A9A2] text-[11px] mt-2">Máximo 100 MB. Ideal: videos verticales de menos de 1 minuto.</p>
+              {subiendo && (
+                <div className="h-1.5 rounded-full bg-arena/60 overflow-hidden mt-3 max-w-xs">
+                  <div className="h-full bg-verde rounded-full transition-[width] duration-300" style={{ width: `${progreso}%` }} />
+                </div>
+              )}
+              <p className="text-piedra text-[11px] mt-2">Máximo 100 MB. Ideal: videos verticales de menos de 1 minuto.</p>
             </>
           )}
         </div>
@@ -273,22 +293,22 @@ function SeccionReels({ reels, alCambiar, mostrarMsg }) {
 
       {/* Listado */}
       {reels.length === 0 ? (
-        <p className="text-[#A9A9A2] text-sm">Todavía no hay videos.</p>
+        <p className="text-piedra text-sm">Todavía no hay videos.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {reels.map((reel, i) => (
             <div key={reel.id} className={reel.activo ? '' : 'opacity-50'}>
               <Reel reel={reel} />
-              <p className="text-[11px] text-[#A9A9A2] mt-2">
+              <p className="text-[11px] text-piedra mt-2">
                 {reel.tipo === 'ARCHIVO' ? 'Video subido' : 'Instagram'}
                 {reel.descripcion && ` · ${reel.descripcion}`}
                 {!reel.activo && ' · Oculto'}
               </p>
               <div className="flex gap-1 mt-2">
-                <button onClick={() => mover(i, -1)} disabled={i === 0} className={botonChico} title="Mover antes">‹</button>
-                <button onClick={() => mover(i, 1)} disabled={i === reels.length - 1} className={botonChico} title="Mover después">›</button>
-                <button onClick={() => alternar(reel)} className={botonChico} title={reel.activo ? 'Ocultar' : 'Mostrar'}>{reel.activo ? '👁' : '◌'}</button>
-                <button onClick={() => eliminar(reel)} className={`${botonChico} text-red-400`} title="Eliminar">✕</button>
+                <button onClick={() => mover(i, -1)} disabled={i === 0} className={botonChico} title="Mover antes" aria-label="Mover antes"><ChevronLeft size={16} /></button>
+                <button onClick={() => mover(i, 1)} disabled={i === reels.length - 1} className={botonChico} title="Mover después" aria-label="Mover después"><ChevronRight size={16} /></button>
+                <button onClick={() => alternar(reel)} className={botonChico} title={reel.activo ? 'Ocultar' : 'Mostrar'}>{reel.activo ? <Eye size={15} /> : <EyeOff size={15} />}</button>
+                <button onClick={() => eliminar(reel)} className={`${botonChico} text-error`} title="Eliminar" aria-label="Eliminar"><Trash2 size={14} /></button>
               </div>
             </div>
           ))}

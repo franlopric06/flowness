@@ -16,7 +16,7 @@ function Reel({ reel, titulo = 'Reel' }) {
   const embed = urlEmbedInstagram(reel.url)
   if (!embed) return null
   return (
-    <div className="w-full overflow-hidden rounded-2xl bg-white border border-[#D8A48F]/20">
+    <div className="w-full overflow-hidden rounded-2xl bg-blanco border border-terracota/20">
       <iframe src={embed} title={titulo} loading="lazy" scrolling="no" allowFullScreen
         className="block w-full h-[640px] border-0" />
     </div>

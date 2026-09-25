@@ -1,8 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useVibrar } from '../../compartido/hooks/useVibrar'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight, X, Images, Film, Camera } from 'lucide-react'
 import Reel from '../../compartido/componentes/Reel'
+import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
+import EstadoVacio from '../../compartido/componentes/EstadoVacio'
+import { fadeUpScroll, fadeUpScrollDelay, listItem } from '../../compartido/utilidades/animaciones'
 import { imagenReducida } from '../../compartido/utilidades/medios'
 import { obtenerGaleria } from './galeria.servicio'
+
+function TituloBloque({ icono: Icono, texto }) {
+  return (
+    <motion.h2 {...fadeUpScroll} className="flex items-center justify-center gap-3 titulo text-verde text-3xl md:text-4xl mb-8">
+      <Icono size={24} className="text-terracota" /> {texto}
+    </motion.h2>
+  )
+}
 
 // Galería pública: primero las fotos (con visor a pantalla completa) y después los videos
 function Galeria() {
@@ -10,7 +22,7 @@ function Galeria() {
   const [reels, setReels] = useState([])
   const [cargando, setCargando] = useState(true)
   const [abierta, setAbierta] = useState(null) // índice de la foto abierta en el visor
-  const vibrar = useVibrar()
+  const [direccion, setDireccion] = useState(0)
 
   useEffect(() => {
     obtenerGaleria()
@@ -23,9 +35,12 @@ function Galeria() {
   }, [])
 
   const cerrar = useCallback(() => setAbierta(null), [])
-  const mover = useCallback((paso) => setAbierta((i) => (i + paso + fotos.length) % fotos.length), [fotos.length])
+  const mover = useCallback((paso) => {
+    setDireccion(paso)
+    setAbierta((i) => (i + paso + fotos.length) % fotos.length)
+  }, [fotos.length])
 
-  // Teclado en el visor: flechas y Escape
+  // Teclado en el visor: flechas y Escape. Además, bloquea el scroll de fondo.
   useEffect(() => {
     if (abierta === null) return
     const alApretar = (e) => {
@@ -34,77 +49,113 @@ function Galeria() {
       if (e.key === 'ArrowLeft') mover(-1)
     }
     window.addEventListener('keydown', alApretar)
-    return () => window.removeEventListener('keydown', alApretar)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', alApretar)
+      document.body.style.overflow = ''
+    }
   }, [abierta, cerrar, mover])
 
+  // Deslizar con el dedo para pasar de foto
+  const alSoltar = (_, info) => {
+    if (info.offset.x < -60 || info.velocity.x < -400) mover(1)
+    else if (info.offset.x > 60 || info.velocity.x > 400) mover(-1)
+  }
+
+  const foto = abierta !== null ? fotos[abierta] : null
+
   return (
-    <main className="pt-32 min-h-screen px-4 md:px-16 pb-16">
-      <p className="text-[#D8A48F] text-xs tracking-widest uppercase text-center mb-2">Momentos</p>
-      <h1 className="text-[#7B9B77] text-3xl md:text-4xl font-bold text-center tracking-widest mb-8">Galería</h1>
+    <main className="min-h-screen pb-20">
+      <CabeceraPagina etiqueta="Momentos" titulo="Galería" texto="Clases, encuentros y momentos de movimiento compartido." />
 
-      {cargando ? (
-        <p className="text-center text-[#A9A9A2]">Cargando…</p>
-      ) : fotos.length === 0 && reels.length === 0 ? (
-        <p className="text-center text-[#A9A9A2]">Muy pronto vas a encontrar fotos y videos acá.</p>
-      ) : (
-        <>
-          {/* Fotos */}
-          {fotos.length > 0 && (
-            <section className="mb-16">
-              <h2 className="text-[#7B9B77] text-xl font-semibold tracking-widest uppercase text-center mb-2">Fotos</h2>
-              <div className="w-12 h-px bg-[#D8A48F] mx-auto mb-8" />
-              <div className="columns-2 md:columns-3 lg:columns-4 gap-3 max-w-6xl mx-auto">
-                {fotos.map((foto, i) => (
-                  <button key={foto.id} onClick={() => { vibrar(); setAbierta(i) }}
-                    className="block w-full mb-3 overflow-hidden rounded-xl break-inside-avoid group">
-                    <img src={imagenReducida(foto.url, 600)} alt={foto.descripcion || 'Foto de Flowness'} loading="lazy"
-                      className="w-full h-auto transition-transform duration-500 group-hover:scale-105" />
-                  </button>
-                ))}
-              </div>
-            </section>
-          )}
-          {/* Videos */}
-          {reels.length > 0 && (
-            <section className={fotos.length > 0 ? 'pt-16 border-t border-[#D8A48F]/20' : ''}>
-              <h2 className="text-[#7B9B77] text-xl font-semibold tracking-widest uppercase text-center mb-2">Videos</h2>
-              <div className="w-12 h-px bg-[#D8A48F] mx-auto mb-8" />
-              <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
-                {reels.map((reel) => (
-                  <div key={reel.id} className="w-full sm:w-[320px]">
-                    <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
-                    {reel.descripcion && <p className="text-[#A9A9A2] text-xs text-center mt-2">{reel.descripcion}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-        </>
-      )}
-
-      {/* Visor de fotos */}
-      {abierta !== null && fotos[abierta] && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={cerrar}>
-          <button onClick={cerrar} aria-label="Cerrar" className="absolute top-4 right-5 text-white text-4xl leading-none opacity-80 hover:opacity-100">×</button>
-          {fotos.length > 1 && (
-            <>
-              <button onClick={(e) => { e.stopPropagation(); vibrar(); mover(-1) }} aria-label="Anterior"
-                className="absolute left-2 md:left-6 text-white text-4xl px-3 py-6 opacity-70 hover:opacity-100">‹</button>
-              <button onClick={(e) => { e.stopPropagation(); vibrar(); mover(1) }} aria-label="Siguiente"
-                className="absolute right-2 md:right-6 text-white text-4xl px-3 py-6 opacity-70 hover:opacity-100">›</button>
-            </>
-          )}
-          <figure className="max-w-5xl max-h-full flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
-            <img src={imagenReducida(fotos[abierta].url, 1600)} alt={fotos[abierta].descripcion || ''}
-              className="max-h-[80vh] w-auto rounded-lg object-contain" />
-            {fotos[abierta].descripcion && (
-              <figcaption className="text-white/80 text-sm mt-3 text-center">{fotos[abierta].descripcion}</figcaption>
+      <div className="contenedor">
+        {cargando ? (
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-3" role="status" aria-label="Cargando">
+            {[220, 300, 180, 260, 200, 320, 240, 190].map((alto, i) => (
+              <div key={i} className="esqueleto mb-3 rounded-xl" style={{ height: alto }} />
+            ))}
+          </div>
+        ) : fotos.length === 0 && reels.length === 0 ? (
+          <EstadoVacio icono={Camera} titulo="Muy pronto" texto="Muy pronto vas a encontrar fotos y videos acá." />
+        ) : (
+          <>
+            {fotos.length > 0 && (
+              <section className="mb-20">
+                <TituloBloque icono={Images} texto="Fotos" />
+                <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-4">
+                  {fotos.map((f, i) => (
+                    <motion.button key={f.id} {...listItem(i)} onClick={() => { setDireccion(0); setAbierta(i) }}
+                      className="relative block w-full mb-2 md:mb-4 overflow-hidden rounded-xl md:rounded-2xl break-inside-avoid group">
+                      <img src={imagenReducida(f.url, 600)} alt={f.descripcion || 'Foto de Flowness'} loading="lazy"
+                        className="w-full h-auto transition-transform duration-700 group-hover:scale-105" />
+                      <span className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </motion.button>
+                  ))}
+                </div>
+              </section>
             )}
-            <p className="text-white/50 text-xs mt-2">{abierta + 1} / {fotos.length}</p>
-          </figure>
-        </div>
-      )}
+
+            {reels.length > 0 && (
+              <section className={fotos.length > 0 ? 'pt-16 border-t border-terracota/20' : ''}>
+                <TituloBloque icono={Film} texto="Videos" />
+                <div className="flex flex-wrap justify-center gap-6">
+                  {reels.map((reel, i) => (
+                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 3) * 0.1)} className="w-full sm:w-[320px]">
+                      <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
+                      {reel.descripcion && <p className="text-texto/70 text-xs text-center mt-3">{reel.descripcion}</p>}
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Visor de fotos (se puede deslizar con el dedo) */}
+      <AnimatePresence>
+        {foto && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-black/95 flex items-center justify-center" onClick={cerrar}>
+            <button onClick={cerrar} aria-label="Cerrar"
+              className="absolute top-4 right-4 z-10 w-11 h-11 rounded-full bg-blanco/10 text-blanco hover:bg-blanco/20 flex items-center justify-center">
+              <X size={22} />
+            </button>
+            {fotos.length > 1 && (
+              <>
+                <button onClick={(e) => { e.stopPropagation(); mover(-1) }} aria-label="Anterior"
+                  className="hidden md:flex absolute left-6 z-10 w-12 h-12 rounded-full bg-blanco/10 text-blanco hover:bg-blanco/20 items-center justify-center">
+                  <ChevronLeft size={26} />
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); mover(1) }} aria-label="Siguiente"
+                  className="hidden md:flex absolute right-6 z-10 w-12 h-12 rounded-full bg-blanco/10 text-blanco hover:bg-blanco/20 items-center justify-center">
+                  <ChevronRight size={26} />
+                </button>
+              </>
+            )}
+
+            <AnimatePresence mode="popLayout" initial={false} custom={direccion}>
+              <motion.figure key={foto.id} custom={direccion}
+                initial={{ opacity: 0, x: direccion * 80 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direccion * -80 }}
+                transition={{ duration: 0.25 }}
+                drag={fotos.length > 1 ? 'x' : false} dragConstraints={{ left: 0, right: 0 }} dragElastic={0.6} onDragEnd={alSoltar}
+                className="max-w-5xl w-full px-4 flex flex-col items-center cursor-grab active:cursor-grabbing touch-pan-y"
+                onClick={(e) => e.stopPropagation()}>
+                <img src={imagenReducida(foto.url, 1600)} alt={foto.descripcion || ''} draggable={false}
+                  className="max-h-[78svh] w-auto rounded-xl object-contain select-none" />
+                {foto.descripcion && <figcaption className="text-blanco/85 text-sm mt-4 text-center">{foto.descripcion}</figcaption>}
+              </motion.figure>
+            </AnimatePresence>
+
+            {fotos.length > 1 && (
+              <div className="absolute bottom-6 inset-x-0 flex flex-col items-center gap-2 pointer-events-none">
+                <p className="text-blanco/60 text-xs tracking-widest">{abierta + 1} / {fotos.length}</p>
+                <p className="md:hidden text-blanco/40 text-[0.65rem]">Deslizá para ver más</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }

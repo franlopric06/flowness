@@ -1,4 +1,7 @@
 // Cliente HTTP común a todos los módulos: arma la URL, agrega el token y maneja errores.
+// Si falla algo que modifica datos (crear, guardar, borrar…), muestra el aviso de error solo.
+import { avisar } from '../utilidades/avisos'
+
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 const obtenerToken = () => localStorage.getItem('token')
@@ -13,7 +16,10 @@ export const peticion = async (ruta, opciones = {}) => {
   const res = await fetch(`${BASE}${ruta}`, { ...opciones, headers: cabeceras })
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: 'Error desconocido' }))
-    throw new Error(error.error || 'Error en la petición')
+    const mensaje = error.error || 'Error en la petición'
+    const metodo = (opciones.method || 'GET').toUpperCase()
+    if (metodo !== 'GET') avisar(mensaje, 'error')
+    throw new Error(mensaje)
   }
   return res.json()
 }

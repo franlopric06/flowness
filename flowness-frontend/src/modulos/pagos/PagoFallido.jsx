@@ -1,17 +1,20 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useVibrar } from '../../compartido/hooks/useVibrar'
+import { XCircle, RotateCcw, MessageCircleQuestion } from 'lucide-react'
+import ResultadoPago from './ResultadoPago'
+import { avisar } from '../../compartido/utilidades/avisos'
 
 function PagoFallido() {
-  const vibrar = useVibrar()
+  useEffect(() => {
+    avisar('El pago no se completó.', 'error')
+  }, [])
+
   return (
-    <main className="pt-32 min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      <div className="text-6xl mb-6">❌</div>
-      <h1 className="text-[#D8A48F] text-3xl font-bold tracking-widest mb-4">Pago no completado</h1>
-      <p className="text-[#A9A9A2] text-sm mb-8">Podés intentarlo nuevamente cuando quieras.</p>
-      <Link to="/clases" onClick={vibrar} className="bg-[#D8A48F] text-white text-xs tracking-widest uppercase px-8 py-4 rounded-full hover:opacity-80 transition-colors">
-        Volver a clases
-      </Link>
-    </main>
+    <ResultadoPago icono={XCircle} color="bg-terracota text-blanco" titulo="Pago no completado"
+      texto="No se realizó ningún cobro. Podés intentarlo nuevamente cuando quieras.">
+      <Link to="/clases" className="btn btn-primario"><RotateCcw size={16} /> Volver a intentar</Link>
+      <Link to="/contacto" className="btn btn-secundario"><MessageCircleQuestion size={16} /> Necesito ayuda</Link>
+    </ResultadoPago>
   )
 }
 
