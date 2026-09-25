@@ -5,7 +5,7 @@ import {
   ArrowRight, ChevronDown, Clock, Lock, Megaphone, PlayCircle, Sprout, TrendingUp, Award, Sparkles, Images, Film,
 } from 'lucide-react'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
-import Reel from '../../compartido/componentes/Reel'
+import Medio from '../../compartido/componentes/Medio'
 import TituloSeccion from '../../compartido/componentes/TituloSeccion'
 import Carrusel from '../../compartido/componentes/Carrusel'
 import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
@@ -104,8 +104,8 @@ function Inicio() {
   const listaClases = clases || []
   const hayClaseGratis = listaClases.some((c) => c.esGratis)
   const clasesDestacadas = [...listaClases].sort((a, b) => Number(b.esGratis) - Number(a.esGratis)).slice(0, 3)
-  const fotosDestacadas = galeria.fotos.slice(0, 6)
-  const reelsDestacados = galeria.reels.slice(0, 3)
+  const fotosDestacadas = galeria.fotos.slice(0, 8)
+  const reelsDestacados = galeria.reels.slice(0, 8)
 
   return (
     <main className="pt-16 md:pt-20 overflow-x-clip">
@@ -291,13 +291,10 @@ function Inicio() {
           {fotosDestacadas.length > 0 && (
             <div className="mb-14">
               <p className="flex items-center justify-center gap-2 text-verde text-xs font-semibold tracking-[0.2em] uppercase mb-5"><Images size={16} /> Fotos</p>
-              <Carrusel claseEscritorio="md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:grid md:grid-cols-3 md:gap-4">
+              <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                 {fotosDestacadas.map((foto, i) => (
-                  <motion.div key={foto.id} {...listItem(i)} className="w-[62vw] max-w-[260px] md:w-auto md:max-w-none">
-                    <Link to="/galeria" className="block overflow-hidden rounded-2xl group">
-                      <img src={imagenReducida(foto.url, 500)} alt={foto.descripcion || ''} loading="lazy"
-                        className="w-full aspect-[4/5] md:aspect-square object-cover transition-transform duration-700 group-hover:scale-105" />
-                    </Link>
+                  <motion.div key={foto.id} {...listItem(i)} className={i >= 4 ? 'md:hidden' : ''}>
+                    <Link to="/galeria" className="block" aria-label="Ver galería"><Medio item={{ ...foto, descripcion: null }} clase="foto" /></Link>
                   </motion.div>
                 ))}
               </Carrusel>
@@ -309,7 +306,7 @@ function Inicio() {
               <p className="flex items-center justify-center gap-2 text-verde text-xs font-semibold tracking-[0.2em] uppercase mb-5"><Film size={16} /> Videos</p>
               <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                 {reelsDestacados.map((reel, i) => (
-                  <motion.div key={reel.id} {...fadeUpScrollDelay(i * 0.1)}><Reel reel={reel} /></motion.div>
+                  <motion.div key={reel.id} {...fadeUpScrollDelay((i % 4) * 0.1)} className={i >= 4 ? 'md:hidden' : ''}><Medio item={reel} clase="video" /></motion.div>
                 ))}
               </Carrusel>
             </div>

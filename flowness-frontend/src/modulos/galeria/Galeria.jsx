@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ChevronsRight, X, Images, Film, Camera } from 'lucide-react'
-import Reel from '../../compartido/componentes/Reel'
+import { ChevronLeft, ChevronRight, X, Images, Film, Camera } from 'lucide-react'
+import Medio from '../../compartido/componentes/Medio'
 import Carrusel from '../../compartido/componentes/Carrusel'
 import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import { fadeUpScroll, fadeUpScrollDelay, listItem } from '../../compartido/utilidades/animaciones'
-import { imagenReducida } from '../../compartido/utilidades/medios'
+import { imagenReducida, urlEmbedInstagram } from '../../compartido/utilidades/medios'
 import { obtenerGaleria } from './galeria.servicio'
 
 function TituloBloque({ icono: Icono, texto }) {
@@ -71,10 +71,8 @@ function Galeria() {
 
       <div className="contenedor">
         {cargando ? (
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-3" role="status" aria-label="Cargando">
-            {[220, 300, 180, 260, 200, 320, 240, 190].map((alto, i) => (
-              <div key={i} className="esqueleto mb-3 rounded-xl" style={{ height: alto }} />
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3" role="status" aria-label="Cargando">
+            {[1, 2, 3, 4].map((i) => <div key={i} className="esqueleto mb-3 rounded-md aspect-[4/5]" />)}
           </div>
         ) : fotos.length === 0 && reels.length === 0 ? (
           <EstadoVacio icono={Camera} titulo="Muy pronto" texto="Muy pronto vas a encontrar fotos y videos acá." />
@@ -83,24 +81,13 @@ function Galeria() {
             {fotos.length > 0 && (
               <section className="mb-20">
                 <TituloBloque icono={Images} texto="Fotos" />
-                {/* Celular: dos filas que se deslizan de costado · Computadora: mosaico */}
-                <Carrusel puntos={false}
-                  claseCelular={`grid ${fotos.length > 4 ? 'grid-rows-2' : 'grid-rows-1'} grid-flow-col auto-cols-[42vw] gap-2`}
-                  claseEscritorio="md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:block md:columns-3 lg:columns-4 md:gap-4">
+                <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                   {fotos.map((f, i) => (
-                    <motion.button key={f.id} {...listItem(i)} onClick={() => { setDireccion(0); setAbierta(i) }}
-                      className="relative block w-full md:mb-4 overflow-hidden rounded-xl md:rounded-2xl break-inside-avoid group">
-                      <img src={imagenReducida(f.url, 600)} alt={f.descripcion || 'Foto de Flowness'} loading="lazy"
-                        className="w-full aspect-square md:aspect-auto object-cover md:h-auto transition-transform duration-700 group-hover:scale-105" />
-                      <span className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </motion.button>
+                    <motion.div key={f.id} {...listItem(i)}>
+                      <Medio item={f} clase="foto" alAbrir={() => { setDireccion(0); setAbierta(i) }} />
+                    </motion.div>
                   ))}
                 </Carrusel>
-                {fotos.length > 4 && (
-                  <p className="md:hidden flex items-center justify-center gap-1 text-piedra text-xs mt-3">
-                    Deslizá para ver más <ChevronsRight size={14} className="animate-pulse" />
-                  </p>
-                )}
               </section>
             )}
 
@@ -109,9 +96,8 @@ function Galeria() {
                 <TituloBloque icono={Film} texto="Videos" />
                 <Carrusel claseEscritorio="items-start md:mx-0 md:px-0 md:overflow-visible md:flex-wrap md:justify-center md:gap-6">
                   {reels.map((reel, i) => (
-                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 3) * 0.1)} className="reel-marco">
-                      <Reel reel={reel} titulo={reel.descripcion || 'Video de Flowness'} />
-                      {reel.descripcion && <p className="text-texto/70 text-xs text-center mt-3">{reel.descripcion}</p>}
+                    <motion.div key={reel.id} {...fadeUpScrollDelay((i % 4) * 0.08)}>
+                      <Medio item={reel} clase="video" />
                     </motion.div>
                   ))}
                 </Carrusel>
@@ -150,8 +136,13 @@ function Galeria() {
                 drag={fotos.length > 1 ? 'x' : false} dragConstraints={{ left: 0, right: 0 }} dragElastic={0.6} onDragEnd={alSoltar}
                 className="max-w-5xl w-full px-4 flex flex-col items-center cursor-grab active:cursor-grabbing touch-pan-y"
                 onClick={(e) => e.stopPropagation()}>
-                <img src={imagenReducida(foto.url, 1600)} alt={foto.descripcion || ''} draggable={false}
-                  className="max-h-[78svh] w-auto rounded-xl object-contain select-none" />
+                {foto.tipo === 'INSTAGRAM' ? (
+                  <iframe src={urlEmbedInstagram(foto.url)} title={foto.descripcion || 'Foto de Instagram'} scrolling="no" allowFullScreen
+                    className="w-[340px] h-[min(620px,76svh)] rounded-md bg-blanco border-0" />
+                ) : (
+                  <img src={imagenReducida(foto.url, 1600)} alt={foto.descripcion || ''} draggable={false}
+                    className="max-h-[78svh] w-auto rounded-md object-contain select-none" />
+                )}
                 {foto.descripcion && <figcaption className="text-blanco/85 text-sm mt-4 text-center">{foto.descripcion}</figcaption>}
               </motion.figure>
             </AnimatePresence>

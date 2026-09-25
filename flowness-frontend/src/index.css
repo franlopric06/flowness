@@ -284,14 +284,33 @@
     animation: var(--animate-esqueleto);
   }
 
-  /* Marco de los reels: en el celular se ven más chicos (escalados)
-     para que entren varios en el carrusel; en computadora, tamaño real.
-     Instagram necesita al menos 326px de ancho, por eso el video se
-     arma a 340px y se achica con transform. */
-  .reel-marco { --k: 0.68; width: calc(340px * var(--k)); flex-shrink: 0; }
-  @media (min-width: 768px) { .reel-marco { --k: 1; } }
-  .reel-ig-caja { height: calc(700px * var(--k)); overflow: hidden; }
-  .reel-ig { width: 340px; height: 700px; transform: scale(var(--k)); transform-origin: top left; }
+  /* Tarjetas de la galería (fotos y videos): todas del mismo tamaño y
+     formato 4:5. En el celular son más chicas para que entren varias
+     en el carrusel. Lo que viene de Instagram se arma a 340px (el mínimo
+     que acepta Instagram), se achica con transform y se esconde la
+     cabecera de Instagram para que se vea solo la foto o el video. */
+  .medio { --k: 0.7; width: calc(340px * var(--k)); flex-shrink: 0; }
+  @media (min-width: 768px) { .medio { --k: 0.72; } }
+  /* En el panel se muestran más chicas, para ver varias a la vez */
+  .medios-chicos .medio { --k: 0.42; }
+  @media (min-width: 768px) { .medios-chicos .medio { --k: 0.56; } }
+  .medio-caja {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-arena);
+  }
+  .medio-ig {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 340px;
+    height: 700px;
+    border: 0;
+    transform: scale(var(--k)) translateY(-56px);
+    transform-origin: top left;
+  }
 
   /* Oculta la barra de scroll (pestañas que se deslizan en el celular) */
   .no-scrollbar { scrollbar-width: none; }

@@ -36,7 +36,10 @@ function Carrusel({ children, claseEscritorio = '', claseCelular = 'flex gap-3',
         className={`${claseCelular} overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-5 px-5 scroll-px-5 pb-1 [&>*]:snap-start [&>*]:shrink-0 ${claseEscritorio}`}>
         {children}
       </div>
-      {puntos && cantidad > 1 && (
+      {puntos && cantidad > 8 && (
+        <p className="md:hidden text-center text-piedra text-xs tracking-widest mt-4">{actual + 1} / {cantidad}</p>
+      )}
+      {puntos && cantidad > 1 && cantidad <= 8 && (
         <div className="md:hidden flex justify-center gap-1.5 mt-4" role="tablist" aria-label="Elegir elemento">
           {Array.from({ length: cantidad }).map((_, i) => (
             <button key={i} onClick={() => irA(i)} aria-label={`Ir al ${i + 1}`} aria-selected={actual === i} role="tab"

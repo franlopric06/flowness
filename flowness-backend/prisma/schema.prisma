@@ -178,6 +178,7 @@ model Documento {
 
 model Foto {
   id          Int      @id @default(autoincrement())
+  tipo        String   @default("ARCHIVO") // ARCHIVO (subida a Cloudinary) o INSTAGRAM (link de una publicación)
   url         String
   descripcion String?
   orden       Int      @default(0)
