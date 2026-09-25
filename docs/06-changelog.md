@@ -66,3 +66,18 @@ Este archivo registra los cambios más relevantes del proyecto ordenados por fec
 
 ---
 
+
+---
+
+## Reorganización modular y seguridad (Septiembre 2026)
+
+| Descripción | Fecha |
+|---|---|
+| Quitamos los archivos .env del repositorio y agregamos .gitignore en la raíz y en el backend | 24/09/2026 |
+| Quitamos node_modules del repositorio | 24/09/2026 |
+| Completamos .env.example del backend y del frontend con todas las variables necesarias | 24/09/2026 |
+| Agregamos validación de variables de entorno al iniciar el servidor | 24/09/2026 |
+| Restringimos CORS al dominio del frontend (FRONTEND_URL) | 24/09/2026 |
+| Reorganizamos el backend por módulos (auth, usuarios, fases, clases, pagos, media, admin, avisos, sobre-mi, configuracion, publico) | 24/09/2026 |
+| Separamos app.js (configuración de Express) de index.js (arranque del servidor) | 24/09/2026 |
+| Reorganizamos el frontend por módulos y dividimos api.js en servicios por módulo | 24/09/2026 |

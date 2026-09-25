@@ -1,38 +1,6 @@
-import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
+import app from './app.js'
+import entorno from './config/entorno.js'
 
-import rutasAuth from './rutas/auth.rutas.js'
-import rutasUsuario from './rutas/usuario.rutas.js'
-import rutasFases from './rutas/fases.rutas.js'
-import rutasClases from './rutas/clases.rutas.js'
-import rutasPagos from './rutas/pagos.rutas.js'
-import rutasAdmin from './rutas/admin.rutas.js'
-import rutasMedia from './rutas/media.rutas.js'
-import rutasConfiguracion from './rutas/configuracion.rutas.js'
-import rutasPublicas from './rutas/publicas.rutas.js'
-
-dotenv.config()
-
-const app = express()
-const PUERTO = process.env.PORT || 3000
-
-app.use(cors({
-  origin: (origin, callback) => callback(null, true),
-  credentials: true
-}))
-app.use(express.json())
-
-app.use('/api/auth', rutasAuth)
-app.use('/api/publico', rutasPublicas)
-app.use('/api/usuario', rutasUsuario)
-app.use('/api/fases', rutasFases)
-app.use('/api/clases', rutasClases)
-app.use('/api/pagos', rutasPagos)
-app.use('/api/media', rutasMedia)
-app.use('/api/admin', rutasAdmin)
-app.use('/api/configuracion', rutasConfiguracion)
-
-app.listen(PUERTO, () => {
-  console.log(`Servidor corriendo en puerto ${PUERTO}`)
+app.listen(entorno.puerto, () => {
+  console.log(`Servidor corriendo en puerto ${entorno.puerto}`)
 })

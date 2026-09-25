@@ -1,10 +1,8 @@
 import { MercadoPagoConfig } from 'mercadopago'
-import dotenv from 'dotenv'
-
-dotenv.config()
+import entorno from './entorno.js'
 
 const clienteMP = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN,
+  accessToken: entorno.mpAccessToken,
 })
 
 export default clienteMP
