@@ -3,8 +3,9 @@ import { useVibrar } from '../../compartido/hooks/useVibrar'
 import * as api from './admin.servicio'
 import AdminClases from './AdminClases'
 import AdminFormacion from './AdminFormacion'
+import AdminGaleria from './AdminGaleria'
 
-const SECCIONES = ['Fases', 'Clases', 'Formación', 'Avisos', 'Sobre mí', 'Configuración', 'Usuarios']
+const SECCIONES = ['Fases', 'Clases', 'Formación', 'Galería', 'Avisos', 'Sobre mí', 'Configuración', 'Usuarios']
 
 function Admin() {
   const [seccion, setSeccion] = useState('Fases')
@@ -86,6 +87,7 @@ function Admin() {
         {/* Clases (componente propio) */}
         {seccion === 'Clases' && <AdminClases mostrarMsg={mostrarMsg} />}
         {seccion === 'Formación' && <AdminFormacion mostrarMsg={mostrarMsg} />}
+        {seccion === 'Galería' && <AdminGaleria mostrarMsg={mostrarMsg} />}
 
         {/* Avisos */}
         {seccion === 'Avisos' && (

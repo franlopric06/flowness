@@ -6,6 +6,7 @@ import rutasUsuarios from './usuarios/usuarios.rutas.js'
 import rutasFases from './fases/fases.rutas.js'
 import rutasClases from './clases/clases.rutas.js'
 import rutasCursos from './cursos/cursos.rutas.js'
+import rutasGaleria from './galeria/galeria.rutas.js'
 import rutasPagos from './pagos/pagos.rutas.js'
 import rutasMedia from './media/media.rutas.js'
 import rutasAdmin from './admin/admin.rutas.js'
@@ -21,6 +22,7 @@ router.use('/usuario', rutasUsuarios)
 router.use('/fases', rutasFases)
 router.use('/clases', rutasClases)
 router.use('/cursos', rutasCursos)
+router.use('/galeria', rutasGaleria)
 router.use('/pagos', rutasPagos)
 router.use('/media', rutasMedia)
 router.use('/admin', rutasAdmin)

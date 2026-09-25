@@ -27,3 +27,9 @@ export const subirDocumento = (archivo) => subirArchivo('/media/documento', arch
 
 // Formación (cursos y lecciones)
 export { obtenerCursosAdmin, actualizarCurso, crearLeccion, actualizarLeccion } from '../formacion/formacion.servicio'
+
+// Galería (fotos y reels)
+export {
+  obtenerGaleriaAdmin, crearFoto, actualizarFoto, eliminarFoto,
+  crearReel, actualizarReel, eliminarReel,
+} from '../galeria/galeria.servicio'

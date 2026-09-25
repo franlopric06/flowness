@@ -6,7 +6,8 @@ export const subirArchivo = multer({
   storage: almacenamiento,
   limits: { fileSize: 100 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'application/pdf']
+    // Fotos, videos (los celulares graban en mp4 o mov) y PDFs
+    const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime', 'video/webm', 'application/pdf']
     if (tiposPermitidos.includes(file.mimetype)) {
       cb(null, true)
     } else {

@@ -185,6 +185,19 @@ model Foto {
   creadoEn    DateTime @default(now())
 }
 
+// Videos cortos (reels) de la galería. Pueden venir de dos lados:
+// - INSTAGRAM: link a un reel público de Instagram (no ocupa espacio).
+// - ARCHIVO: video subido desde la compu o el celular a Cloudinary.
+model Reel {
+  id          Int      @id @default(autoincrement())
+  tipo        String   @default("INSTAGRAM")
+  url         String
+  descripcion String?
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  creadoEn    DateTime @default(now())
+}
+
 // ─────────────────────────────────────────────
 // SOBRE MÍ (info de la instructora)
 // ─────────────────────────────────────────────
