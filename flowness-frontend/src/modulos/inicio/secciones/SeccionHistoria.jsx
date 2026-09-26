@@ -5,6 +5,7 @@ import ReproductorVideo from '../../../compartido/componentes/ReproductorVideo'
 import TituloSeccion from '../../../compartido/componentes/TituloSeccion'
 import { fadeUpScroll, fadeUpScrollDelay } from '../../../compartido/utilidades/animaciones'
 import { imagenReducida } from '../../../compartido/utilidades/medios'
+import { useOrientacionVideo } from '../../../compartido/hooks/useOrientacionVideo'
 
 // Con video: "Cómo nació Flowness" con el video grande
 function ConVideo({ sobreMi }) {
@@ -26,12 +27,20 @@ function ConVideo({ sobreMi }) {
   )
 }
 
-// Sin video: la foto con un marco terracota y el texto al lado
-function ConFoto({ sobreMi }) {
+// Foto (o video vertical tipo reel) con un marco terracota y el texto al lado
+function ConFoto({ sobreMi, videoVertical = false }) {
   return (
     <section className="bg-arena/50 py-20 md:py-28">
       <div className="contenedor max-w-5xl flex flex-col md:flex-row gap-12 md:gap-16 items-center">
-        {sobreMi.fotoUrl && (
+        {videoVertical && (
+          <motion.div {...fadeUpScroll} className="relative shrink-0 w-60 md:w-72">
+            <span className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl border-2 border-terracota" aria-hidden="true" />
+            <div className="relative rounded-xl overflow-hidden shadow-alta">
+              <ReproductorVideo url={sobreMi.videoUrl} titulo="La historia de Flowness" vertical />
+            </div>
+          </motion.div>
+        )}
+        {!videoVertical && sobreMi.fotoUrl && (
           <motion.div {...fadeUpScroll} className="relative shrink-0">
             <span className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl border-2 border-terracota" aria-hidden="true" />
             <img src={imagenReducida(sobreMi.fotoUrl, 600)} alt={sobreMi.nombre} className="relative w-60 h-72 md:w-72 md:h-88 rounded-xl object-cover shadow-alta" />
@@ -49,10 +58,14 @@ function ConFoto({ sobreMi }) {
   )
 }
 
-// Sobre Florencia: con el video de la historia si está cargado, si no con la foto
+// Sobre Florencia: con el video de la historia si está cargado, si no con la foto.
+// Video horizontal: grande y centrado. Vertical (tipo reel): al costado del texto.
 function SeccionHistoria({ sobreMi }) {
+  const orientacion = useOrientacionVideo(sobreMi?.videoUrl)
   if (!sobreMi) return null
-  return sobreMi.videoUrl ? <ConVideo sobreMi={sobreMi} /> : <ConFoto sobreMi={sobreMi} />
+  if (!sobreMi.videoUrl) return <ConFoto sobreMi={sobreMi} />
+  if (!orientacion) return null // un instante, mientras se averigua el formato
+  return orientacion === 'vertical' ? <ConFoto sobreMi={sobreMi} videoVertical /> : <ConVideo sobreMi={sobreMi} />
 }
 
 export default SeccionHistoria

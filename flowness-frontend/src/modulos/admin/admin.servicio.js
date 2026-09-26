@@ -15,6 +15,7 @@ export const obtenerCompras = () => peticion('/admin/compras')
 // Avisos
 export const obtenerAvisos = () => peticion('/admin/avisos')
 export const crearAviso = (datos) => peticion('/admin/avisos', { method: 'POST', body: JSON.stringify(datos) })
+export const actualizarAviso = (id, datos) => peticion(`/admin/avisos/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
 export const eliminarAviso = (id) => peticion(`/admin/avisos/${id}`, { method: 'DELETE' })
 
 // Sobre mí

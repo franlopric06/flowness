@@ -5,7 +5,8 @@ import { ArrowRight, PlayCircle, Quote, UserRound } from 'lucide-react'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import ReproductorVideo from '../../compartido/componentes/ReproductorVideo'
 import { fadeUpDelay, fadeUpScroll } from '../../compartido/utilidades/animaciones'
-import { imagenReducida } from '../../compartido/utilidades/medios'
+import { useOrientacionVideo } from '../../compartido/hooks/useOrientacionVideo'
+import MedioAlCostado from './componentes/MedioAlCostado'
 import { obtenerDatosPublicos } from '../../compartido/servicios/publico.servicio'
 
 function SobreMi() {
@@ -15,7 +16,11 @@ function SobreMi() {
     obtenerDatosPublicos().then((d) => setSobreMi(d.sobreMi || null)).catch(() => setSobreMi(null))
   }, [])
 
-  if (sobreMi === undefined) {
+  // Video horizontal: arriba a todo el ancho. Vertical (tipo reel): al costado, como la foto.
+  const orientacion = useOrientacionVideo(sobreMi?.videoUrl)
+  const averiguando = sobreMi?.videoUrl && !orientacion
+
+  if (sobreMi === undefined || averiguando) {
     return (
       <main className="contenedor pt-32 min-h-screen grid md:grid-cols-[320px_1fr] gap-10" role="status" aria-label="Cargando">
         <div className="esqueleto aspect-[4/5] rounded-xl" />
@@ -31,6 +36,10 @@ function SobreMi() {
     return <main className="contenedor pt-32 min-h-screen"><EstadoVacio icono={UserRound} titulo="Muy pronto" texto="Esta sección se está preparando." /></main>
   }
 
+  const videoArriba = sobreMi.videoUrl && orientacion === 'horizontal'
+  const videoAlCostado = sobreMi.videoUrl && orientacion === 'vertical'
+  const conColumna = videoAlCostado || (sobreMi.fotoUrl && !sobreMi.videoUrl)
+
   return (
     <main className="min-h-screen overflow-x-clip">
       <section className="relative isolate pt-28 md:pt-36 pb-16 md:pb-24">
@@ -39,8 +48,8 @@ function SobreMi() {
           <span className="absolute bottom-0 -right-24 w-80 h-80 rounded-full bg-terracota/25 blur-3xl animate-respirar-lento" />
         </div>
 
-        {/* Si hay video de la historia, va arriba y ocupa todo el ancho (en vez de la foto) */}
-        {sobreMi.videoUrl && (
+        {/* Video horizontal de la historia: va arriba y ocupa todo el ancho (en vez de la foto) */}
+        {videoArriba && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
             className="contenedor max-w-4xl mb-12">
             <div className="rounded-xl overflow-hidden shadow-alta bg-black">
@@ -48,15 +57,8 @@ function SobreMi() {
             </div>
           </motion.div>
         )}
-        <div className={`contenedor grid gap-12 md:gap-16 items-start ${sobreMi.videoUrl ? 'max-w-3xl' : 'max-w-5xl md:grid-cols-[minmax(0,340px)_1fr]'}`}>
-          {sobreMi.fotoUrl && !sobreMi.videoUrl && (
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
-              className="relative mx-auto md:mx-0 w-64 md:w-full md:sticky md:top-28">
-              <span className="absolute inset-0 translate-x-4 translate-y-4 rounded-xl border-2 border-terracota" aria-hidden="true" />
-              <img src={imagenReducida(sobreMi.fotoUrl, 800)} alt={sobreMi.nombre}
-                className="relative w-full aspect-[4/5] rounded-xl object-cover shadow-alta" />
-            </motion.div>
-          )}
+        <div className={`contenedor grid gap-12 md:gap-16 items-start ${conColumna ? 'max-w-5xl md:grid-cols-[minmax(0,340px)_1fr]' : 'max-w-3xl'}`}>
+          {conColumna && <MedioAlCostado sobreMi={sobreMi} conVideo={videoAlCostado} />}
 
           <div className="text-center md:text-left">
             <motion.p {...fadeUpDelay(0.1)} className="etiqueta mb-3">Sobre mí</motion.p>

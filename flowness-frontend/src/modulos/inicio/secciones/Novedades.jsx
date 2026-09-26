@@ -1,22 +1,27 @@
 import { motion } from 'framer-motion'
-import { Megaphone } from 'lucide-react'
 import { fadeUpScrollDelay } from '../../../compartido/utilidades/animaciones'
+import { useConfiguracion } from '../../../compartido/hooks/useConfiguracion'
+import TarjetaAviso from './novedades/TarjetaAviso'
 
-// Avisos cargados en el panel, debajo de la portada
+// Avisos cargados en el panel (novedades, clases gratis y promos), debajo de la portada.
+// En el celular, si hay varios, se deslizan de costado.
 function Novedades({ avisos }) {
+  const { whatsapp_numero: whatsapp } = useConfiguracion()
   if (!avisos.length) return null
+
+  const varios = avisos.length > 1
+  const grilla = avisos.length >= 3 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2'
+
   return (
-    <section className="contenedor pt-10 pb-4">
-      <div className={`grid gap-4 ${avisos.length > 1 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'}`}>
+    <section className="contenedor pt-10 pb-4" aria-label="Novedades">
+      <div className={varios
+        ? `flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-5 px-5 pb-2 md:grid md:overflow-visible md:mx-0 md:px-0 md:pb-0 ${grilla}`
+        : 'max-w-2xl mx-auto'}>
         {avisos.map((aviso, i) => (
-          <motion.article key={aviso.id} {...fadeUpScrollDelay(i * 0.08)} className="card-vidrio p-5 flex gap-4 items-start">
-            <span className="icono-caja bg-terracota/20 text-terracota"><Megaphone size={20} /></span>
-            <div>
-              <p className="etiqueta mb-1">Novedad</p>
-              <h3 className="font-semibold text-texto mb-1">{aviso.titulo}</h3>
-              <p className="text-texto/70 text-sm whitespace-pre-line">{aviso.descripcion}</p>
-            </div>
-          </motion.article>
+          <motion.div key={aviso.id} {...fadeUpScrollDelay(i * 0.08)}
+            className={varios ? 'snap-start shrink-0 w-[85%] sm:w-[60%] md:w-auto' : ''}>
+            <TarjetaAviso aviso={aviso} whatsapp={whatsapp} />
+          </motion.div>
         ))}
       </div>
     </section>

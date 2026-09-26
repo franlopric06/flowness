@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Loader2, Upload, X } from 'lucide-react'
 import ReproductorVideo from '../../../compartido/componentes/ReproductorVideo'
 import { avisar } from '../../../compartido/utilidades/avisos'
+import { useOrientacionVideo } from '../../../compartido/hooks/useOrientacionVideo'
 import { estiloLabel, botonQuitar } from '../componentes/estilos'
 import * as api from '../admin.servicio'
 
 // Campo del video de la historia (link de YouTube o archivo subido)
 function VideoHistoria({ valor, alCambiar }) {
   const [progreso, setProgreso] = useState(null)
+  const vertical = useOrientacionVideo(valor) === 'vertical'
 
   const subir = async (archivo) => {
     if (!archivo) return
@@ -36,7 +38,11 @@ function VideoHistoria({ valor, alCambiar }) {
           {valor && <button onClick={() => alCambiar('')} className={botonQuitar}><X size={13} /> Quitar</button>}
         </div>
       </div>
-      {valor && <div className="mt-4 max-w-md"><ReproductorVideo url={valor} titulo="Video de la historia" /></div>}
+      {valor && (
+        <div className={`mt-4 ${vertical ? 'max-w-[220px]' : 'max-w-md'}`}>
+          <ReproductorVideo url={valor} titulo="Video de la historia" vertical={vertical} />
+        </div>
+      )}
     </div>
   )
 }

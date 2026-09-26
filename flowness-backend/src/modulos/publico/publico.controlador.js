@@ -1,5 +1,6 @@
 import prisma from '../../config/prisma.js'
 import { configuracionPublica } from '../configuracion/configuracion.privada.js'
+import { soloVigentes } from '../avisos/avisos.validar.js'
 
 export const obtenerDatosPublicos = async (req, res) => {
   try {
@@ -7,7 +8,7 @@ export const obtenerDatosPublicos = async (req, res) => {
       prisma.fase.findMany({ where: { activo: true }, orderBy: { numero: 'asc' } }),
       prisma.sobreMi.findFirst(),
       prisma.foto.findMany({ where: { activo: true }, orderBy: { orden: 'asc' } }),
-      prisma.aviso.findMany({ where: { activo: true }, orderBy: { creadoEn: 'desc' }, take: 5 }),
+      prisma.aviso.findMany({ where: soloVigentes(), orderBy: { creadoEn: 'desc' }, take: 6 }),
       prisma.configuracion.findMany(),
     ])
 

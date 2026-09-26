@@ -225,8 +225,13 @@ model SobreMi {
 
 model Aviso {
   id          Int      @id @default(autoincrement())
+  tipo        String   @default("NOVEDAD") // NOVEDAD | CLASE_GRATIS | PROMO
   titulo      String
   descripcion String
+  destino     String   @default("")        // botón: "" | clases | formacion | whatsapp | link
+  enlace      String?                      // solo si destino = link
+  imagenUrl   String?                      // imagen opcional (Cloudinary)
+  hasta       String?                      // AAAA-MM-DD: último día que se muestra (opcional)
   activo      Boolean  @default(true)
   creadoEn    DateTime @default(now())
 }

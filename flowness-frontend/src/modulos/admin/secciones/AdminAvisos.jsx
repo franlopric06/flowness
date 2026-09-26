@@ -1,73 +1,75 @@
 import { useState } from 'react'
-import { Plus, Trash2, Loader2, Megaphone } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { avisar } from '../../../compartido/utilidades/avisos'
 import { confirmar } from '../../../compartido/utilidades/dialogos'
-import { estiloLabel } from '../componentes/estilos'
+import { botonVerde } from '../componentes/estilos'
 import { useCargar } from '../componentes/useCargar'
+import FormularioAviso from '../avisos/FormularioAviso'
+import FilaAviso from '../avisos/FilaAviso'
+import { AVISO_VACIO, datosDeAviso } from '../avisos/datosAviso'
 import * as api from '../admin.servicio'
 
-// Sección "Avisos" del panel: novedades que se muestran en el Inicio
+// Sección "Avisos" del panel: novedades, clases gratis y promos que se ven en el Inicio
 function AdminAvisos() {
   const [avisos, recargar] = useCargar(api.obtenerAvisos, [])
-  const [form, setForm] = useState({ titulo: '', descripcion: '' })
-  const [guardando, setGuardando] = useState(false)
+  // null = formulario cerrado · { id: null } = nuevo · { id: 5 } = editando el 5
+  const [edicion, setEdicion] = useState(null)
 
-  const publicar = async () => {
-    if (!form.titulo.trim()) return avisar('Poné un título para el aviso.', 'alerta')
-    setGuardando(true)
+  const nuevo = () => setEdicion({ id: null, datos: { ...AVISO_VACIO } })
+  const editar = (aviso) => {
+    setEdicion({ id: aviso.id, datos: datosDeAviso(aviso) })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const guardar = async (form) => {
+    if (edicion.id) await api.actualizarAviso(edicion.id, form)
+    else await api.crearAviso(form)
+    avisar(edicion.id ? 'Aviso actualizado' : 'Aviso publicado')
+    setEdicion(null)
+    recargar()
+  }
+
+  const cambiarVisibilidad = async (aviso) => {
     try {
-      await api.crearAviso(form)
-      setForm({ titulo: '', descripcion: '' })
-      await recargar()
-      avisar('Aviso publicado')
+      await api.actualizarAviso(aviso.id, { activo: !aviso.activo })
+      avisar(aviso.activo ? 'Aviso ocultado' : 'Aviso visible')
+      recargar()
     } catch { /* el aviso de error lo muestra el cliente de la API */ }
-    setGuardando(false)
   }
 
   const eliminar = async (aviso) => {
-    if (!(await confirmar(`¿Eliminar el aviso "${aviso.titulo}"?`, { textoConfirmar: 'Eliminar' }))) return
+    if (!(await confirmar(`¿Eliminar el aviso "${aviso.titulo}"? Si solo querés sacarlo un tiempo, usá "Ocultar".`, { textoConfirmar: 'Eliminar' }))) return
     try {
       await api.eliminarAviso(aviso.id)
-      await recargar()
       avisar('Aviso eliminado')
+      recargar()
     } catch { /* el aviso de error lo muestra el cliente de la API */ }
   }
 
+  const lista = avisos || []
+
   return (
     <div>
-      <h2 className="titulo text-verde text-3xl mb-2">Avisos</h2>
-      <p className="text-piedra text-xs mb-5">Se muestran como "Novedades" en el Inicio.</p>
-      <div className="card p-5 md:p-6 mb-6 space-y-3">
-        <div>
-          <label className={estiloLabel}>Título</label>
-          <input value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} className="input" />
-        </div>
-        <div>
-          <label className={estiloLabel}>Descripción</label>
-          <textarea rows={3} value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} className="input" />
-        </div>
-        <button onClick={publicar} disabled={guardando} className="btn btn-primario btn-chico">
-          {guardando ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Publicar aviso
-        </button>
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="titulo text-verde text-3xl">Avisos</h2>
+        {!edicion && <button onClick={nuevo} className={botonVerde}><Plus size={14} /> Nuevo aviso</button>}
       </div>
-      {(avisos || []).length === 0 ? (
-        <p className="text-piedra text-sm">No hay avisos publicados.</p>
+      <p className="text-piedra text-xs mb-5">Se muestran debajo de la portada del Inicio: novedades, clases gratis y promos. Los más nuevos van primero.</p>
+
+      {edicion && (
+        <FormularioAviso key={edicion.id ?? 'nuevo'} inicial={edicion.datos} editando={!!edicion.id}
+          alGuardar={guardar} alCancelar={() => setEdicion(null)} />
+      )}
+
+      {lista.length === 0 ? (
+        <p className="text-piedra text-sm">Todavía no hay avisos. Tocá "Nuevo aviso" para crear el primero.</p>
       ) : (
-        <ul className="space-y-3">
-          {avisos.map((a) => (
-            <li key={a.id} className="card p-4 flex gap-4 items-start">
-              <span className="icono-caja bg-terracota/15 text-terracota"><Megaphone size={18} /></span>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-texto">{a.titulo}</p>
-                <p className="text-texto/60 text-xs whitespace-pre-line">{a.descripcion}</p>
-              </div>
-              <button onClick={() => eliminar(a)} aria-label="Eliminar aviso" title="Eliminar"
-                className="w-9 h-9 shrink-0 inline-flex items-center justify-center rounded-full text-error hover:bg-error/10 transition-colors">
-                <Trash2 size={16} />
-              </button>
-            </li>
+        <div className="flex flex-col gap-3">
+          {lista.map((aviso) => (
+            <FilaAviso key={aviso.id} aviso={aviso} alEditar={() => editar(aviso)}
+              alCambiarVisibilidad={() => cambiarVisibilidad(aviso)} alEliminar={() => eliminar(aviso)} />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )
