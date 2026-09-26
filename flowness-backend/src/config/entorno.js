@@ -39,6 +39,13 @@ const entorno = {
   // Con él, lo que se agrega a la galería con link de Instagram se trae
   // como archivo real (se ve en la página con todos los controles).
   instagramToken: (process.env.INSTAGRAM_TOKEN || '').trim(),
+  // Opcional: envío de emails con Brevo (recuperar contraseña, confirmación de compra).
+  // EMAIL_REMITENTE tiene que ser un remitente verificado en la cuenta de Brevo.
+  email: {
+    brevoApiKey: (process.env.BREVO_API_KEY || '').trim(),
+    remitente: (process.env.EMAIL_REMITENTE || '').trim(),
+    nombreRemitente: (process.env.EMAIL_NOMBRE || 'Flowness').trim(),
+  },
 }
 
 export default entorno

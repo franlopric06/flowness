@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /mi-cuenta
+Disallow: /pagar
+Disallow: /recuperar-clave
+Disallow: /restablecer-clave
 
 Sitemap: https://flowness-git-main-fran-lopez-s-projects.vercel.app/sitemap.xml

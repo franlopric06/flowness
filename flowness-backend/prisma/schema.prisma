@@ -22,6 +22,7 @@ model Usuario {
 
   compras   Compra[]
   resenas   Resena[]
+  recuperaciones RecuperacionClave[]
 }
 
 enum Rol {
@@ -266,4 +267,23 @@ model Resena {
   @@unique([usuarioId, claseId])
   @@unique([usuarioId, cursoId])
   @@index([estado])
+}
+
+// ─────────────────────────────────────────────
+// RECUPERACIÓN DE CONTRASEÑA
+// Se guarda solo el "hash" del código que va en el link del email (nunca el
+// código en sí). Vence en 1 hora y sirve una sola vez.
+// ─────────────────────────────────────────────
+
+model RecuperacionClave {
+  id         Int       @id @default(autoincrement())
+  usuarioId  Int
+  tokenHash  String    @unique
+  expira     DateTime
+  usadoEn    DateTime?
+  creadoEn   DateTime  @default(now())
+
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
 }

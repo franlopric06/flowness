@@ -15,6 +15,8 @@ import SobreMi from '../modulos/sobre-mi/SobreMi'
 import Galeria from '../modulos/galeria/Galeria'
 import Contacto from '../modulos/contacto/Contacto'
 import Ingresar from '../modulos/auth/Ingresar'
+import RecuperarClave from '../modulos/auth/RecuperarClave'
+import RestablecerClave from '../modulos/auth/RestablecerClave'
 import MiCuenta from '../modulos/cuenta/MiCuenta'
 import PagoExitoso from '../modulos/pagos/PagoExitoso'
 import PagoFallido from '../modulos/pagos/PagoFallido'
@@ -54,6 +56,8 @@ function App() {
           <Route path="/galeria" element={<Galeria />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/ingresar" element={<Ingresar />} />
+          <Route path="/recuperar-clave" element={<RecuperarClave />} />
+          <Route path="/restablecer-clave" element={<RestablecerClave />} />
           <Route path="/mi-cuenta" element={<MiCuenta />} />
           <Route path="/pago-exitoso" element={<PagoExitoso />} />
           <Route path="/pago-fallido" element={<PagoFallido />} />
