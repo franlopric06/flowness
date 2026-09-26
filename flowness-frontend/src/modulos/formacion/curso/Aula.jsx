@@ -7,6 +7,7 @@ import { tabContent } from '../../../compartido/utilidades/animaciones'
 import { urlVisorPdf } from '../../../compartido/utilidades/medios'
 import ListaLecciones from './ListaLecciones'
 import Volver from './Volver'
+import SeccionResenas from '../../resenas/SeccionResenas'
 
 // Aula: para quien ya compró el curso (video, material y lista de lecciones)
 function Aula({ curso }) {
@@ -59,6 +60,10 @@ function Aula({ curso }) {
           </section>
 
           <ListaLecciones curso={curso} actual={actual} alElegir={elegir} />
+        </div>
+
+        <div className="mt-14 max-w-3xl">
+          <SeccionResenas producto={{ cursoId: curso.id }} titulo="Tu opinión sobre el curso" conFormulario />
         </div>
       </div>
     </main>

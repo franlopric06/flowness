@@ -6,12 +6,15 @@ import TituloSeccion from '../../../compartido/componentes/TituloSeccion'
 import { EsqueletoGrilla } from '../../../compartido/componentes/Esqueleto'
 import { fadeUpScroll, fadeUpScrollDelay } from '../../../compartido/utilidades/animaciones'
 import { formatearPrecio } from '../../../compartido/utilidades/video'
+import PromedioChico from '../../../compartido/componentes/resenas/PromedioChico'
+import { useResumenResenas } from '../../../compartido/hooks/useResumenResenas'
 
 const ICONOS_NIVEL = [Sprout, TrendingUp, Award]
 
 // Tarjeta de un nivel de la formación (video o portada arriba, datos abajo)
 function TarjetaNivel({ curso, indice }) {
   const Icono = ICONOS_NIVEL[indice % ICONOS_NIVEL.length]
+  const resumen = useResumenResenas().cursos[curso.id]
   return (
     <Link to={`/formacion/${curso.slug}`} className="card card-elevable group flex flex-col h-full">
       <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-verde/35 to-terracota/35">
@@ -24,7 +27,8 @@ function TarjetaNivel({ curso, indice }) {
       </div>
       <div className="p-6 md:p-7 flex flex-col flex-1">
         <p className="etiqueta mb-1">{curso.subtitulo || `Nivel ${indice + 1}`}</p>
-        <h3 className="titulo text-verde text-3xl mb-3">{curso.nombre}</h3>
+        <h3 className="titulo text-verde text-3xl mb-1">{curso.nombre}</h3>
+        <PromedioChico resumen={resumen} className="mb-2" />
         {curso.descripcion && <p className="text-texto/75 text-sm leading-relaxed mb-5 line-clamp-3 flex-1">{curso.descripcion}</p>}
         <div className="flex items-center justify-between pt-4 border-t border-terracota/15 mt-auto">
           <p className="font-semibold text-texto">{curso.disponibleParaComprar ? formatearPrecio(curso.precio) : 'Próximamente'}</p>

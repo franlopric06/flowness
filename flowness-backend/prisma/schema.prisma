@@ -21,6 +21,7 @@ model Usuario {
   creadoEn  DateTime @default(now())
 
   compras   Compra[]
+  resenas   Resena[]
 }
 
 enum Rol {
@@ -88,6 +89,7 @@ model Clase {
   fase        Fase?       @relation(fields: [faseId], references: [id])
   compras     Compra[]
   documentos  Documento[]
+  resenas     Resena[]
 }
 
 // ─────────────────────────────────────────────
@@ -116,6 +118,7 @@ model Curso {
 
   lecciones   Leccion[]
   compras     Compra[]
+  resenas     Resena[]
 }
 
 // Cada lección: un video de YouTube "No listado" + su PDF explicativo
@@ -234,4 +237,33 @@ model Aviso {
   hasta       String?                      // AAAA-MM-DD: último día que se muestra (opcional)
   activo      Boolean  @default(true)
   creadoEn    DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────
+// RESEÑAS
+// Solo opina quien tiene acceso (compró la clase o el curso, o la clase es
+// gratis). Cada persona deja una sola reseña por clase o curso. Se ven en el
+// sitio recién cuando Florencia la aprueba. "destacada" = aparece en el Inicio.
+// ─────────────────────────────────────────────
+
+model Resena {
+  id            Int      @id @default(autoincrement())
+  usuarioId     Int
+  claseId       Int?
+  cursoId       Int?
+  estrellas     Int                          // de 1 a 5
+  texto         String   @default("")
+  estado        String   @default("PENDIENTE") // PENDIENTE | APROBADA | RECHAZADA
+  respuesta     String?                      // respuesta pública de Florencia
+  destacada     Boolean  @default(false)
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  clase         Clase?   @relation(fields: [claseId], references: [id], onDelete: Cascade)
+  curso         Curso?   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, claseId])
+  @@unique([usuarioId, cursoId])
+  @@index([estado])
 }

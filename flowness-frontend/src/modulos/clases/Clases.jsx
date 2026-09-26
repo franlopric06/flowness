@@ -7,6 +7,7 @@ import EstadoVacio from '../../compartido/componentes/EstadoVacio'
 import Modal from '../../compartido/componentes/Modal'
 import { EsqueletoGrilla } from '../../compartido/componentes/Esqueleto'
 import TarjetaClase from './componentes/TarjetaClase'
+import SeccionResenas from '../resenas/SeccionResenas'
 import { obtenerClases } from './clases.servicio'
 
 // Catálogo de clases: lo ve cualquiera.
@@ -60,6 +61,9 @@ function Clases() {
             {claseAbierta.descripcion && (
               <p className="text-texto/80 text-sm leading-relaxed mt-5 whitespace-pre-line">{claseAbierta.descripcion}</p>
             )}
+            <div className="mt-8 pt-6 border-t border-terracota/15">
+              <SeccionResenas producto={{ claseId: claseAbierta.id }} conFormulario />
+            </div>
           </>
         )}
       </Modal>

@@ -11,6 +11,7 @@ import SeccionClases from './secciones/SeccionClases'
 import SeccionFormacion from './secciones/SeccionFormacion'
 import SeccionHistoria from './secciones/SeccionHistoria'
 import SeccionGaleria from './secciones/SeccionGaleria'
+import Testimonios from './secciones/Testimonios'
 import Cierre from './secciones/Cierre'
 
 // Inicio: pide los datos y arma la página con sus secciones, en orden
@@ -39,6 +40,7 @@ function Inicio() {
       <SeccionFormacion cursos={cursos} />
       <SeccionHistoria sobreMi={datos.sobreMi} />
       <SeccionGaleria galeria={galeria} />
+      <Testimonios />
       <Cierre hayClaseGratis={hayClaseGratis} />
     </main>
   )

@@ -9,6 +9,7 @@ import CabeceraCurso from './CabeceraCurso'
 import TemarioCurso from './TemarioCurso'
 import TarjetaCompra from './TarjetaCompra'
 import BotonCompra from './BotonCompra'
+import SeccionResenas from '../../resenas/SeccionResenas'
 
 // Página de venta de un nivel (para quien todavía no lo compró)
 function PaginaVenta({ curso }) {
@@ -46,6 +47,10 @@ function PaginaVenta({ curso }) {
           )}
 
           <TemarioCurso lecciones={curso.lecciones} faltan={faltan} />
+
+          <div className="mt-14">
+            <SeccionResenas producto={{ cursoId: curso.id }} titulo="Lo que dicen quienes lo hicieron" ocultarSiVacia />
+          </div>
         </div>
 
         <TarjetaCompra curso={curso} cantidadVideos={cantidadVideos} botonCompra={botonCompra} />

@@ -12,6 +12,11 @@ export {
 export const obtenerUsuarios = () => peticion('/admin/usuarios')
 export const obtenerCompras = () => peticion('/admin/compras')
 
+// Reseñas (moderación)
+export const obtenerResenasAdmin = (estado) => peticion(`/admin/resenas${estado ? `?estado=${estado}` : ''}`)
+export const moderarResena = (id, datos) => peticion(`/admin/resenas/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
+export const eliminarResena = (id) => peticion(`/admin/resenas/${id}`, { method: 'DELETE' })
+
 // Avisos
 export const obtenerAvisos = () => peticion('/admin/avisos')
 export const crearAviso = (datos) => peticion('/admin/avisos', { method: 'POST', body: JSON.stringify(datos) })

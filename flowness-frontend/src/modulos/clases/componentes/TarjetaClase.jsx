@@ -3,9 +3,12 @@ import { Clock, Lock, PlayCircle, Sparkles, CheckCircle2 } from 'lucide-react'
 import MediaTarjeta from '../../../compartido/componentes/MediaTarjeta'
 import { fadeUpScrollDelay } from '../../../compartido/utilidades/animaciones'
 import AccionClase from './AccionClase'
+import PromedioChico from '../../../compartido/componentes/resenas/PromedioChico'
+import { useResumenResenas } from '../../../compartido/hooks/useResumenResenas'
 
 // Tarjeta de una clase en el catálogo: adelanto, etiquetas, texto y botón
 function TarjetaClase({ clase, indice, alVer }) {
+  const resumen = useResumenResenas().clases[clase.id]
   return (
     <motion.article {...fadeUpScrollDelay((indice % 3) * 0.08)} className="card card-elevable group flex flex-col">
       <div className="relative aspect-video bg-gradient-to-br from-verde/25 to-terracota/25 overflow-hidden">
@@ -34,7 +37,8 @@ function TarjetaClase({ clase, indice, alVer }) {
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <h3 className="titulo text-verde text-2xl mb-2">{clase.nombre}</h3>
+        <h3 className="titulo text-verde text-2xl mb-1">{clase.nombre}</h3>
+        <PromedioChico resumen={resumen} className="mb-2" />
         <p className="text-texto/70 text-sm leading-relaxed mb-6 flex-1 whitespace-pre-line line-clamp-4">{clase.descripcion}</p>
         <AccionClase clase={clase} alVer={alVer} />
       </div>

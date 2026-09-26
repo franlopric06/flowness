@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Layers, Clapperboard, GraduationCap, Images, Megaphone, UserRound, Settings, Users, ShieldAlert, ExternalLink } from 'lucide-react'
+import { Layers, Clapperboard, GraduationCap, Images, Megaphone, Star, UserRound, Settings, Users, ShieldAlert, ExternalLink } from 'lucide-react'
 import { avisar } from '../../compartido/utilidades/avisos'
 import { tabContent } from '../../compartido/utilidades/animaciones'
 import EstadoVacio from '../../compartido/componentes/EstadoVacio'
@@ -10,6 +10,7 @@ import AdminClases from './AdminClases'
 import AdminFormacion from './AdminFormacion'
 import AdminGaleria from './AdminGaleria'
 import AdminAvisos from './secciones/AdminAvisos'
+import AdminResenas from './secciones/AdminResenas'
 import AdminSobreMi from './secciones/AdminSobreMi'
 import AdminConfiguracion from './secciones/AdminConfiguracion'
 import AdminUsuarios from './secciones/AdminUsuarios'
@@ -24,6 +25,7 @@ const SECCIONES = [
   ['Formación', GraduationCap, AdminFormacion],
   ['Galería', Images, AdminGaleria],
   ['Avisos', Megaphone, AdminAvisos],
+  ['Reseñas', Star, AdminResenas],
   ['Sobre mí', UserRound, AdminSobreMi],
   ['Configuración', Settings, AdminConfiguracion],
   ['Usuarios', Users, AdminUsuarios],

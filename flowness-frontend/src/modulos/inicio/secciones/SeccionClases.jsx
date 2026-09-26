@@ -6,9 +6,12 @@ import TituloSeccion from '../../../compartido/componentes/TituloSeccion'
 import { EsqueletoGrilla } from '../../../compartido/componentes/Esqueleto'
 import { fadeUpScroll, fadeUpScrollDelay } from '../../../compartido/utilidades/animaciones'
 import { formatearPrecio } from '../../../compartido/utilidades/video'
+import PromedioChico from '../../../compartido/componentes/resenas/PromedioChico'
+import { useResumenResenas } from '../../../compartido/hooks/useResumenResenas'
 
 // Tarjeta de una clase en el Inicio (lleva a la página de Clases)
 function TarjetaClase({ clase }) {
+  const resumen = useResumenResenas().clases[clase.id]
   return (
     <Link to="/clases" className="card card-elevable group block h-full">
       <div className="relative aspect-video bg-gradient-to-br from-verde/25 to-terracota/25 flex items-center justify-center overflow-hidden">
@@ -22,7 +25,10 @@ function TarjetaClase({ clase }) {
       </div>
       <div className="p-5">
         <h3 className="titulo text-verde text-xl mb-1">{clase.nombre}</h3>
-        {clase.duracion && <p className="text-piedra text-xs flex items-center gap-1"><Clock size={12} /> {clase.duracion}</p>}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <PromedioChico resumen={resumen} />
+          {clase.duracion && <p className="text-piedra text-xs flex items-center gap-1"><Clock size={12} /> {clase.duracion}</p>}
+        </div>
       </div>
     </Link>
   )
