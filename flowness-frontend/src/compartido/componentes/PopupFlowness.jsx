@@ -2,17 +2,16 @@ import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import IconoInstagram from './IconoInstagram'
-import { obtenerConfiguracion } from '../servicios/configuracion.servicio'
+import { useConfiguracion } from '../hooks/useConfiguracion'
 
 // Invitación a seguir a Flow en Instagram.
 // Aparece a los pocos segundos y, si la persona la cierra, no vuelve
 // a aparecer mientras siga navegando el sitio.
 function PopupFlowness() {
   const [visible, setVisible] = useState(false)
-  const [config, setConfig] = useState({})
+  const config = useConfiguracion()
 
   useEffect(() => {
-    obtenerConfiguracion().then(setConfig).catch(() => {})
     let cerrado = false
     try { cerrado = sessionStorage.getItem('popupFlownessCerrado') === '1' } catch { /* sin almacenamiento */ }
     if (cerrado) return

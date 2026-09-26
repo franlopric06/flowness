@@ -1,4 +1,5 @@
 import prisma from '../../config/prisma.js'
+import { configuracionPublica } from '../configuracion/configuracion.privada.js'
 
 export const obtenerDatosPublicos = async (req, res) => {
   try {
@@ -10,8 +11,8 @@ export const obtenerDatosPublicos = async (req, res) => {
       prisma.configuracion.findMany(),
     ])
 
-    const configuracion = {}
-    config.forEach(({ clave, valor }) => { configuracion[clave] = valor })
+    // Sin las claves privadas (por ejemplo el token de Instagram)
+    const configuracion = configuracionPublica(config)
 
     res.json({ fases, sobreMi, fotos, avisos, configuracion })
   } catch {

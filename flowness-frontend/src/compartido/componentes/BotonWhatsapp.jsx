@@ -1,17 +1,10 @@
-import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import IconoWhatsapp from './IconoWhatsapp'
-import { obtenerConfiguracion } from '../servicios/configuracion.servicio'
+import { useConfiguracion } from '../hooks/useConfiguracion'
 
 // Botón flotante de WhatsApp (abajo a la izquierda), con un anillo que late suave
 function BotonWhatsapp() {
-  const [numero, setNumero] = useState(null)
-
-  useEffect(() => {
-    obtenerConfiguracion()
-      .then((config) => { if (config.whatsapp_numero) setNumero(config.whatsapp_numero) })
-      .catch(() => {})
-  }, [])
+  const numero = useConfiguracion().whatsapp_numero
 
   if (!numero) return null
 

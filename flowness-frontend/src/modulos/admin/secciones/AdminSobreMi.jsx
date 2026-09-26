@@ -63,7 +63,6 @@ function AdminSobreMi() {
               onChange={(e) => subirFoto(e.target.files[0])} />
           </label>
         </div>
-        <VideoHistoria valor={valor('videoUrl')} alCambiar={(v) => cambiar('videoUrl', v)} />
         <div className="space-y-4">
           {CAMPOS.map(([campo, etiqueta]) => (
             <div key={campo}>
@@ -75,6 +74,9 @@ function AdminSobreMi() {
               )}
             </div>
           ))}
+        </div>
+        <VideoHistoria valor={valor('videoUrl')} alCambiar={(v) => cambiar('videoUrl', v)} />
+        <div className="md:col-span-2">
           <BotonGuardar guardando={guardando} onClick={guardar} />
         </div>
       </div>

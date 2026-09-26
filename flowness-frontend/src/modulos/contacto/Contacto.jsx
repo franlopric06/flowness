@@ -1,18 +1,13 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, MapPin } from 'lucide-react'
 import CabeceraPagina from '../../compartido/componentes/CabeceraPagina'
 import IconoInstagram from '../../compartido/componentes/IconoInstagram'
 import IconoWhatsapp from '../../compartido/componentes/IconoWhatsapp'
 import { fadeUpDelay } from '../../compartido/utilidades/animaciones'
-import { obtenerConfiguracion } from '../../compartido/servicios/configuracion.servicio'
+import { useConfiguracion } from '../../compartido/hooks/useConfiguracion'
 
 function Contacto() {
-  const [config, setConfig] = useState({})
-
-  useEffect(() => {
-    obtenerConfiguracion().then(setConfig).catch(() => {})
-  }, [])
+  const config = useConfiguracion()
 
   const canales = [
     config.whatsapp_numero && {

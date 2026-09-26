@@ -1,35 +1,25 @@
-import { CreditCard, Wallet, Banknote, ShieldCheck, Landmark } from 'lucide-react'
+import { useConfiguracionLista } from '../hooks/useConfiguracion'
+import { leerMedios, itemsDeLaFranja } from '../utilidades/mediosDePago'
+import { leerPromos, promosVigentes } from '../utilidades/promociones'
+import BarraPromos from './pagos/BarraPromos'
+import FranjaMedios from './pagos/FranjaMedios'
 
-// Franja que se desliza sola con los medios de pago que acepta Mercado Pago
-const MEDIOS = [
-  [CreditCard, 'Visa'],
-  [CreditCard, 'Mastercard'],
-  [CreditCard, 'American Express'],
-  [CreditCard, 'Naranja X'],
-  [CreditCard, 'Cabal'],
-  [Landmark, 'Tarjetas de débito'],
-  [Wallet, 'Dinero en cuenta de Mercado Pago'],
-  [Banknote, 'Efectivo en Rapipago y Pago Fácil'],
-  [ShieldCheck, 'Pago 100% seguro'],
-]
-
+// Franja de pagos del sitio: arriba las promociones vigentes y abajo los
+// medios de pago. Las dos cosas se eligen en Configuración del panel.
 function MediosDePago({ className = '' }) {
-  const lista = MEDIOS.map(([Icono, texto]) => (
-    <span key={texto} className="inline-flex items-center gap-2 px-5 text-texto/75 text-xs font-medium tracking-wide whitespace-nowrap">
-      <Icono size={16} className="text-verde" /> {texto}
-      <span className="ml-5 w-1 h-1 rounded-full bg-terracota" aria-hidden="true" />
-    </span>
-  ))
+  // Espera a tener la configuración para no mostrar primero lo de por defecto
+  const config = useConfiguracionLista()
+  if (!config) return <div className={`h-[3.25rem] border-y border-terracota/15 bg-blanco ${className}`} aria-hidden="true" />
+
+  const items = itemsDeLaFranja(leerMedios(config))
+  const promos = promosVigentes(leerPromos(config))
+
+  if (items.length === 0 && promos.length === 0) return null
+
   return (
-    <section className={`relative overflow-hidden bg-blanco border-y border-terracota/15 py-4 ${className}`} aria-label="Medios de pago">
-      <p className="sr-only">Aceptamos Visa, Mastercard, American Express, Naranja X, Cabal, débito, dinero en cuenta de Mercado Pago y efectivo.</p>
-      {/* El contenido se repite dos veces para que el movimiento no tenga cortes */}
-      <div className="flex w-max animate-desplazar hover:[animation-play-state:paused]" aria-hidden="true">
-        <div className="flex">{lista}</div>
-        <div className="flex">{lista}</div>
-      </div>
-      <span className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-blanco to-transparent" />
-      <span className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-blanco to-transparent" />
+    <section className={`bg-blanco border-y border-terracota/15 ${className}`} aria-label="Promociones y medios de pago">
+      <BarraPromos promos={promos} whatsapp={config.whatsapp_numero} />
+      <FranjaMedios items={items} />
     </section>
   )
 }

@@ -16,9 +16,9 @@ function ConVideo({ sobreMi }) {
           <ReproductorVideo url={sobreMi.videoUrl} titulo="La historia de Flowness" />
         </motion.div>
         <motion.div {...fadeUpScrollDelay(0.1)} className="text-center max-w-2xl mx-auto mt-10">
-          <h3 className="titulo text-verde text-3xl md:text-4xl mb-1">{sobreMi.nombre}</h3>
-          <p className="text-piedra text-sm tracking-wide mb-5">{sobreMi.titulo}</p>
-          <p className="text-texto/80 text-sm md:text-base leading-relaxed mb-7 line-clamp-4 whitespace-pre-line">{sobreMi.descripcion1}</p>
+          {sobreMi.nombre && <h3 className="titulo text-verde text-3xl md:text-4xl mb-1">{sobreMi.nombre}</h3>}
+          {sobreMi.titulo && <p className="text-piedra text-sm tracking-wide mb-5">{sobreMi.titulo}</p>}
+          {sobreMi.descripcion1 && <p className="text-texto/80 text-sm md:text-base leading-relaxed mb-7 line-clamp-4 whitespace-pre-line">{sobreMi.descripcion1}</p>}
           <Link to="/sobre-mi" className="btn btn-secundario">Conocé más sobre mí <ArrowRight size={16} /></Link>
         </motion.div>
       </div>

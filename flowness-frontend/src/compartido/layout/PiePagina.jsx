@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MapPin } from 'lucide-react'
 import IconoWhatsapp from '../componentes/IconoWhatsapp'
 import IconoInstagram from '../componentes/IconoInstagram'
-import { obtenerConfiguracion } from '../servicios/configuracion.servicio'
+import { useConfiguracion } from '../hooks/useConfiguracion'
 
 const LINKS = [
   ['/', 'Inicio'],
@@ -16,11 +15,7 @@ const LINKS = [
 
 // Pie de página verde (manual) con el patrón decorativo de la marca en terracota
 function PiePagina() {
-  const [config, setConfig] = useState({})
-
-  useEffect(() => {
-    obtenerConfiguracion().then(setConfig).catch(() => {})
-  }, [])
+  const config = useConfiguracion()
 
   const instagram = config.instagram_url || 'https://instagram.com/flownessargentina'
   const whatsapp = config.whatsapp_numero ? `https://wa.me/${config.whatsapp_numero}` : null
