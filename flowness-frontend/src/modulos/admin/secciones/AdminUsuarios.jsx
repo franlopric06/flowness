@@ -1,28 +1,41 @@
-import { useCargar } from '../componentes/useCargar'
-import * as api from '../admin.servicio'
+import { useCallback, useState } from 'react'
+import { ChartColumn, ShoppingBag, UsersRound } from 'lucide-react'
+import ResumenVentas from '../usuarios/ResumenVentas'
+import ListaCompras from '../usuarios/ListaCompras'
+import ListaPersonas from '../usuarios/ListaPersonas'
+import DetallePersona from '../usuarios/DetallePersona'
 
-// Sección "Usuarios" del panel: la lista de personas registradas
+const VISTAS = [
+  ['resumen', 'Resumen', ChartColumn],
+  ['compras', 'Compras', ShoppingBag],
+  ['personas', 'Personas', UsersRound],
+]
+
+// Sección "Usuarios" del panel: métricas, quién compró qué y la ficha de cada persona
 function AdminUsuarios() {
-  const [usuarios] = useCargar(api.obtenerUsuarios, [])
-  const lista = usuarios || []
+  const [vista, setVista] = useState('resumen')
+  const [personaAbierta, setPersonaAbierta] = useState(null)
+  const cerrarPersona = useCallback(() => setPersonaAbierta(null), [])
 
   return (
     <div>
-      <h2 className="titulo text-verde text-3xl mb-5">Usuarios <span className="text-piedra text-xl">· {lista.length}</span></h2>
-      <ul className="card divide-y divide-terracota/10">
-        {lista.map((u) => (
-          <li key={u.id} className="flex items-center gap-3 px-4 py-3">
-            <span className="w-9 h-9 shrink-0 rounded-full bg-verde/15 text-verde flex items-center justify-center font-semibold text-sm">
-              {u.nombre?.[0]?.toUpperCase() || '?'}
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-texto truncate">{u.nombre}</p>
-              <p className="text-xs text-piedra truncate">{u.email}</p>
-            </div>
-            <span className={`chip ${u.rol === 'ADMIN' ? 'chip-verde' : 'bg-terracota/15 text-terracota'}`}>{u.rol === 'ADMIN' ? 'Admin' : 'Alumna/o'}</span>
-          </li>
+      <h2 className="titulo text-verde text-3xl mb-4">Usuarios y ventas</h2>
+
+      <div className="inline-flex p-1 rounded-full bg-blanco border border-terracota/20 mb-5" role="tablist">
+        {VISTAS.map(([clave, texto, Icono]) => (
+          <button key={clave} type="button" role="tab" aria-selected={vista === clave} onClick={() => setVista(clave)}
+            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
+              vista === clave ? 'bg-verde text-blanco' : 'text-texto/70 hover:text-verde'}`}>
+            <Icono size={14} /> {texto}
+          </button>
         ))}
-      </ul>
+      </div>
+
+      {vista === 'resumen' && <ResumenVentas />}
+      {vista === 'compras' && <ListaCompras alVerPersona={setPersonaAbierta} />}
+      {vista === 'personas' && <ListaPersonas alVerPersona={setPersonaAbierta} />}
+
+      <DetallePersona id={personaAbierta} alCerrar={cerrarPersona} />
     </div>
   )
 }

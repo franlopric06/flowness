@@ -9,8 +9,15 @@ export {
 } from '../clases/clases.servicio'
 
 // Usuarios y compras
-export const obtenerUsuarios = () => peticion('/admin/usuarios')
-export const obtenerCompras = () => peticion('/admin/compras')
+const consulta = (filtros = {}) => {
+  const limpios = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== '' && v !== undefined && v !== null))
+  const texto = new URLSearchParams(limpios).toString()
+  return texto ? `?${texto}` : ''
+}
+export const obtenerUsuarios = (filtros) => peticion(`/admin/usuarios${consulta(filtros)}`)
+export const obtenerUsuario = (id) => peticion(`/admin/usuarios/${id}`)
+export const obtenerCompras = (filtros) => peticion(`/admin/compras${consulta(filtros)}`)
+export const obtenerMetricas = () => peticion('/admin/metricas')
 
 // Reseñas (moderación)
 export const obtenerResenasAdmin = (estado) => peticion(`/admin/resenas${estado ? `?estado=${estado}` : ''}`)

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { obtenerUsuarios, obtenerCompras } from './admin.controlador.js'
+import { obtenerUsuarios, obtenerUsuario, obtenerCompras, obtenerMetricas } from './admin.controlador.js'
 import { verificarToken, soloAdmin } from '../../compartido/middlewares/autenticacion.js'
 import rutasAvisos from '../avisos/avisos.rutas.js'
 import rutasSobreMi from '../sobre-mi/sobre-mi.rutas.js'
@@ -10,7 +10,9 @@ const router = Router()
 router.use(verificarToken, soloAdmin)
 
 router.get('/usuarios', obtenerUsuarios)
+router.get('/usuarios/:id', obtenerUsuario)
 router.get('/compras', obtenerCompras)
+router.get('/metricas', obtenerMetricas)
 
 // Submódulos de administración (mantienen las mismas URLs: /api/admin/avisos y /api/admin/sobre-mi)
 router.use('/avisos', rutasAvisos)
