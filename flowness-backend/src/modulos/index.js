@@ -12,6 +12,7 @@ import rutasMedia from './media/media.rutas.js'
 import rutasAdmin from './admin/admin.rutas.js'
 import rutasConfiguracion from './configuracion/configuracion.rutas.js'
 import rutasResenas from './resenas/resenas.rutas.js'
+import rutasPreguntas from './preguntas/preguntas.rutas.js'
 
 // Punto único donde se registran todos los módulos de la API.
 // Las URLs son las mismas que antes de la reorganización.
@@ -29,5 +30,6 @@ router.use('/media', rutasMedia)
 router.use('/admin', rutasAdmin)
 router.use('/configuracion', rutasConfiguracion)
 router.use('/resenas', rutasResenas)
+router.use('/preguntas', rutasPreguntas)
 
 export default router

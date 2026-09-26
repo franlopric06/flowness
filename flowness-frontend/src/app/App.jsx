@@ -5,6 +5,7 @@ import Footer from '../compartido/layout/PiePagina'
 import ScrollAlTope from '../compartido/componentes/ScrollAlTope'
 import PopupFlowness from '../compartido/componentes/PopupFlowness'
 import BotonWhatsapp from '../compartido/componentes/BotonWhatsapp'
+import Asistente from '../compartido/componentes/asistente/Asistente'
 import Avisos from '../compartido/componentes/Avisos'
 import Dialogo from '../compartido/componentes/Dialogo'
 import Inicio from '../modulos/inicio/Inicio'
@@ -38,6 +39,7 @@ function App() {
       <Dialogo />
       {!sinFlotantes && <PopupFlowness />}
       {!sinFlotantes && <BotonWhatsapp />}
+      {!sinFlotantes && <Asistente />}
 
       {/* Transición suave al cambiar de página */}
       <motion.div

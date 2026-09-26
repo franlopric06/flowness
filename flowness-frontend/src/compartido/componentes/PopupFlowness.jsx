@@ -36,7 +36,7 @@ function PopupFlowness() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-          className="fixed bottom-20 right-4 z-40 w-60 card shadow-alta p-4 md:bottom-6 md:w-72 md:p-5"
+          className="fixed bottom-22 right-4 z-40 w-60 card shadow-alta p-4 md:bottom-24 md:w-72 md:p-5"
         >
           <button onClick={cerrar} aria-label="Cerrar" className="absolute top-2 right-2 p-1 text-piedra hover:text-texto">
             <X size={18} />

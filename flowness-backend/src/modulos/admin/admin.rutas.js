@@ -4,6 +4,7 @@ import { verificarToken, soloAdmin } from '../../compartido/middlewares/autentic
 import rutasAvisos from '../avisos/avisos.rutas.js'
 import rutasSobreMi from '../sobre-mi/sobre-mi.rutas.js'
 import rutasResenasAdmin from '../resenas/resenas.admin.rutas.js'
+import rutasPreguntasAdmin from '../preguntas/preguntas.admin.rutas.js'
 
 const router = Router()
 
@@ -18,5 +19,6 @@ router.get('/metricas', obtenerMetricas)
 router.use('/avisos', rutasAvisos)
 router.use('/sobre-mi', rutasSobreMi)
 router.use('/resenas', rutasResenasAdmin)
+router.use('/preguntas', rutasPreguntasAdmin)
 
 export default router

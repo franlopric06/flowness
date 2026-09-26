@@ -5,6 +5,7 @@ import IconoInstagram from '../../compartido/componentes/IconoInstagram'
 import IconoWhatsapp from '../../compartido/componentes/IconoWhatsapp'
 import { fadeUpDelay } from '../../compartido/utilidades/animaciones'
 import { useConfiguracion } from '../../compartido/hooks/useConfiguracion'
+import PreguntasFrecuentes from './PreguntasFrecuentes'
 
 function Contacto() {
   const config = useConfiguracion()
@@ -40,6 +41,8 @@ function Contacto() {
           <MapPin size={16} /> Tinogasta, Catamarca · Argentina
         </motion.p>
       </div>
+
+      <PreguntasFrecuentes />
     </main>
   )
 }

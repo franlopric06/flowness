@@ -287,3 +287,19 @@ model RecuperacionClave {
 
   @@index([usuarioId])
 }
+
+// ─────────────────────────────────────────────
+// PREGUNTAS FRECUENTES
+// Las usa el asistente del sitio para responder dudas. Si no encuentra una
+// respuesta, ofrece seguir por WhatsApp. Se editan desde el panel.
+// ─────────────────────────────────────────────
+
+model PreguntaFrecuente {
+  id            Int      @id @default(autoincrement())
+  pregunta      String
+  respuesta     String
+  palabrasClave String   @default("") // otras formas de preguntarlo, separadas por coma
+  orden         Int      @default(0)
+  activo        Boolean  @default(true)
+  creadoEn      DateTime @default(now())
+}

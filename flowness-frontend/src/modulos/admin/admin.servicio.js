@@ -24,6 +24,12 @@ export const obtenerResenasAdmin = (estado) => peticion(`/admin/resenas${estado 
 export const moderarResena = (id, datos) => peticion(`/admin/resenas/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
 export const eliminarResena = (id) => peticion(`/admin/resenas/${id}`, { method: 'DELETE' })
 
+// Preguntas frecuentes (asistente)
+export const obtenerPreguntasAdmin = () => peticion('/admin/preguntas')
+export const crearPregunta = (datos) => peticion('/admin/preguntas', { method: 'POST', body: JSON.stringify(datos) })
+export const actualizarPregunta = (id, datos) => peticion(`/admin/preguntas/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
+export const eliminarPregunta = (id) => peticion(`/admin/preguntas/${id}`, { method: 'DELETE' })
+
 // Avisos
 export const obtenerAvisos = () => peticion('/admin/avisos')
 export const crearAviso = (datos) => peticion('/admin/avisos', { method: 'POST', body: JSON.stringify(datos) })
