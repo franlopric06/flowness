@@ -1,62 +1,11 @@
 import prisma from '../../config/prisma.js'
-import cloudinary from '../../config/cloudinary.js'
-import { estaConfigurado, importarDeInstagram, estadoConexion, ErrorInstagram } from '../instagram/instagram.servicio.js'
+import { orden } from './galeria.comun.js'
 
-const orden = [{ orden: 'asc' }, { creadoEn: 'asc' }]
-
-// Acepta links de reels o publicaciones de Instagram:
-// instagram.com/reel/CODIGO · /reels/CODIGO · /p/CODIGO · /tv/CODIGO
-const esLinkInstagram = (url = '') =>
-  /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p|tv)\/[\w-]+/i.test(String(url).trim())
-
-const esVideoCloudinary = (url = '') => /^https:\/\/res\.cloudinary\.com\/.+\/video\/upload\//i.test(String(url).trim())
-const esImagenCloudinary = (url = '') => /^https:\/\/res\.cloudinary\.com\/.+\/image\/upload\//i.test(String(url).trim())
-
-// Campos que se pueden editar de una foto o un reel (descripción, orden,
-// visible y, si viene de Instagram, el link)
-const datosEditables = (cuerpo, actual) => {
-  const datos = {}
-  if (cuerpo.descripcion !== undefined) datos.descripcion = cuerpo.descripcion?.trim() || null
-  if (cuerpo.orden !== undefined) datos.orden = parseInt(cuerpo.orden, 10) || 0
-  if (cuerpo.activo !== undefined) datos.activo = Boolean(cuerpo.activo)
-  if (cuerpo.url !== undefined) {
-    if (actual.tipo !== 'INSTAGRAM') return { error: 'Solo se puede cambiar el link de lo que viene de Instagram' }
-    if (!esLinkInstagram(cuerpo.url)) return { error: 'El link no es de Instagram' }
-    datos.url = String(cuerpo.url).trim()
-    datos.enlace = datos.url
-  }
-  return { datos }
-}
-
-// Borra el archivo de Cloudinary para no ocupar espacio (si falla, no bloquea)
-const borrarDeCloudinary = async (url, tipoRecurso = 'image') => {
-  const coincidencia = String(url).match(/\/upload\/(?:v\d+\/)?(.+)\.[a-z0-9]+$/i)
-  if (!coincidencia) return
-  try {
-    await cloudinary.uploader.destroy(coincidencia[1], { resource_type: tipoRecurso })
-  } catch (err) {
-    console.error('No se pudo borrar de Cloudinary:', err?.message || err)
-  }
-}
-
-// Si llega un link de Instagram y la cuenta está conectada, se trae el archivo
-// real a Cloudinary (queda como ARCHIVO, guardando el link en "enlace").
-// Si no está conectada, se guarda el link y se muestra el recuadro de Instagram.
-const prepararDatos = async (tipo, url, clase) => {
-  if (tipo === 'INSTAGRAM' && (await estaConfigurado())) {
-    const importado = await importarDeInstagram(url, clase)
-    return { tipo: 'ARCHIVO', url: importado.url, enlace: importado.enlace }
-  }
-  return { tipo, url, enlace: tipo === 'INSTAGRAM' ? url : null }
-}
-
-const responderError = (res, err, mensaje) => {
-  if (err instanceof ErrorInstagram) return res.status(400).json({ error: err.message })
-  console.error(mensaje, err?.message || err)
-  res.status(500).json({ error: mensaje })
-}
-
-// ── Público ─────────────────────────────────
+// Galería: lo público y el listado del panel.
+// Las acciones de fotos, reels e Instagram viven en su propio archivo.
+export { crearFoto, actualizarFoto, eliminarFoto } from './galeria.fotos.js'
+export { crearReel, actualizarReel, eliminarReel } from './galeria.reels.js'
+export { obtenerEstadoInstagram, importarExistente } from './galeria.instagram.js'
 
 // GET /api/galeria — fotos y reels visibles
 export const obtenerGaleria = async (req, res) => {
@@ -71,125 +20,7 @@ export const obtenerGaleria = async (req, res) => {
   }
 }
 
-// ── Panel: fotos ────────────────────────────
-
-// POST /api/galeria/fotos — imagen ya subida a Cloudinary o link de Instagram
-export const crearFoto = async (req, res) => {
-  const tipo = req.body.tipo === 'INSTAGRAM' ? 'INSTAGRAM' : 'ARCHIVO'
-  const url = String(req.body.url || '').trim()
-  if (tipo === 'ARCHIVO' && !esImagenCloudinary(url)) return res.status(400).json({ error: 'Falta subir la imagen' })
-  if (tipo === 'INSTAGRAM' && !esLinkInstagram(url)) return res.status(400).json({ error: 'El link no es de una publicación de Instagram' })
-  try {
-    const datos = await prepararDatos(tipo, url, 'foto')
-    const ultima = await prisma.foto.findFirst({ orderBy: { orden: 'desc' } })
-    const foto = await prisma.foto.create({
-      data: { ...datos, descripcion: req.body.descripcion?.trim() || null, orden: (ultima?.orden || 0) + 1 },
-    })
-    res.json(foto)
-  } catch (err) {
-    responderError(res, err, 'Error al guardar la foto')
-  }
-}
-
-export const actualizarFoto = async (req, res) => {
-  try {
-    const actual = await prisma.foto.findUnique({ where: { id: Number(req.params.id) } })
-    if (!actual) return res.status(404).json({ error: 'No se encontró la foto' })
-    const { datos, error } = datosEditables(req.body, actual)
-    if (error) return res.status(400).json({ error })
-    res.json(await prisma.foto.update({ where: { id: actual.id }, data: datos }))
-  } catch {
-    res.status(500).json({ error: 'Error al guardar la foto' })
-  }
-}
-
-export const eliminarFoto = async (req, res) => {
-  try {
-    const foto = await prisma.foto.delete({ where: { id: Number(req.params.id) } })
-    if (foto.tipo !== 'INSTAGRAM') await borrarDeCloudinary(foto.url)
-    res.json({ mensaje: 'Foto eliminada' })
-  } catch {
-    res.status(500).json({ error: 'Error al eliminar la foto' })
-  }
-}
-
-// ── Panel: reels ────────────────────────────
-
-// Valida el reel según de dónde viene
-const validarReel = (tipo, url) => {
-  if (tipo === 'ARCHIVO') return esVideoCloudinary(url) ? null : 'Falta subir el video'
-  return esLinkInstagram(url) ? null : 'El link no es de un reel de Instagram'
-}
-
-export const crearReel = async (req, res) => {
-  const tipo = req.body.tipo === 'ARCHIVO' ? 'ARCHIVO' : 'INSTAGRAM'
-  const url = String(req.body.url || '').trim()
-  const error = validarReel(tipo, url)
-  if (error) return res.status(400).json({ error })
-  try {
-    const datos = await prepararDatos(tipo, url, 'video')
-    const ultimo = await prisma.reel.findFirst({ orderBy: { orden: 'desc' } })
-    const reel = await prisma.reel.create({
-      data: { ...datos, descripcion: req.body.descripcion?.trim() || null, orden: (ultimo?.orden || 0) + 1 },
-    })
-    res.json(reel)
-  } catch (err) {
-    responderError(res, err, 'Error al guardar el video')
-  }
-}
-
-export const actualizarReel = async (req, res) => {
-  try {
-    const actual = await prisma.reel.findUnique({ where: { id: Number(req.params.id) } })
-    if (!actual) return res.status(404).json({ error: 'No se encontró el video' })
-    const { datos, error } = datosEditables(req.body, actual)
-    if (error) return res.status(400).json({ error })
-    res.json(await prisma.reel.update({ where: { id: actual.id }, data: datos }))
-  } catch {
-    res.status(500).json({ error: 'Error al guardar el reel' })
-  }
-}
-
-export const eliminarReel = async (req, res) => {
-  try {
-    const reel = await prisma.reel.delete({ where: { id: Number(req.params.id) } })
-    if (reel.tipo === 'ARCHIVO') await borrarDeCloudinary(reel.url, 'video')
-    res.json({ mensaje: 'Reel eliminado' })
-  } catch {
-    res.status(500).json({ error: 'Error al eliminar el reel' })
-  }
-}
-
-// ── Panel: Instagram ────────────────────────
-
-// GET /api/galeria/instagram — si la cuenta de Instagram está conectada
-export const obtenerEstadoInstagram = async (req, res) => {
-  try {
-    res.json(await estadoConexion())
-  } catch {
-    res.json({ conectado: false })
-  }
-}
-
-// POST /api/galeria/:clase/:id/importar — pasa algo agregado como recuadro
-// de Instagram a archivo real (cuando la cuenta ya está conectada)
-export const importarExistente = async (req, res) => {
-  const clase = req.params.clase === 'reels' ? 'video' : 'foto'
-  const modelo = clase === 'video' ? prisma.reel : prisma.foto
-  try {
-    const actual = await modelo.findUnique({ where: { id: Number(req.params.id) } })
-    if (!actual) return res.status(404).json({ error: 'No se encontró' })
-    if (actual.tipo !== 'INSTAGRAM') return res.status(400).json({ error: 'Ya es un archivo' })
-    if (!(await estaConfigurado())) return res.status(400).json({ error: 'Instagram no está conectado' })
-    const importado = await importarDeInstagram(actual.url, clase)
-    res.json(await modelo.update({ where: { id: actual.id }, data: { tipo: 'ARCHIVO', url: importado.url, enlace: importado.enlace } }))
-  } catch (err) {
-    responderError(res, err, 'No se pudo traer de Instagram')
-  }
-}
-
-// ── Panel: todo, incluso lo oculto ──────────
-
+// Panel: todo, incluso lo oculto
 export const obtenerGaleriaAdmin = async (req, res) => {
   try {
     const [fotos, reels] = await Promise.all([

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'framer-motion'
-import { Menu, X, LogOut, LayoutDashboard, UserRound } from 'lucide-react'
-import { dropdown } from '../utilidades/animaciones'
+import { Link, useLocation } from 'react-router-dom'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { Menu, X } from 'lucide-react'
 import { avisar } from '../utilidades/avisos'
+import NavegacionCompu from './encabezado/NavegacionCompu'
+import MenuCelular from './encabezado/MenuCelular'
 
 const LINKS = [
   ['/', 'Inicio'],
@@ -64,13 +65,6 @@ function Encabezado() {
   const esAdmin = usuario?.rol === 'ADMIN'
   const links = token && !esAdmin ? [...LINKS, ['/mi-cuenta', 'Mi cuenta']] : LINKS
 
-  const estiloLink = ({ isActive }) =>
-    `relative py-1 whitespace-nowrap text-[0.68rem] font-medium tracking-[0.14em] xl:tracking-[0.18em] uppercase transition-colors ${
-      isActive ? 'text-blanco' : 'text-blanco/75 hover:text-blanco'
-    } after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-terracota after:transition-all ${
-      isActive ? 'after:w-full' : 'after:w-0 hover:after:w-full'
-    }`
-
   return (
     <motion.header
       animate={{ y: oculto ? '-100%' : '0%' }}
@@ -89,24 +83,8 @@ function Encabezado() {
           </span>
         </Link>
 
-        {/* Links (computadora) */}
-        <ul className="hidden lg:flex items-center gap-5 xl:gap-7 mx-auto">
-          {links.map(([ruta, texto]) => (
-            <li key={ruta}><NavLink to={ruta} end={ruta === '/'} className={estiloLink}>{texto}</NavLink></li>
-          ))}
-        </ul>
-
-        {/* Botones (computadora) */}
-        <div className="hidden lg:flex items-center gap-2 shrink-0 whitespace-nowrap">
-          {esAdmin && (
-            <Link to="/admin" className="btn btn-chico btn-claro"><LayoutDashboard size={14} /> Panel</Link>
-          )}
-          {token ? (
-            <button onClick={cerrarSesion} className="btn btn-chico btn-contorno-claro"><LogOut size={14} /> Salir</button>
-          ) : (
-            <Link to="/ingresar" className="btn btn-chico btn-claro"><UserRound size={14} /> Ingresar</Link>
-          )}
-        </div>
+        {/* Links y botones (computadora) */}
+        <NavegacionCompu links={links} token={token} esAdmin={esAdmin} alCerrarSesion={cerrarSesion} />
 
         {/* Botón del menú (celular) */}
         <button onClick={() => setMenuAbierto((v) => !v)} className="lg:hidden text-blanco p-2 -mr-2"
@@ -116,30 +94,7 @@ function Encabezado() {
       </nav>
 
       {/* Menú desplegable (celular) */}
-      <AnimatePresence>
-        {menuAbierto && (
-          <motion.div {...dropdown} transition={{ duration: 0.25 }} className="lg:hidden border-t border-blanco/15">
-            <ul className="contenedor py-4 flex flex-col">
-              {links.map(([ruta, texto], i) => (
-                <motion.li key={ruta} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 * i }}>
-                  <NavLink to={ruta} end={ruta === '/'}
-                    className={({ isActive }) => `block py-3 text-sm tracking-[0.18em] uppercase border-b border-blanco/10 ${isActive ? 'text-blanco font-semibold' : 'text-blanco/80'}`}>
-                    {texto}
-                  </NavLink>
-                </motion.li>
-              ))}
-            </ul>
-            <div className="contenedor pb-6 flex flex-col gap-3">
-              {esAdmin && <Link to="/admin" className="btn btn-claro w-full"><LayoutDashboard size={16} /> Panel admin</Link>}
-              {token ? (
-                <button onClick={cerrarSesion} className="btn btn-contorno-claro w-full"><LogOut size={16} /> Cerrar sesión</button>
-              ) : (
-                <Link to="/ingresar" className="btn btn-claro w-full"><UserRound size={16} /> Ingresar</Link>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MenuCelular abierto={menuAbierto} links={links} token={token} esAdmin={esAdmin} alCerrarSesion={cerrarSesion} />
     </motion.header>
   )
 }
