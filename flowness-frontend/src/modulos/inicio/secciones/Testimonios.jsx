@@ -18,7 +18,7 @@ function Testimonios() {
   if (lista.length === 0) return null
 
   return (
-    <section className="py-20 md:py-28 overflow-x-clip" aria-label="Testimonios">
+    <section className="seccion overflow-x-clip" aria-label="Testimonios">
       <div className="contenedor">
         <TituloSeccion etiqueta="Testimonios" titulo="Lo que dicen quienes ya se mueven con Flowness" />
         <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-5 px-5 pb-2 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:mx-0 md:px-0">

@@ -6,7 +6,7 @@ import { fadeUpScroll } from '../../../compartido/utilidades/animaciones'
 // Última invitación del Inicio antes del pie de página
 function Cierre({ hayClaseGratis }) {
   return (
-    <section className="relative isolate overflow-hidden bg-arena/60 py-20 md:py-28 text-center">
+    <section className="relative isolate overflow-hidden bg-arena/60 seccion text-center">
       <span className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-terracota/30 blur-3xl animate-respirar -z-10" aria-hidden="true" />
       <span className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-verde/25 blur-3xl animate-respirar-lento -z-10" aria-hidden="true" />
       <motion.div {...fadeUpScroll} className="contenedor max-w-2xl">

@@ -147,6 +147,12 @@
     .contenedor { padding-inline: 2.5rem; }
   }
 
+  /* Espacio de arriba y abajo de cada sección del Inicio (se ajusta acá, en un solo lugar) */
+  .seccion { padding-block: 3.5rem; }
+  @media (min-width: 768px) {
+    .seccion { padding-block: 4.75rem; }
+  }
+
   /* Etiqueta pequeña sobre los títulos (ej: "PARA TODO PÚBLICO") */
   .etiqueta {
     font-family: var(--font-texto);

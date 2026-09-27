@@ -10,7 +10,7 @@ import { useOrientacionVideo } from '../../../compartido/hooks/useOrientacionVid
 // Con video: "Cómo nació Flowness" con el video grande
 function ConVideo({ sobreMi }) {
   return (
-    <section className="bg-arena/50 py-20 md:py-28">
+    <section className="bg-arena/50 seccion">
       <div className="contenedor max-w-5xl">
         <TituloSeccion etiqueta="La historia" titulo="Cómo nació Flowness" />
         <motion.div {...fadeUpScroll} className="rounded-xl overflow-hidden shadow-alta bg-black">
@@ -30,7 +30,7 @@ function ConVideo({ sobreMi }) {
 // Foto (o video vertical tipo reel) con un marco terracota y el texto al lado
 function ConFoto({ sobreMi, videoVertical = false }) {
   return (
-    <section className="bg-arena/50 py-20 md:py-28">
+    <section className="bg-arena/50 seccion">
       <div className="contenedor max-w-5xl flex flex-col md:flex-row gap-12 md:gap-16 items-center">
         {videoVertical && (
           <motion.div {...fadeUpScroll} className="relative shrink-0 w-60 md:w-72">

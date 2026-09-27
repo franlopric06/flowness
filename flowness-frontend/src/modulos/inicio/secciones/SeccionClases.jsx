@@ -41,7 +41,7 @@ function SeccionClases({ clases }) {
   const destacadas = [...lista].sort((a, b) => Number(b.esGratis) - Number(a.esGratis)).slice(0, 3)
 
   return (
-    <section className="bg-blanco py-20 md:py-28">
+    <section className="bg-blanco seccion">
       <div className="contenedor">
         <TituloSeccion
           etiqueta="Para todo público"
@@ -49,9 +49,9 @@ function SeccionClases({ clases }) {
           texto={`Clases grabadas para hacer cuando quieras, a tu ritmo. ${hayClaseGratis ? 'Registrate y mirá la primera gratis; ' : ''}las demás las comprás de a una y quedan en tu cuenta para siempre.`}
         />
         {clases === null ? (
-          <EsqueletoGrilla cantidad={3} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" />
+          <EsqueletoGrilla cantidad={3} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" />
         ) : destacadas.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {destacadas.map((clase, i) => (
               <motion.div key={clase.id} {...fadeUpScrollDelay(i * 0.1)}><TarjetaClase clase={clase} /></motion.div>
             ))}

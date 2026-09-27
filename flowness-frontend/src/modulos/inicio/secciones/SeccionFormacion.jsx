@@ -43,16 +43,16 @@ function TarjetaNivel({ curso, indice }) {
 function SeccionFormacion({ cursos }) {
   if (cursos !== null && cursos.length === 0) return null
   return (
-    <section className="contenedor py-20 md:py-28">
+    <section className="contenedor seccion">
       <TituloSeccion
         etiqueta="Para profesionales"
         titulo="Formación Flowness"
         texto="Tres niveles para profesores de educación física, entrenadores y profesionales del movimiento. Método con marca registrada a nivel nacional."
       />
       {cursos === null ? (
-        <EsqueletoGrilla cantidad={3} imagen="aspect-[16/10]" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" />
+        <EsqueletoGrilla cantidad={3} imagen="aspect-[16/10]" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {cursos.map((curso, i) => (
             <motion.div key={curso.id} {...fadeUpScrollDelay(i * 0.12)}><TarjetaNivel curso={curso} indice={i} /></motion.div>
           ))}

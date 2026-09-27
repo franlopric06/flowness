@@ -5,7 +5,7 @@ import FasesEnVideo from '../FasesEnVideo'
 function SeccionFases({ fases }) {
   if (!fases.length) return null
   return (
-    <section id="metodo" className="patron-marca bg-verde py-20 md:py-28 mt-16 scroll-mt-20">
+    <section id="metodo" className="patron-marca bg-verde seccion mt-10 scroll-mt-20">
       <div className="contenedor">
         <TituloSeccion claro
           etiqueta="El método"

@@ -24,11 +24,11 @@ function SeccionGaleria({ galeria }) {
   if (!fotos.length && !reels.length) return null
 
   return (
-    <section className="contenedor py-20 md:py-28">
+    <section className="contenedor seccion">
       <TituloSeccion etiqueta="Galería" titulo="Momentos Flowness" />
 
       {fotos.length > 0 && (
-        <div className="mb-14">
+        <div className="mb-10">
           <Subtitulo icono={Images}>Fotos</Subtitulo>
           <Carrusel claseEscritorio={ESCRITORIO}>
             {fotos.map((foto, i) => (
@@ -41,7 +41,7 @@ function SeccionGaleria({ galeria }) {
       )}
 
       {reels.length > 0 && (
-        <div className="mb-14">
+        <div className="mb-10">
           <Subtitulo icono={Film}>Videos</Subtitulo>
           <Carrusel claseEscritorio={ESCRITORIO}>
             {reels.map((reel, i) => (
